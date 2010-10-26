@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #include <cassert>
 #include <memory>
 #include <Windows.h>
