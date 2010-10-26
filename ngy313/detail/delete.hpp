@@ -5,7 +5,7 @@
 #include <XAudio2.h>
 
 namespace ngy313 {
-namespace detial {
+namespace detail {
 struct handle_delete {
   void operator ()(const HANDLE handle) const {
     assert(handle && "ƒnƒ“ƒhƒ‹‚ª•s³");

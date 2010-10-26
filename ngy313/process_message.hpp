@@ -24,4 +24,20 @@ pstade::oven::any_range<int, boost::forward_traversal_tag> process_message() {
     return true;
   });
 }
+
+struct main_loop {
+  explicit main_loop(const std::function<void ()> &func) : func_(func) {}
+
+  void operator ()(int) const {
+    func_();
+  }
+
+ private:
+  const std::function<void ()> func_;
+};
+
+inline
+void quit() {
+  PostQuitMessage(0);
+}
 }
