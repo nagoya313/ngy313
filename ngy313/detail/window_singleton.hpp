@@ -9,23 +9,24 @@ namespace ngy313 { namespace detail {
 class window_singleton : public singleton<window_singleton> {
  public:
   const window_handle &window() const {
-    return window_handle_;
+    return window_;
   }
 
   const graphic_device_handle &graphic_device() const {
-    return graphic_device_handle_;
+    return graphic_device_;
   }
 
  private:
   typedef boost::mpl::string<'BASE'> window_class_name;
 
   window_singleton()
-      : window_handle_(init_window()),
-        graphic_base_handle_(create_graphic_base()),
-        graphic_device_handle_(create_graphic_device(window_handle_,
-                                                     graphic_base_handle_,
-                                                     true)) {
-    set_procedure(window_handle_, &procedure);
+      : window_(init_window()),
+        graphic_base_(create_graphic_base()),
+        graphic_device_(create_graphic_device(window_,
+                                              graphic_base_,
+                                              true)) {
+    set_procedure(window_, &procedure);
+    init_device(graphic_device_);
   }
 
   static window_handle init_window() {
@@ -44,9 +45,9 @@ class window_singleton : public singleton<window_singleton> {
     return DefWindowProc(window_handle, message, wp, lp);
   }
 
-  const window_handle window_handle_;
-  const graphic_base_handle graphic_base_handle_;
-  const graphic_device_handle graphic_device_handle_;
+  const window_handle window_;
+  const graphic_base_handle graphic_base_;
+  const graphic_device_handle graphic_device_;
   friend singleton<window_singleton>;
 };
 

@@ -71,4 +71,56 @@ graphic_device_handle create_graphic_device(
   }
   return graphic_device_handle(graphic_device);
 }
+
+inline
+void init_device(const graphic_device_handle &graphic_device) {
+  assert(graphic_device);
+  graphic_device->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+  graphic_device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+  graphic_device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+  graphic_device->SetRenderState(D3DRS_LIGHTING, FALSE);
+  graphic_device->SetRenderState(D3DRS_ZENABLE, FALSE);
+}
+
+inline
+void clear(const graphic_device_handle &graphic_device, const std::uint32_t col) {
+  assert(graphic_device);
+  graphic_device->Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, col, 1.f, 0);
+}
+
+inline
+bool begin_scene(const graphic_device_handle &graphic_device) {
+  assert(graphic_device);
+  return SUCCEEDED(graphic_device->BeginScene());
+}
+
+inline
+void end_scene(const graphic_device_handle &graphic_device) {
+  graphic_device->EndScene();
+}
+
+inline
+void present(const window_handle &window, const graphic_device_handle &graphic_device, const bool windowed) {
+  assert(window);
+  assert(graphic_device);
+  switch (graphic_device->Present(nullptr, nullptr, nullptr, nullptr)) {
+    case D3DERR_DEVICELOST: {
+      D3DPRESENT_PARAMETERS present_parameter = detail::init_present_parameters(window, windowed);
+	    if (graphic_device->TestCooperativeLevel() == D3DERR_DEVICENOTRESET) {
+        if (FAILED(graphic_device->Reset(&present_parameter))) {
+           throw std::runtime_error("デバイスロストからの復旧に失敗");
+	      }
+        detail::init_device(graphic_device);
+      }
+	    break;
+    }
+    case D3DERR_DRIVERINTERNALERROR: {
+	    throw std::runtime_error("内部ドライバエラーが発生");
+	    break;
+    }
+    default: {
+	    break;
+    }
+  }
+}
 }}
