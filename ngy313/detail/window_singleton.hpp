@@ -24,17 +24,19 @@ class window_singleton : public singleton<window_singleton> {
         graphic_base_handle_(create_graphic_base()),
         graphic_device_handle_(create_graphic_device(window_handle_,
                                                      graphic_base_handle_,
-                                                     true)) {}
+                                                     true)) {
+    set_procedure(window_handle_, &procedure);
+  }
 
   static window_handle init_window() {
     regist_window_class<window_class_name>();
     return create_window<window_class_name>();
   }
 
-  static LRESULT CALLBACK window_procedure(const HWND window_handle, 
-                                           const UINT message,
-                                           const WPARAM wp, 
-                                           const LPARAM lp) {
+  static LRESULT CALLBACK procedure(const HWND window_handle, 
+                                    const UINT message,
+                                    const WPARAM wp, 
+                                    const LPARAM lp) {
     if (message == WM_CLOSE) {
       PostQuitMessage(0);
       return 0;
