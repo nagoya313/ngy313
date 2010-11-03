@@ -1,4 +1,4 @@
-#pragma 
+#pragma once
 #include <cstdint>
 #include <cstring>
 #include <string>
@@ -6,6 +6,7 @@
 #include <Windows.h>
 
 namespace ngy313 { namespace detail {
+inline
 std::string format_error_message() {
   void *message_buffer = nullptr;
   FormatMessage(
@@ -13,14 +14,15 @@ std::string format_error_message() {
       nullptr,
       GetLastError(),
       MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-      reinterpret_cast<char *>(message_buffer),
+      reinterpret_cast<char *>(&message_buffer),
       0,
       nullptr);
+  std::string message(
+                  static_cast<const char *>(message_buffer),
+                  static_cast<const char *>(message_buffer) + 
+                  std::strlen(static_cast<const char *>(message_buffer)));
   LocalFree(message_buffer);
-  return std::string(
-             static_cast<const char *>(message_buffer),
-             static_cast<const char *>(message_buffer) + 
-             std::strlen(static_cast<const char *>(message_buffer)));
+  return message;
 }
 
 class last_error : public std::runtime_error {

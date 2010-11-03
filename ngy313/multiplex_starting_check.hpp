@@ -8,7 +8,8 @@ template <typename MPLString>
 class multiplex_starting_check : private boost::noncopyable {
  public:
   multiplex_starting_check()
-      : mutex_(CreateMutex(nullptr, FALSE, boost::mpl::c_str<MPLString>::value)),
+      : mutex_(CreateMutex(nullptr, 
+                           FALSE, boost::mpl::c_str<MPLString>::value)),
         multipex_starting_(GetLastError() == ERROR_ALREADY_EXISTS) {}
   
   bool multiplex_starting() const {
