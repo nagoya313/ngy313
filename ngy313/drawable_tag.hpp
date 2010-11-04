@@ -87,7 +87,7 @@ template <typename T0,
           BOOST_PP_REPEAT_FROM_TO(1, 
               BOOST_PP_INC(NGY313_TAG_MAX), 
               NGY313_MAKE_TAG_GEN, _)> 
-struct make_tag {
+struct make_drawable_tag {
   typedef typename boost::mpl::fold<boost::mpl::vector<
                                         BOOST_PP_ENUM_PARAMS(
                                             BOOST_PP_INC(NGY313_TAG_MAX),

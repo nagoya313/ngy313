@@ -4,7 +4,9 @@
 
 namespace ngy313 {
 class box
-    : public drawable_adaptor<box, 4, 2, make_tag<dimension2_fvf_tag, diffuse_fvf_tag, triangle_strip_primitive_tag>> {
+    : public drawable_adaptor<box, 4, 2, make_drawable_tag<dimension2_fvf_tag, 
+                                                           diffuse_fvf_tag, 
+                                                           triangle_strip_primitive_tag>> {
  public:
   box(const float x, const float y, const float width, const float height) 
       : vertex_(init(x, y, width, height)) {}
@@ -14,7 +16,10 @@ class box
   }
 
  private:
-  static vertex_array_type init(const float x, const float y, const float width, const float height) {
+  static vertex_array_type init(const float x, 
+                                const float y, 
+                                const float width, 
+                                const float height) {
     const vertex_array_type vertex = {{
       {{x, y, 0.f, 1.f}, 0xFFFFFFFF},
       {{x + width, y, 0.f, 1.f}, 0xFFFFFFFF},
