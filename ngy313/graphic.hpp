@@ -29,4 +29,9 @@ inline
 void present() {
   detail::present(detail::window(), detail::graphic_device(), true);
 }
+
+template <typename Drawable>
+void draw(const Drawable &drawable) {
+  detail::draw(detail::graphic_device(), drawable);
+}
 }

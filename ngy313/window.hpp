@@ -32,6 +32,7 @@ void window_move(const int x, const int y) {
 
 void window_resize(const int width, const int height) {
   detail::resize(detail::window(), width, height);
+  detail::reset(detail::window(), detail::graphic_device(), true);
 }
 
 std::string window_caption() {

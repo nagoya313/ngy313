@@ -62,23 +62,23 @@ typedef boost::mpl::map<
         boost::mpl::integral_c<D3DPRIMITIVETYPE, 
                                D3DPT_POINTLIST>>,
     boost::mpl::pair<
-        point_list_primitive_tag, 
+        line_list_primitive_tag, 
         boost::mpl::integral_c<D3DPRIMITIVETYPE,
                                D3DPT_LINELIST>>,
     boost::mpl::pair<
-        point_list_primitive_tag, 
+        line_strip_primitive_tag, 
         boost::mpl::integral_c<D3DPRIMITIVETYPE,
                                D3DPT_LINESTRIP>>,
     boost::mpl::pair<
-        point_list_primitive_tag, 
+        triangle_list_primitive_tag, 
         boost::mpl::integral_c<D3DPRIMITIVETYPE, 
                                D3DPT_TRIANGLELIST>>,
     boost::mpl::pair<
-        point_list_primitive_tag, 
+        triangle_strip_primitive_tag, 
         boost::mpl::integral_c<D3DPRIMITIVETYPE, 
                                D3DPT_TRIANGLESTRIP>>,
     boost::mpl::pair<
-        point_list_primitive_tag, 
+        triangle_fan_primitive_tag, 
         boost::mpl::integral_c<D3DPRIMITIVETYPE, 
                                D3DPT_TRIANGLEFAN>>> primitive_map;
 
@@ -156,50 +156,41 @@ struct remove_tag_list {
 };
 
 template <typename DrawableTag>
-struct tag_inherit {
-  typedef typename boost::mpl::inherit_linearly<
-      typename DrawableTag, 
-      boost::mpl::inherit2<boost::mpl::_, 
-                           boost::mpl::_>>::type type;
-};
-
-template <typename DrawableTag>
 struct fvf_traits {
-  static_assert(std::is_base_of<
-                    fvf_tag,
-                    typename tag_inherit<DrawableTag>::type>::value, 
+  static_assert(std::is_base_of<fvf_tag,
+                                typename DrawableTag>::value, 
                 "DrawableTag not has FVFTag");
   typedef typename boost::mpl::fold<
       typename boost::mpl::transform<
           typename remove_tag_list<
               tag_list, 
-              typename tag_inherit<DrawableTag>::type>::type, 
-              tag_transformed<boost::mpl::_1, kValue>>::type, 
-              boost::mpl::integral_c<std::uint32_t, 0>, 
-              boost::mpl::bitor_<boost::mpl::_1, boost::mpl::_2>>::type type;
+              typename DrawableTag::type>::type,
+          tag_transformed<boost::mpl::_1, kValue>>::type, 
+          boost::mpl::integral_c<std::uint32_t, 0>, 
+          boost::mpl::bitor_<boost::mpl::_1, boost::mpl::_2>>::type type;
 };
 
 template <typename DrawableTag>
 struct vertex_traits {
-  static_assert(std::is_base_of<
-                    fvf_tag, 
-                    typename tag_inherit<DrawableTag>::type>::value,
+  static_assert(std::is_base_of<fvf_tag, 
+                                typename DrawableTag::type>::value,
                 "DrawableTag not has FVFTag");
   typedef typename boost::mpl::transform<
       typename remove_tag_list<
           tag_list, 
-          typename tag_inherit<DrawableTag>::type>::type, 
-          tag_transformed<boost::mpl::_1, kType>>::type type_list;
+          typename DrawableTag::type>::type, 
+      tag_transformed<boost::mpl::_1, kType>>::type type_list;
   typedef typename vertex<type_list, boost::mpl::size<type_list>::value> type;
 };
 
 template <typename DrawableTag>
-struct primitve_traits {
-  static_assert(std::is_base_of<
-                    primitive_tag, 
-                    typename tag_inherit<DrawableTag>::type>::value,
+struct primitive_traits {
+  static_assert(std::is_base_of<primitive_tag, 
+                                typename DrawableTag::type>::value,
                 "DrawableTag not has PrimitiveTag");
-  typedef DrawableTag type;
+  typedef typename boost::mpl::at<
+      primitive_map, 
+      typename DrawableTag::primitive_type>::type type;
 };
 
 template <typename Member, typename Vertex, typename List>

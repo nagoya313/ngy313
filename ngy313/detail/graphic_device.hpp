@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include "com_fwd.hpp"
 #include "window_impl.hpp"
+#include "copy_vertex.hpp"
 
 namespace ngy313 { namespace detail {
 inline
@@ -96,11 +97,14 @@ bool begin_scene(const graphic_device_handle &graphic_device) {
 
 inline
 void end_scene(const graphic_device_handle &graphic_device) {
+  assert(graphic_device);
   graphic_device->EndScene();
 }
 
 inline
-void present(const window_handle &window, const graphic_device_handle &graphic_device, const bool windowed) {
+void present(const window_handle &window, 
+             const graphic_device_handle &graphic_device, 
+             const bool windowed) {
   assert(window);
   assert(graphic_device);
   switch (graphic_device->Present(nullptr, nullptr, nullptr, nullptr)) {
@@ -108,19 +112,42 @@ void present(const window_handle &window, const graphic_device_handle &graphic_d
       D3DPRESENT_PARAMETERS present_parameter = detail::init_present_parameters(window, windowed);
 	    if (graphic_device->TestCooperativeLevel() == D3DERR_DEVICENOTRESET) {
         if (FAILED(graphic_device->Reset(&present_parameter))) {
-           throw std::runtime_error("デバイスロストからの復旧に失敗");
+           throw std::runtime_error("デバイスロストからの復旧に失敗しました");
 	      }
         detail::init_device(graphic_device);
       }
 	    break;
     }
     case D3DERR_DRIVERINTERNALERROR: {
-	    throw std::runtime_error("内部ドライバエラーが発生");
+	    throw std::runtime_error("内部ドライバエラーが発生しました");
 	    break;
     }
     default: {
 	    break;
     }
   }
+}
+
+inline
+void reset(const window_handle &window,
+           const graphic_device_handle &graphic_device,
+           const bool windowed) {
+  assert(window);
+  assert(graphic_device);
+  D3DPRESENT_PARAMETERS present_parameter = detail::init_present_parameters(window, windowed);
+  if (FAILED(graphic_device->Reset(&present_parameter))) {
+     throw std::runtime_error("デバイスリセｯﾄに失敗しました");
+	}
+}
+
+template <typename Drawable>
+void draw(const graphic_device_handle &graphic_device, const Drawable &drawable) {
+  assert(graphic_device);
+  const typename Drawable::vertex_array_type vertex = copy_vertex(drawable);
+  graphic_device->SetFVF(typename Drawable::fvf_type::value);
+  graphic_device->DrawPrimitiveUP(typename Drawable::primitive_type::value,
+                                  typename Drawable::count_type::value, 
+                                  &(vertex.front()), 
+                                  sizeof(vertex.front()));
 }
 }}
