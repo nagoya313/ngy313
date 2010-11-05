@@ -94,13 +94,13 @@ struct vertex;
 #define NGY313_MEMBER_MAX 8
 
 #define NGY313_VERTEX_MENBER_GEN(z, n, data)\
-typename boost::mpl::at_c<list, n>::type BOOST_PP_CAT(m, n);
+typename boost::mpl::at_c<data, n>::type BOOST_PP_CAT(m, n);
 
 #define NGY313_VERTEX_STRUCT_GEN(z, n, data)\
 template <typename List>\
 struct vertex<List, n> {\
   typedef List list;\
-  BOOST_PP_REPEAT(n, NGY313_VERTEX_MENBER_GEN, _)\
+  BOOST_PP_REPEAT(n, NGY313_VERTEX_MENBER_GEN, list)\
 };
 
 BOOST_PP_REPEAT_FROM_TO(1, 
@@ -108,6 +108,7 @@ BOOST_PP_REPEAT_FROM_TO(1,
                         NGY313_VERTEX_STRUCT_GEN, _)
 
 #undef NGY313_VERTEX_MENBER_GEN
+
 #undef NGY313_VERTEX_STRUCT_GEN
 
 template <typename Member, typename Vertex, std::size_t Size>

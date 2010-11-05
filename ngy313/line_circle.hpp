@@ -1,15 +1,28 @@
 #pragma once
-#include <pstade/oven/algorithm.hpp>
+#include <cmath>
+#include <boost/preprocessor/repeat.hpp>
+#include <boost/preprocessor/inc.hpp>
+#include <boost/preprocessor/arithmetic/dec.hpp>
 #include <pstade/oven/make_range.hpp>
-#include <pstade/oven/counting.hpp>
-#include <d3dx9math.h>
 #include "drawable_adaptor.hpp"
+#include "detail/radian.hpp"
 
 namespace ngy313 {
+#define NGY313_LINE_CIRCLE_VERTEX_SIZE 60
+
+#define NGY313_LINE_CIRCLE_VERTEX_ELEM_GEN(z, n, data)\
+{{x + std::cos(detail::line_vertex_radian<line_circle, n>::value) * r,\
+  y + std::sin(detail::line_vertex_radian<line_circle, n>::value) * r,\
+  0.f,\
+  1.f}, 0xFFFFFFFF},
+
 class line_circle
-    : public drawable_adaptor<line_circle, 60, 59, make_drawable_tag<dimension2_fvf_tag, 
-                                                                     diffuse_fvf_tag, 
-                                                                     line_strip_primitive_tag>> {
+    : public drawable_adaptor<line_circle, 
+                              NGY313_LINE_CIRCLE_VERTEX_SIZE, 
+                              59,
+                              make_drawable_tag<dimension2_fvf_tag, 
+                                                diffuse_fvf_tag, 
+                                                line_strip_primitive_tag>> {
  public:
   line_circle(const float x, const float y, const float r)
       : vertex_(init_vertex(x, y, r)) {}
@@ -20,18 +33,18 @@ class line_circle
 
  private:
   static vertex_array_type init_vertex(const float x, const float y, const float r) {
-    vertex_array_type vertex;
-    pstade::oven::transform(pstade::oven::counting(0, vertex.size()), vertex.begin(),
-                            [x, y, r](const int i) -> vertex_type {
-      const float rad = D3DX_PI * 2.f * static_cast<float>(i) / static_cast<float>(line_circle::size_type::value - 1);
-      const vertex_type vertex = {
-        {x + std::cos(rad) * r, y + std::sin(rad) * r, 0.f, 1.f}, 0xFFFFFFFF
-      };
-      return vertex;
-    });
+    const vertex_array_type vertex = {{
+      BOOST_PP_REPEAT(BOOST_PP_DEC(BOOST_PP_INC(NGY313_LINE_CIRCLE_VERTEX_SIZE)),
+                      NGY313_LINE_CIRCLE_VERTEX_ELEM_GEN, 
+                      _)
+    }};
     return vertex;
   }
 
   const vertex_array_type vertex_;
 };
+
+#undef NGY313_LINE_CIRCLE_VERTEX_ELEM_GEN
+
+#undef NGY313_LINE_CIRCLE_VERTEX_SIZE
 }
