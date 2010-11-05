@@ -4,9 +4,12 @@
 
 namespace ngy313 {
 class pixel
-    : public drawable_adaptor<pixel, 1, 1, make_drawable_tag<dimension2_fvf_tag, 
-                                                             diffuse_fvf_tag, 
-                                                             point_list_primitive_tag>> {
+    : public drawable_adaptor<pixel, 
+                              1,
+                              1,
+                              make_drawable_tag<dimension2_fvf_tag, 
+                                                diffuse_fvf_tag, 
+                                                point_list_primitive_tag>> {
  public:
   pixel(const float x, const float y) : vertex_(init_vertex(x, y)) {}
 

@@ -13,6 +13,7 @@ template <typename Drawable,
           std::uint32_t Count, 
           typename DrawableTag>
 struct drawable_adaptor {
+  typedef drawable_adaptor<Drawable, Size, Count, DrawableTag> adaptor_type;
   typedef Drawable drawable_type;
   typedef boost::mpl::integral_c<std::size_t, Size> size_type;
   typedef boost::mpl::integral_c<std::uint32_t, Count> count_type;

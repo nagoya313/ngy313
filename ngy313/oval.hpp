@@ -32,13 +32,17 @@ class oval
   }
 
  private:
-  static vertex_array_type init_vertex(const float x, const float y, const float rx, const float ry) {
+  static vertex_array_type init_vertex(const float x, 
+                                       const float y, 
+                                       const float rx,
+                                       const float ry) {
     const vertex_array_type vertex = {{
       {{x, y, 0.f, 1.f}, 0xFFFFFFFF},
-      BOOST_PP_REPEAT_FROM_TO(1, 
-                              BOOST_PP_DEC(BOOST_PP_INC(NGY313_OVAL_VERTEX_SIZE)),
-                              NGY313_OVAL_VERTEX_ELEM_GEN, 
-                              _)
+      BOOST_PP_REPEAT_FROM_TO(
+          1, 
+          BOOST_PP_DEC(BOOST_PP_INC(NGY313_OVAL_VERTEX_SIZE)),
+          NGY313_OVAL_VERTEX_ELEM_GEN, 
+          _)
     }};
     return vertex;
   }

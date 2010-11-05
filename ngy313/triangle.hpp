@@ -4,9 +4,12 @@
 
 namespace ngy313 {
 class triangle 
-  : public drawable_adaptor<triangle, 3, 1, make_drawable_tag<dimension2_fvf_tag, 
-                                                             diffuse_fvf_tag, 
-                                                             triangle_list_primitive_tag>> {
+  : public drawable_adaptor<triangle,
+                            3,
+                            1,
+                            make_drawable_tag<dimension2_fvf_tag, 
+                                              diffuse_fvf_tag, 
+                                              triangle_list_primitive_tag>> {
  public:
   triangle(const float x1, 
            const float y1,

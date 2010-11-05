@@ -6,7 +6,7 @@
 namespace ngy313 {
 class scoped_render : private boost::noncopyable {
  public:
-  explicit scoped_render() : succeeded_(detail::begin_scene(detail::graphic_device())) {}
+  scoped_render() : succeeded_(detail::begin_scene(detail::graphic_device())) {}
   
   ~scoped_render() {
     detail::end_scene(detail::graphic_device());

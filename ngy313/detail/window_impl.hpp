@@ -60,7 +60,9 @@ inline
 void set_procedure(const window_handle &window, const WNDPROC procedure) {
   assert(window);
   SetLastError(0);
-  if (!SetWindowLongPtr(window.get(), GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(procedure))) {
+  if (!SetWindowLongPtr(window.get(), 
+                        GWLP_WNDPROC,
+                        reinterpret_cast<LONG_PTR>(procedure))) {
     if (GetLastError()) {
       throw last_error("プロシージャの設定に失敗しました\n詳細：");
     }
