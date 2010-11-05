@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include "window_fwd.hpp"
+#include "string_piece.hpp"
 #include "last_error.hpp"
 
 namespace ngy313 { namespace detail {
@@ -82,7 +83,7 @@ void hide(const window_handle &window) {
 }
 
 inline
-void set_caption(const window_handle &window, const std::string &caption) {
+void set_caption(const window_handle &window, const string_piece &caption) {
   assert(window);
   SetWindowText(window.get(), caption.c_str());
 }

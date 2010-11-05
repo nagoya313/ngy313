@@ -4,8 +4,8 @@
 #include <boost/preprocessor/inc.hpp>
 #include <boost/preprocessor/arithmetic/dec.hpp>
 #include <pstade/oven/make_range.hpp>
-#include "drawable_adaptor.hpp"
 #include "detail/radian.hpp"
+#include "drawable_adaptor.hpp"
 
 namespace ngy313 {
 #define NGY313_LINE_CIRCLE_VERTEX_SIZE 60

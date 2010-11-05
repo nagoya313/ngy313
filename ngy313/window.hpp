@@ -16,7 +16,7 @@ void window_hide() {
 }
 
 inline
-void set_window_caption(const std::string &caption) {
+void set_window_caption(const string_piece &caption) {
   detail::set_caption(detail::window(), caption);
 }
 
