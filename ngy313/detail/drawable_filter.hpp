@@ -20,3 +20,4 @@ typename std::result_of<Filter(const Drawable &)>::type operator |(
   return filter(drawable);
 }
 }}
+

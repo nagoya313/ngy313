@@ -12,11 +12,7 @@ class line_box
                                                 line_strip_primitive_tag>> {
  public:
   line_box(const float x, const float y, const float width, const float height) 
-      : vertex_(init(x, y, width, height)) {}
-
-  vertex_range_type vertex() const {
-    return pstade::oven::make_range(vertex_.begin(), vertex_.end());
-  }
+      : drawable_adaptor(init(x, y, width, height)) {}
 
  private:
   static vertex_array_type init(const float x,
@@ -32,7 +28,5 @@ class line_box
     }};
     return vertex;
   }
-
-  const vertex_array_type vertex_;
 };
 }

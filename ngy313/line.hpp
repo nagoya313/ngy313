@@ -12,11 +12,7 @@ class line
                                                 line_list_primitive_tag>> {
  public:
   line(const float x1, const float y1, const float x2, const float y2) 
-      : vertex_(init_vertex(x1, y1, x2, y2)) {}
-
-  vertex_range_type vertex() const {
-    return pstade::oven::make_range(vertex_.begin(), vertex_.end());
-  }
+      : drawable_adaptor(init_vertex(x1, y1, x2, y2)) {}
 
  private:
   static vertex_array_type init_vertex(const float x1, 
@@ -29,7 +25,5 @@ class line
     }};
     return vertex;
   }
-
-  const vertex_array_type vertex_;
 };
 }

@@ -25,11 +25,7 @@ class oval
                                                 triangle_fan_primitive_tag>> {
  public:
   oval(const float x, const float y, const float rx, const float ry)
-      : vertex_(init_vertex(x, y, rx, ry)) {}
-
-  vertex_range_type vertex() const {
-    return pstade::oven::make_range(vertex_.begin(), vertex_.end());
-  }
+      : drawable_adaptor(init_vertex(x, y, rx, ry)) {}
 
  private:
   static vertex_array_type init_vertex(const float x, 
@@ -46,8 +42,6 @@ class oval
     }};
     return vertex;
   }
-
-  const vertex_array_type vertex_;
 };
 
 #undef NGY313_OVAL_VERTEX_ELEM_GEN

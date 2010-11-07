@@ -29,7 +29,7 @@ struct color {
         b(blue),
         a(alpha) {}
 
-  std::uint32_t color_code() const {
+  operator std::uint32_t() const {
     return (detail::check_range_color(a) << 24) | 
                (detail::check_range_color(r) << 16) |
                    (detail::check_range_color(g) << 8) |

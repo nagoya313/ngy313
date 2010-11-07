@@ -12,17 +12,16 @@ class box
                                                 triangle_strip_primitive_tag>> {
  public:
   box(const float x, const float y, const float width, const float height) 
-      : vertex_(init(x, y, width, height)) {}
+      : drawable_adaptor(init_vertex(x, y, width, height)) {}
 
-  vertex_range_type vertex() const {
-    return pstade::oven::make_range(vertex_.begin(), vertex_.end());
-  }
+  template <typename Filter>
+  explicit box(const Filter &filter) : drawable_adaptor(filter) {}
 
  private:
-  static vertex_array_type init(const float x, 
-                                const float y, 
-                                const float width, 
-                                const float height) {
+  static vertex_array_type init_vertex(const float x, 
+                                       const float y, 
+                                       const float width, 
+                                       const float height) {
     const vertex_array_type vertex = {{
       {{x, y, 0.f, 1.f}, 0xFFFFFFFF},
       {{x + width, y, 0.f, 1.f}, 0xFFFFFFFF},
@@ -31,7 +30,5 @@ class box
     }};
     return vertex;
   }
-
-  const vertex_array_type vertex_;
 };
 }

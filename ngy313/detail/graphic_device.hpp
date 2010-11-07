@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include "com_fwd.hpp"
 #include "window_impl.hpp"
-#include "copy_vertex.hpp"
+#include "drawable_core_access.hpp"
 
 namespace ngy313 { namespace detail {
 inline
@@ -146,7 +146,7 @@ void reset(const window_handle &window,
                                                 window,
                                                 windowed);
   if (FAILED(graphic_device->Reset(&present_parameter))) {
-     throw std::runtime_error("デバイスリセｯﾄに失敗しました");
+     throw std::runtime_error("デバイスリセットに失敗しました");
 	}
 }
 
@@ -154,7 +154,8 @@ template <typename Drawable>
 void draw(const graphic_device_handle &graphic_device,
           const Drawable &drawable) {
   assert(graphic_device);
-  const typename Drawable::vertex_array_type vertex = copy_vertex(drawable);
+  const typename Drawable::vertex_array_type vertex = 
+      drawable_core_access::copy_vertex(drawable);
   graphic_device->SetFVF(typename Drawable::fvf_type::value);
   graphic_device->DrawPrimitiveUP(typename Drawable::primitive_type::value,
                                   typename Drawable::count_type::value, 

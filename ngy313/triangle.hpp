@@ -17,11 +17,7 @@ class triangle
            const float y2, 
            const float x3,
            const float y3) 
-      : vertex_(init_vertex(x1, y1, x2, y2, x3, y3)) {}
-
-  vertex_range_type vertex() const {
-    return pstade::oven::make_range(vertex_.begin(), vertex_.end());
-  }
+      : drawable_adaptor(init_vertex(x1, y1, x2, y2, x3, y3)) {}
 
  private:
   static vertex_array_type init_vertex(const float x1, 
@@ -37,7 +33,5 @@ class triangle
     }};
     return vertex;
   }
-
-  const vertex_array_type vertex_;
 };
 }

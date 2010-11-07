@@ -25,11 +25,7 @@ class circle
                                                 triangle_fan_primitive_tag>> {
  public:
   circle(const float x, const float y, const float r)
-      : vertex_(init_vertex(x, y, r)) {}
-
-  vertex_range_type vertex() const {
-    return pstade::oven::make_range(vertex_.begin(), vertex_.end());
-  }
+      : drawable_adaptor(init_vertex(x, y, r)) {}
 
  private:
   static vertex_array_type init_vertex(const float x, 
@@ -45,8 +41,6 @@ class circle
     }};
     return vertex;
   }
-
-  const vertex_array_type vertex_;
 };
 
 #undef NGY313_CIRCLE_VERTEX_ELEM_GEN
