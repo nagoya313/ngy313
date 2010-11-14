@@ -27,7 +27,7 @@ struct diffuse_t {
 };
 
 struct specular_t {
-  std::uint32_t diffuse;
+  std::uint32_t specular;
 };
 
 struct uv_t {
