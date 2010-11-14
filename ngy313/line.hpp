@@ -7,9 +7,8 @@ class line
     : public drawable_adaptor<line, 
                               2, 
                               2,
-                              make_drawable_tag<dimension2_fvf_tag, 
-                                                diffuse_fvf_tag, 
-                                                line_list_primitive_tag>> {
+                              shape_2d_fvf_tag, 
+                              line_list_primitive_tag> {
  public:
   line(const float x1, const float y1, const float x2, const float y2) 
       : drawable_adaptor(init_vertex(x1, y1, x2, y2)) {}

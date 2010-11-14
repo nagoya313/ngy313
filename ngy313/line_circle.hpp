@@ -20,9 +20,8 @@ class line_circle
     : public drawable_adaptor<line_circle, 
                               NGY313_LINE_CIRCLE_VERTEX_SIZE, 
                               59,
-                              make_drawable_tag<dimension2_fvf_tag, 
-                                                diffuse_fvf_tag, 
-                                                line_strip_primitive_tag>> {
+                              shape_2d_fvf_tag, 
+                              line_strip_primitive_tag> {
  public:
   line_circle(const float x, const float y, const float r)
       : drawable_adaptor(init_vertex(x, y, r)) {}

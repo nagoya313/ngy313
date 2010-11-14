@@ -7,15 +7,11 @@ class box
     : public drawable_adaptor<box,
                               4, 
                               2,
-                              make_drawable_tag<dimension2_fvf_tag, 
-                                                diffuse_fvf_tag, 
-                                                triangle_strip_primitive_tag>> {
+                              shape_2d_fvf_tag, 
+                              triangle_strip_primitive_tag> {
  public:
   box(const float x, const float y, const float width, const float height) 
       : drawable_adaptor(init_vertex(x, y, width, height)) {}
-
-  template <typename Filter>
-  explicit box(const Filter &filter) : drawable_adaptor(filter) {}
 
  private:
   static vertex_array_type init_vertex(const float x, 

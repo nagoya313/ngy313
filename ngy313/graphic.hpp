@@ -21,7 +21,7 @@ class scoped_render : private boost::noncopyable {
 };
 
 inline
-void clear(const std::uint32_t &col) {
+void clear_screen(const std::uint32_t &col) {
   detail::clear(detail::graphic_device(), col);
 }
 

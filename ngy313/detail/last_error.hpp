@@ -17,10 +17,9 @@ std::string format_error_message() {
       reinterpret_cast<char *>(&message_buffer),
       0,
       nullptr);
-  std::string message(
-                  static_cast<const char *>(message_buffer),
-                  static_cast<const char *>(message_buffer) + 
-                  std::strlen(static_cast<const char *>(message_buffer)));
+  std::string message(static_cast<const char *>(message_buffer),
+                      static_cast<const char *>(message_buffer) + 
+                      std::strlen(static_cast<const char *>(message_buffer)));
   LocalFree(message_buffer);
   return message;
 }
@@ -29,5 +28,12 @@ class last_error : public std::runtime_error {
  public:
   explicit last_error(const std::string &message)
       : std::runtime_error(message + format_error_message()) {}
+};
+
+class hresult_error : public std::runtime_error {
+ public:
+  explicit hresult_error(const std::string &message,
+                         const HRESULT hr)
+      : std::runtime_error(message) {}
 };
 }}

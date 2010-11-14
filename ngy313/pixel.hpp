@@ -7,9 +7,8 @@ class pixel
     : public drawable_adaptor<pixel, 
                               1,
                               1,
-                              make_drawable_tag<dimension2_fvf_tag, 
-                                                diffuse_fvf_tag, 
-                                                point_list_primitive_tag>> {
+                              shape_2d_fvf_tag, 
+                              point_list_primitive_tag> {
  public:
   pixel(const float x, const float y) : drawable_adaptor(init_vertex(x, y)) {}
 

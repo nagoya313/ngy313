@@ -7,9 +7,8 @@ class line_box
     : public drawable_adaptor<line_box,
                               5,
                               4, 
-                              make_drawable_tag<dimension2_fvf_tag,
-                                                diffuse_fvf_tag,
-                                                line_strip_primitive_tag>> {
+                              shape_2d_fvf_tag,
+                              line_strip_primitive_tag> {
  public:
   line_box(const float x, const float y, const float width, const float height) 
       : drawable_adaptor(init(x, y, width, height)) {}

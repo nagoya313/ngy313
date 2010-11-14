@@ -20,9 +20,8 @@ class circle
     : public drawable_adaptor<circle, 
                               NGY313_CIRCLE_VERTEX_SIZE, 
                               60, 
-                              make_drawable_tag<dimension2_fvf_tag, 
-                                                diffuse_fvf_tag, 
-                                                triangle_fan_primitive_tag>> {
+                              shape_2d_fvf_tag, 
+                              triangle_fan_primitive_tag> {
  public:
   circle(const float x, const float y, const float r)
       : drawable_adaptor(init_vertex(x, y, r)) {}

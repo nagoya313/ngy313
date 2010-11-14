@@ -60,13 +60,16 @@ graphic_device_handle create_graphic_device(
                                       D3DCREATE_SOFTWARE_VERTEXPROCESSING,
                                       &present_parameters,
                                       &graphic_device))) {
-      if (FAILED(direct3d->CreateDevice(D3DADAPTER_DEFAULT,
-                                        D3DDEVTYPE_REF,
-                                        window.get(), 
-                                        D3DCREATE_SOFTWARE_VERTEXPROCESSING,
-                                        &present_parameters, 
-                                        &graphic_device))) {								
-	       throw std::runtime_error("Direct3Dデバイスの作成に失敗しました");
+      const HRESULT ref_hr = direct3d->CreateDevice(
+                                 D3DADAPTER_DEFAULT,
+                                 D3DDEVTYPE_REF,
+                                 window.get(), 
+                                 D3DCREATE_SOFTWARE_VERTEXPROCESSING,
+                                 &present_parameters, 
+                                 &graphic_device);
+      if (FAILED(ref_hr)) {								
+	       throw hresult_error("Direct3Dデバイスの作成に失敗しました\n詳細：",
+                             ref_hr);
 	    }  
     }
   }
@@ -77,8 +80,6 @@ inline
 void init_device(const graphic_device_handle &graphic_device) {
   assert(graphic_device);
   graphic_device->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-  graphic_device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-  graphic_device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
   graphic_device->SetRenderState(D3DRS_LIGHTING, FALSE);
   graphic_device->SetRenderState(D3DRS_ZENABLE, FALSE);
 }
@@ -148,17 +149,23 @@ void reset(const window_handle &window,
   if (FAILED(graphic_device->Reset(&present_parameter))) {
      throw std::runtime_error("デバイスリセットに失敗しました");
 	}
+  init_device(graphic_device);
 }
 
 template <typename Drawable>
 void draw(const graphic_device_handle &graphic_device,
           const Drawable &drawable) {
   assert(graphic_device);
-  const typename Drawable::vertex_array_type vertex = 
-      drawable_core_access::copy_vertex(drawable);
-  graphic_device->SetFVF(typename Drawable::fvf_type::value);
-  graphic_device->DrawPrimitiveUP(typename Drawable::primitive_type::value,
-                                  typename Drawable::count_type::value, 
+  const auto vertex = drawable_core_access::copy_vertex(drawable);
+  graphic_device->SetTexture(0, nullptr);
+  graphic_device->SetTexture(1, nullptr);
+  graphic_device->SetRenderState(D3DRS_SRCBLEND, 
+                                 Drawable::src_blend_type::value);
+  graphic_device->SetRenderState(D3DRS_DESTBLEND, 
+                                 Drawable::dest_blend_type::value);
+  graphic_device->SetFVF(Drawable::fvf_type::value);
+  graphic_device->DrawPrimitiveUP(Drawable::primitive_type::value,
+                                  Drawable::count_type::value, 
                                   &(vertex.front()), 
                                   sizeof(vertex.front()));
 }

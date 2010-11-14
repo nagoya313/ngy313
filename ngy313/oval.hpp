@@ -20,9 +20,8 @@ class oval
     : public drawable_adaptor<oval, 
                               NGY313_OVAL_VERTEX_SIZE,
                               60,
-                              make_drawable_tag<dimension2_fvf_tag, 
-                                                diffuse_fvf_tag, 
-                                                triangle_fan_primitive_tag>> {
+                              shape_2d_fvf_tag, 
+                              triangle_fan_primitive_tag> {
  public:
   oval(const float x, const float y, const float rx, const float ry)
       : drawable_adaptor(init_vertex(x, y, rx, ry)) {}

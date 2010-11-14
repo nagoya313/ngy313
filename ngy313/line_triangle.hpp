@@ -7,9 +7,8 @@ class line_triangle
   : public drawable_adaptor<line_triangle,
                             4,
                             3,
-                            make_drawable_tag<dimension2_fvf_tag, 
-                                              diffuse_fvf_tag, 
-                                              line_strip_primitive_tag>> {
+                            shape_2d_fvf_tag, 
+                            line_strip_primitive_tag> {
  public:
   line_triangle(const float x1, 
                 const float y1,

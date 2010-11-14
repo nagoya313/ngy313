@@ -20,9 +20,8 @@ class line_oval
     : public drawable_adaptor<line_oval, 
                               NGY313_LINE_OVAL_VERTEX_SIZE,
                               59,
-                              make_drawable_tag<dimension2_fvf_tag, 
-                                                diffuse_fvf_tag, 
-                                                line_strip_primitive_tag>> {
+                              shape_2d_fvf_tag, 
+                              line_strip_primitive_tag> {
  public:
   line_oval(const float x, const float y, const float rx, const float ry)
       : drawable_adaptor(init_vertex(x, y, rx, ry)) {}

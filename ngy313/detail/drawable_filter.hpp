@@ -1,16 +1,14 @@
 #pragma once
 #include <functional>
-#include <boost/function_types/parameter_types.hpp>
-#include <boost/mpl/front.hpp>
+#include <boost/type_traits/function_traits.hpp>
 
 namespace ngy313 { namespace detail {
 template <typename Signature>
 struct copy_argument {
   typedef typename std::remove_const<
       typename std::remove_reference<
-          typename boost::mpl::front<
-              typename boost::function_types::parameter_types<
-                  Signature>::type>::type>::type>::type type;
+          typename boost::function_traits<
+              Signature>::arg1_type>::type>::type type;
 };
 
 template <typename Drawable, typename Filter>
@@ -20,4 +18,21 @@ typename std::result_of<Filter(const Drawable &)>::type operator |(
   return filter(drawable);
 }
 }}
+
+namespace ngy313 {
+template <template <class T> class Filter>
+struct filtered_base {
+  template <typename Signature>
+  struct result {  
+    typedef Filter<typename detail::copy_argument<Signature>::type> type;
+  };
+};
+
+struct copy_argument_base {
+  template <typename Signature>
+  struct result {  
+    typedef typename detail::copy_argument<Signature>::type type;
+  };
+};
+}
 
