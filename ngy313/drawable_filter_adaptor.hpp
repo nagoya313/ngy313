@@ -7,6 +7,7 @@
 namespace ngy313 {
 template <typename Drawable>
 class all_vertex_drawable_filter_adaptor;
+
 template <typename Drawable>
 class index_vertex_drawable_filter_adaptor;
 }

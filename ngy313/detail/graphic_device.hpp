@@ -1,11 +1,16 @@
 #pragma once
 #include <cassert>
 #include <stdexcept>
+#include <type_traits>
+#include <boost/utility/enable_if.hpp>
+#include <boost/mpl/has_xxx.hpp>
 #include "com_fwd.hpp"
 #include "window_impl.hpp"
 #include "drawable_core_access.hpp"
 
 namespace ngy313 { namespace detail {
+BOOST_MPL_HAS_XXX_TRAIT_DEF(blend_type)
+
 inline
 D3DPRESENT_PARAMETERS init_present_parameters(const window_handle &window, 
                                               const bool windowed) {
@@ -153,16 +158,37 @@ void reset(const window_handle &window,
 }
 
 template <typename Drawable>
+void set_blend_mode(const graphic_device_handle &graphic_device, 
+                    typename boost::enable_if<
+                        has_blend_type<Drawable>>::type * = nullptr) {
+  assert(graphic_device);
+  graphic_device->SetRenderState(D3DRS_SRCBLEND,
+                                 Drawable::blend_type::src_type::value);
+  graphic_device->SetRenderState(D3DRS_DESTBLEND, 
+                                 Drawable::blend_type::dest_type::value);
+}
+
+template <typename Drawable>
+void set_blend_mode(const graphic_device_handle &graphic_device, 
+                    typename boost::disable_if<
+                        has_blend_type<Drawable>>::type * = nullptr) {
+  assert(graphic_device);
+  /*
+  graphic_device->SetRenderState(D3DRS_SRCBLEND, 
+                                 Drawable::src_blend_type::value);
+  graphic_device->SetRenderState(D3DRS_DESTBLEND, 
+                                 Drawable::dest_blend_type::value);
+                                 */
+}
+                    
+template <typename Drawable>
 void draw(const graphic_device_handle &graphic_device,
           const Drawable &drawable) {
   assert(graphic_device);
   const auto vertex = drawable_core_access::copy_vertex(drawable);
   graphic_device->SetTexture(0, nullptr);
   graphic_device->SetTexture(1, nullptr);
-  graphic_device->SetRenderState(D3DRS_SRCBLEND, 
-                                 Drawable::src_blend_type::value);
-  graphic_device->SetRenderState(D3DRS_DESTBLEND, 
-                                 Drawable::dest_blend_type::value);
+  set_blend_mode<Drawable>(graphic_device);
   graphic_device->SetFVF(Drawable::fvf_type::value);
   graphic_device->DrawPrimitiveUP(Drawable::primitive_type::value,
                                   Drawable::count_type::value, 

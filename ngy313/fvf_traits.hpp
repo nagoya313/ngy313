@@ -16,7 +16,7 @@
 #include <boost/preprocessor/inc.hpp>
 #include <boost/preprocessor/cat.hpp>
 #include <d3d9.h>
-#include "drawable_tag.hpp"
+#include "fvf_tag.hpp"
 #include "vertex_member.hpp"
 
 namespace ngy313 { namespace detail {
