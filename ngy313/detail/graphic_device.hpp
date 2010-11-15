@@ -5,6 +5,7 @@
 #include <boost/utility/enable_if.hpp>
 #include <boost/mpl/has_xxx.hpp>
 #include "com_fwd.hpp"
+#include "graphic_fwd.hpp"
 #include "window_impl.hpp"
 #include "drawable_core_access.hpp"
 
@@ -173,12 +174,10 @@ void set_blend_mode(const graphic_device_handle &graphic_device,
                     typename boost::disable_if<
                         has_blend_type<Drawable>>::type * = nullptr) {
   assert(graphic_device);
-  /*
   graphic_device->SetRenderState(D3DRS_SRCBLEND, 
-                                 Drawable::src_blend_type::value);
+                                 default_blend::src_type::value);
   graphic_device->SetRenderState(D3DRS_DESTBLEND, 
-                                 Drawable::dest_blend_type::value);
-                                 */
+                                 default_blend::dest_type::value);
 }
                     
 template <typename Drawable>
