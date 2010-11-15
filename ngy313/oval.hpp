@@ -3,9 +3,8 @@
 #include <boost/preprocessor/repeat_from_to.hpp>
 #include <boost/preprocessor/inc.hpp>
 #include <boost/preprocessor/arithmetic/dec.hpp>
-#include <pstade/oven/make_range.hpp>
 #include "detail/radian.hpp"
-#include "drawable_adaptor.hpp"
+#include "drawable_base.hpp"
 
 namespace ngy313 {
 #define NGY313_OVAL_VERTEX_SIZE 62
@@ -17,14 +16,14 @@ namespace ngy313 {
   1.f}, 0xFFFFFFFF},
 
 class oval
-    : public drawable_adaptor<oval, 
-                              NGY313_OVAL_VERTEX_SIZE,
-                              60,
-                              shape_2d_fvf_tag, 
-                              triangle_fan_primitive_tag> {
+    : public drawable_base<oval, 
+                           NGY313_OVAL_VERTEX_SIZE,
+                           60,
+                           shape_2d_fvf_tag, 
+                           triangle_fan_primitive_tag> {
  public:
   oval(const float x, const float y, const float rx, const float ry)
-      : drawable_adaptor(init_vertex(x, y, rx, ry)) {}
+      : drawable_base(init_vertex(x, y, rx, ry)) {}
 
  private:
   static vertex_array_type init_vertex(const float x, 

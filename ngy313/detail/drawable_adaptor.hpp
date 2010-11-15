@@ -11,24 +11,23 @@ struct copy_argument {
               Signature>::arg1_type>::type>::type type;
 };
 
-template <typename Drawable, typename Filter>
-typename std::result_of<Filter(const Drawable &)>::type operator |(
-    const Drawable &drawable,
-    const Filter &filter) {
-  return filter(drawable);
+template <typename Drawable, typename Adaptor>
+typename std::result_of<Adaptor(const Drawable &)>::type operator |(
+    const Drawable &drawable, const Adaptor &adaptor) {
+  return adaptor(drawable);
 }
 }}
 
 namespace ngy313 {
-template <template <class T> class Filter>
-struct filtered_base {
+template <template <class> class Adaptor>
+struct adaptor_result {
   template <typename Signature>
   struct result {  
-    typedef Filter<typename detail::copy_argument<Signature>::type> type;
+    typedef Adaptor<typename detail::copy_argument<Signature>::type> type;
   };
 };
 
-struct copy_argument_base {
+struct argument_result {
   template <typename Signature>
   struct result {  
     typedef typename detail::copy_argument<Signature>::type type;

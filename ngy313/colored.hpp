@@ -1,10 +1,10 @@
 #pragma once
 #include <cstdint>
 #include <pstade/oven/transformed.hpp>
-#include "drawable_filter_adaptor.hpp"
+#include "drawable_adaptor_base.hpp"
 
 namespace ngy313 { namespace detail {
-struct transform_color : public copy_argument_base {
+struct transform_color : public argument_result {
   explicit transform_color(const std::uint32_t col) : color_(col) {}
 
   template <typename Vertex>
@@ -18,45 +18,40 @@ struct transform_color : public copy_argument_base {
 };
 
 template <typename Drawable>
-struct colored_filter : public all_vertex_drawable_filter_adaptor<Drawable> {
-  colored_filter(const Drawable &drawable, const std::uint32_t col) 
-      : all_vertex_drawable_filter_adaptor(
+struct colored_adaptor : public all_vertex_adaptor<Drawable> {
+  colored_adaptor(const Drawable &drawable, const std::uint32_t col) 
+      : all_vertex_adaptor(
             drawable,
             pstade::oven::transformed(detail::transform_color(col))) {}
 };
 
 template <typename Drawable>
-struct colored_at_filter
-    : public index_vertex_drawable_filter_adaptor<Drawable> {
-  friend drawable_core_access;
-
-  colored_at_filter(const Drawable &drawable,
-                    const std::uint32_t col,
-                    const std::size_t at) 
-      : index_vertex_drawable_filter_adaptor(drawable,
-                                             at,
-                                             transform_color(col)) {}
+struct colored_at_adaptor : public index_vertex_adaptor<Drawable> {
+  colored_at_adaptor(const Drawable &drawable,
+                     const std::uint32_t col,
+                     const std::size_t at) 
+      : index_vertex_adaptor(drawable, at, transform_color(col)) {}
 };
 
-struct colored : public filtered_base<colored_filter> {
+struct colored : public adaptor_result<colored_adaptor> {
   explicit colored(const std::uint32_t col) : color_(col) {}
 
   template <typename Drawable>
-  colored_filter<Drawable> operator ()(const Drawable &drawable) const {
-    return colored_filter<Drawable>(drawable, color_);
+  colored_adaptor<Drawable> operator ()(const Drawable &drawable) const {
+    return colored_adaptor<Drawable>(drawable, color_);
   }
 
  private:
   const std::uint32_t color_;
 };
 
-struct colored_at : public filtered_base<colored_at_filter> {  
+struct colored_at : public adaptor_result<colored_at_adaptor> {  
   explicit colored_at(const std::size_t at, const std::uint32_t col)
       : at_(at), color_(col) {}
 
   template <typename Drawable>
-  colored_at_filter<Drawable> operator ()(const Drawable &drawable) const {
-    return colored_at_filter<Drawable>(drawable, color_, at_);
+  colored_at_adaptor<Drawable> operator ()(const Drawable &drawable) const {
+    return colored_at_adaptor<Drawable>(drawable, color_, at_);
   }
 
  private:

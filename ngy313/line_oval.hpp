@@ -3,9 +3,8 @@
 #include <boost/preprocessor/repeat.hpp>
 #include <boost/preprocessor/inc.hpp>
 #include <boost/preprocessor/arithmetic/dec.hpp>
-#include <pstade/oven/make_range.hpp>
 #include "detail/radian.hpp"
-#include "drawable_adaptor.hpp"
+#include "drawable_base.hpp"
 
 namespace ngy313 {
 #define NGY313_LINE_OVAL_VERTEX_SIZE 60
@@ -17,14 +16,14 @@ namespace ngy313 {
   1.f}, 0xFFFFFFFF},
 
 class line_oval
-    : public drawable_adaptor<line_oval, 
-                              NGY313_LINE_OVAL_VERTEX_SIZE,
-                              59,
-                              shape_2d_fvf_tag, 
-                              line_strip_primitive_tag> {
+    : public drawable_base<line_oval, 
+                           NGY313_LINE_OVAL_VERTEX_SIZE,
+                           59,
+                           shape_2d_fvf_tag, 
+                           line_strip_primitive_tag> {
  public:
   line_oval(const float x, const float y, const float rx, const float ry)
-      : drawable_adaptor(init_vertex(x, y, rx, ry)) {}
+      : drawable_base(init_vertex(x, y, rx, ry)) {}
 
  private:
   static vertex_array_type init_vertex(const float x, 

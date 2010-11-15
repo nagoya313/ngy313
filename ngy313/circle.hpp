@@ -3,9 +3,8 @@
 #include <boost/preprocessor/repeat_from_to.hpp>
 #include <boost/preprocessor/inc.hpp>
 #include <boost/preprocessor/arithmetic/dec.hpp>
-#include <pstade/oven/make_range.hpp>
 #include "detail/radian.hpp"
-#include "drawable_adaptor.hpp"
+#include "drawable_base.hpp"
 
 namespace ngy313 {
 #define NGY313_CIRCLE_VERTEX_SIZE 62
@@ -17,14 +16,14 @@ namespace ngy313 {
   1.f}, 0xFFFFFFFF},
 
 class circle
-    : public drawable_adaptor<circle, 
-                              NGY313_CIRCLE_VERTEX_SIZE, 
-                              60, 
-                              shape_2d_fvf_tag, 
-                              triangle_fan_primitive_tag> {
+    : public drawable_base<circle, 
+                           NGY313_CIRCLE_VERTEX_SIZE, 
+                           60, 
+                           shape_2d_fvf_tag, 
+                           triangle_fan_primitive_tag> {
  public:
   circle(const float x, const float y, const float r)
-      : drawable_adaptor(init_vertex(x, y, r)) {}
+      : drawable_base(init_vertex(x, y, r)) {}
 
  private:
   static vertex_array_type init_vertex(const float x, 

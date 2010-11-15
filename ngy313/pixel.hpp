@@ -1,16 +1,15 @@
 #pragma once
-#include <pstade/oven/make_range.hpp>
-#include "drawable_adaptor.hpp"
+#include "drawable_base.hpp"
 
 namespace ngy313 {
 class pixel
-    : public drawable_adaptor<pixel, 
-                              1,
-                              1,
-                              shape_2d_fvf_tag, 
-                              point_list_primitive_tag> {
+    : public drawable_base<pixel, 
+                           1,
+                           1,
+                           shape_2d_fvf_tag, 
+                           point_list_primitive_tag> {
  public:
-  pixel(const float x, const float y) : drawable_adaptor(init_vertex(x, y)) {}
+  pixel(const float x, const float y) : drawable_base(init_vertex(x, y)) {}
 
  private:
   static vertex_array_type init_vertex(const float x, const float y) {

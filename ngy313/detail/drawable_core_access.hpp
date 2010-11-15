@@ -1,7 +1,7 @@
 #pragma once
 #include <pstade/oven/algorithm.hpp>
 
-namespace ngy313 {
+namespace ngy313 { namespace detail {
 struct drawable_core_access {
   template <typename Drawable>
   static typename Drawable::vertex_range_type vertex_range(
@@ -17,4 +17,4 @@ struct drawable_core_access {
     return vertex;
   }
 };
-}
+}}

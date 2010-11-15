@@ -1,6 +1,6 @@
 #pragma once
 #include <functional>
-#include "drawable_filter_adaptor.hpp"
+#include "drawable_adaptor_base.hpp"
 
 namespace ngy313 { namespace detail {
 inline
@@ -10,7 +10,7 @@ float extend_position_impl(const float pos,
   return (pos - base) * extend + base;
 }
 
-struct extend_position : public copy_argument_base {
+struct extend_position : public argument_result {
   template <typename Drawable, typename BasePoint>
   extend_position(const Drawable &drawable,
                   const BasePoint &base_point,
@@ -42,33 +42,33 @@ struct extend_position : public copy_argument_base {
 };
 
 template <typename Drawable>
-struct extended_filter : public all_vertex_drawable_filter_adaptor<Drawable> {
+struct extended_adaptor : public all_vertex_adaptor<Drawable> {
   template <typename BasePoint>
-  extended_filter(const Drawable &drawable, 
-                  const BasePoint &base_point,
-                  const float extend_x,
-                  const float extend_y)
-      : all_vertex_drawable_filter_adaptor(
-            drawable,
-            pstade::oven::transformed(extend_position(drawable,
-                                                      base_point,
-                                                      extend_x, 
-                                                      extend_y))) {}
+  extended_adaptor(const Drawable &drawable, 
+                   const BasePoint &base_point,
+                   const float extend_x,
+                   const float extend_y)
+      : all_vertex_adaptor(
+             drawable,
+             pstade::oven::transformed(extend_position(drawable,
+                                                       base_point,
+                                                       extend_x, 
+                                                       extend_y))) {}
 };
 
 template <typename BasePoint>
-struct extended_t : public filtered_base<extended_filter> {
+struct extended_t : public adaptor_result<extended_adaptor> {
   extended_t(const BasePoint base_point,
              const float extend_x,
              const float extend_y)
       : base_point_(base_point), extend_x_(extend_x), extend_y_(extend_y) {}
 
   template <typename Drawable>
-  extended_filter<Drawable> operator ()(const Drawable &drawable) const {
-    return extended_filter<Drawable>(drawable, 
-                                     base_point_, 
-                                     extend_x_,
-                                     extend_y_);
+  extended_adaptor<Drawable> operator ()(const Drawable &drawable) const {
+    return extended_adaptor<Drawable>(drawable, 
+                                      base_point_, 
+                                      extend_x_,
+                                      extend_y_);
   }
 
  private:

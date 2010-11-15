@@ -1,14 +1,13 @@
 #pragma once
-#include <pstade/oven/make_range.hpp>
-#include "drawable_adaptor.hpp"
+#include "drawable_base.hpp"
 
 namespace ngy313 {
 class line_triangle 
-  : public drawable_adaptor<line_triangle,
-                            4,
-                            3,
-                            shape_2d_fvf_tag, 
-                            line_strip_primitive_tag> {
+  : public drawable_base<line_triangle,
+                         4,
+                         3,
+                         shape_2d_fvf_tag, 
+                         line_strip_primitive_tag> {
  public:
   line_triangle(const float x1, 
                 const float y1,
@@ -16,7 +15,7 @@ class line_triangle
                 const float y2, 
                 const float x3,
                 const float y3) 
-      : drawable_adaptor(init_vertex(x1, y1, x2, y2, x3, y3)) {}
+      : drawable_base(init_vertex(x1, y1, x2, y2, x3, y3)) {}
 
  private:
   static vertex_array_type init_vertex(const float x1, 

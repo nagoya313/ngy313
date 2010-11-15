@@ -1,5 +1,4 @@
 #pragma once
-#include "drawable_filter_adaptor.hpp"
 #include "shape_position.hpp"
 
 namespace ngy313 {

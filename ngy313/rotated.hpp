@@ -1,9 +1,9 @@
 #pragma once
 #include <cmath>
-#include "drawable_filter_adaptor.hpp"
+#include "drawable_adaptor_base.hpp"
 
 namespace ngy313 { namespace detail {
-struct rotate_position : public copy_argument_base  {
+struct rotate_position : public argument_result {
   template <typename Drawable, typename BasePoint>
   rotate_position(const Drawable &drawable,
                   const BasePoint &base_point,
@@ -32,12 +32,12 @@ struct rotate_position : public copy_argument_base  {
 };
 
 template <typename Drawable>
-struct rotated_filter : public all_vertex_drawable_filter_adaptor<Drawable> {
+struct rotated_adaptor : public all_vertex_adaptor<Drawable> {
   template <typename BasePoint>
-  rotated_filter(const Drawable &drawable,
-                 const BasePoint &base_point,
-                 const float angle)
-      : all_vertex_drawable_filter_adaptor(
+  rotated_adaptor(const Drawable &drawable,
+                  const BasePoint &base_point,
+                  const float angle)
+      : all_vertex_adaptor(
             drawable,
             pstade::oven::transformed(rotate_position(drawable,
                                                       base_point,
@@ -45,14 +45,14 @@ struct rotated_filter : public all_vertex_drawable_filter_adaptor<Drawable> {
 };
 
 template <typename BasePoint>
-struct rotated_t : public filtered_base<rotated_filter> {
+struct rotated_t : public adaptor_result<rotated_adaptor> {
   explicit rotated_t(const BasePoint base_point, const float angle) 
       : base_point_(base_point),
         angle_(angle) {}
 
   template <typename Drawable>
-  rotated_filter<Drawable> operator ()(const Drawable &drawable) const {
-    return rotated_filter<Drawable>(drawable, base_point_, angle_);
+  rotated_adaptor<Drawable> operator ()(const Drawable &drawable) const {
+    return rotated_adaptor<Drawable>(drawable, base_point_, angle_);
   }
 
  private:
