@@ -9,8 +9,8 @@ struct move_position : public copy_argument_base {
 
   template <typename Vertex>
   Vertex &operator ()(Vertex &vertex) const {
-    member_at<rhw_position_t>(vertex).x += move_x_;
-    member_at<rhw_position_t>(vertex).y += move_y_;
+    vertex_member_at<rhw_position_t>(vertex).x += move_x_;
+    vertex_member_at<rhw_position_t>(vertex).y += move_y_;
     return vertex;
   }
 

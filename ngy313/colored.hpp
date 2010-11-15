@@ -9,7 +9,7 @@ struct transform_color : public copy_argument_base {
 
   template <typename Vertex>
   Vertex &operator ()(Vertex &vertex) const {
-    member_at<diffuse_t>(vertex).diffuse = color_;
+    vertex_member_at<diffuse_t>(vertex).diffuse = color_;
     return vertex;
   }
 

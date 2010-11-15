@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <d3dx9math.h>
+#include "detail/math_expr.hpp"
 
 namespace ngy313 { namespace expr {
 struct color {

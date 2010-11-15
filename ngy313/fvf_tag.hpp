@@ -4,13 +4,11 @@
 #include <boost/mpl/fold.hpp>
 #include <boost/mpl/and.hpp>
 #include <boost/mpl/inherit.hpp>
-#include <boost/mpl/lambda.hpp>
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/repeat_from_to.hpp>
-#include <boost/preprocessor/inc.hpp>
 #include <boost/preprocessor/enum_shifted_params.hpp>
 #include <boost/preprocessor/comparison/not_equal.hpp>
-#include <boost/preprocessor/arithmetic/dec.hpp>
+#include <boost/preprocessor/arithmetic/inc.hpp>
 #include <boost/preprocessor/comma_if.hpp>
 #include <d3d9.h>
 
@@ -37,23 +35,25 @@ struct tex2_fvf_tag : public tex_tag {};
 }
 
 namespace ngy313 { namespace detail {
-template <typename Lhs, typename Rhs>
 struct tag_inherit {
-  static_assert(!(std::is_base_of<
+  template <typename Lhs, typename Rhs>
+  struct apply {
+    static_assert(!(std::is_base_of<
                       position_tag, 
                       Lhs>::value && std::is_base_of<
                                          position_tag, 
                                          Rhs>::value), 
-                "");
-  static_assert(!(std::is_base_of<
+                  "");
+    static_assert(!(std::is_base_of<
                       tex_tag, 
                       Lhs>::value && std::is_base_of<
                                          tex_tag, 
                                          Rhs>::value), 
-                "");
-  static_assert(std::is_base_of<fvf_tag, Lhs>::value,
-                "");
-  typedef typename boost::mpl::inherit<Lhs, Rhs>::type type;
+                  "");
+    static_assert(std::is_base_of<fvf_tag, Lhs>::value,
+                  "");
+    typedef typename boost::mpl::inherit<Lhs, Rhs>::type type;
+  };
 };
 }}
 
@@ -64,9 +64,7 @@ namespace ngy313 {
 typename BOOST_PP_CAT(T, n) = boost::mpl::na BOOST_PP_COMMA_IF(\
                                                  BOOST_PP_NOT_EQUAL(\
                                                      n,\
-                                                     BOOST_PP_DEC(\
-                                                         BOOST_PP_INC(\
-                                                             NGY313_TAG_MAX))))
+                                                     NGY313_TAG_MAX))
 
 template <typename T0, 
           BOOST_PP_REPEAT_FROM_TO(1, 
@@ -75,13 +73,10 @@ template <typename T0,
 struct make_fvf_tag {
   typedef typename boost::mpl::fold<boost::mpl::vector<
                                         BOOST_PP_ENUM_SHIFTED_PARAMS(
-                                            BOOST_PP_DEC(
-                                                BOOST_PP_INC(NGY313_TAG_MAX)),
+                                            NGY313_TAG_MAX,
                                             T)>,
                                     T0, 
-                                    detail::tag_inherit<
-                                        boost::mpl::_1,
-                                        boost::mpl::_2>>::type type;
+                                    detail::tag_inherit>::type type;
 };
 
 #undef NGY313_MAKE_TAG_GEN

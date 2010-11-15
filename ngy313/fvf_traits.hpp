@@ -162,14 +162,14 @@ struct member_at_impl {
 
 namespace ngy313 {
 template <typename Member, typename Vertex>
-Member &member_at(Vertex &vertex) {
+Member &vertex_member_at(Vertex &vertex) {
   return detail::member_at_impl<Member, 
                                 Vertex, 
                                 typename Vertex::list>::type::at(vertex);
 }
 
 template <typename Member, typename Vertex>
-const Member &member_at(const Vertex &vertex) {
+const Member &vertex_member_at(const Vertex &vertex) {
   return detail::member_at_impl<Member,
                                 Vertex,
                                 typename Vertex::list>::type::at(vertex);

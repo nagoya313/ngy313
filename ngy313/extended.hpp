@@ -1,3 +1,5 @@
+#pragma once
+#include <functional>
 #include "drawable_filter_adaptor.hpp"
 
 namespace ngy313 { namespace detail {
@@ -9,23 +11,24 @@ float extend_position_impl(const float pos,
 }
 
 struct extend_position : public copy_argument_base {
-  extend_position(const float base_point_x,
-                  const float base_point_y,
+  template <typename Drawable, typename BasePoint>
+  extend_position(const Drawable &drawable,
+                  const BasePoint &base_point,
                   const float extend_x,
                   const float extend_y)
-      : base_point_x_(base_point_x),
-        base_point_y_(base_point_y),
+      : base_point_x_(base_point.x(drawable)),
+        base_point_y_(base_point.y(drawable)),
         extend_x_(extend_x), 
         extend_y_(extend_y) {}
 
   template <typename Vertex>
   Vertex &operator ()(Vertex &vertex) const {
-    member_at<rhw_position_t>(vertex).x = 
-        extend_position_impl(member_at<rhw_position_t>(vertex).x, 
+    vertex_member_at<rhw_position_t>(vertex).x = 
+        extend_position_impl(vertex_member_at<rhw_position_t>(vertex).x, 
                              base_point_x_, 
                              extend_x_);
-    member_at<rhw_position_t>(vertex).y = 
-        extend_position_impl(member_at<rhw_position_t>(vertex).y, 
+    vertex_member_at<rhw_position_t>(vertex).y = 
+        extend_position_impl(vertex_member_at<rhw_position_t>(vertex).y, 
                              base_point_y_, 
                              extend_y_);
     return vertex;
@@ -40,44 +43,46 @@ struct extend_position : public copy_argument_base {
 
 template <typename Drawable>
 struct extended_filter : public all_vertex_drawable_filter_adaptor<Drawable> {
+  template <typename BasePoint>
   extended_filter(const Drawable &drawable, 
-                  const float base_point_x,
-                  const float base_point_y,
+                  const BasePoint &base_point,
                   const float extend_x,
                   const float extend_y)
       : all_vertex_drawable_filter_adaptor(
             drawable,
-            pstade::oven::transformed(extend_position(base_point_x,
-                                                      base_point_y,
+            pstade::oven::transformed(extend_position(drawable,
+                                                      base_point,
                                                       extend_x, 
                                                       extend_y))) {}
 };
 
-struct extended : public filtered_base<extended_filter> {
-  extended(const float base_point_x,
-           const float base_point_y,
-           const float extend_x,
-           const float extend_y)
-      : base_point_x_(base_point_x),
-        base_point_y_(base_point_y),
-        extend_x_(extend_x), 
-        extend_y_(extend_y) {}
+template <typename BasePoint>
+struct extended_t : public filtered_base<extended_filter> {
+  extended_t(const BasePoint base_point,
+             const float extend_x,
+             const float extend_y)
+      : base_point_(base_point), extend_x_(extend_x), extend_y_(extend_y) {}
 
   template <typename Drawable>
   extended_filter<Drawable> operator ()(const Drawable &drawable) const {
     return extended_filter<Drawable>(drawable, 
-                                     base_point_x_,
-                                     base_point_y_,
-                                     extend_x_, 
+                                     base_point_, 
+                                     extend_x_,
                                      extend_y_);
   }
 
  private:
-  const float base_point_x_;
-  const float base_point_y_;
+  const BasePoint base_point_;
   const float extend_x_;
   const float extend_y_;
 };
+
+template <typename BasePoint>
+extended_t<BasePoint> extended(const BasePoint base_point,
+                               const float extend_x,
+                               const float extend_y) {
+  return extended_t<BasePoint>(base_point, extend_x, extend_y);
+}
 }}
 
 namespace ngy313 {
