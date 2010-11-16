@@ -3,15 +3,13 @@
 #include <stdexcept>
 #include <type_traits>
 #include <boost/utility/enable_if.hpp>
-#include <boost/mpl/has_xxx.hpp>
 #include "com_fwd.hpp"
 #include "graphic_fwd.hpp"
 #include "window_impl.hpp"
+#include "image_base.hpp"
 #include "drawable_core_access.hpp"
 
 namespace ngy313 { namespace detail {
-BOOST_MPL_HAS_XXX_TRAIT_DEF(blend_type)
-
 inline
 D3DPRESENT_PARAMETERS init_present_parameters(const window_handle &window, 
                                               const bool windowed) {
@@ -158,6 +156,23 @@ void reset(const window_handle &window,
   init_device(graphic_device);
 }
 
+void set_blend_mode(const graphic_device_handle &graphic_device,
+                    const D3DBLEND src,
+                    const D3DBLEND dest) {
+  assert(graphic_device);
+  graphic_device->SetRenderState(D3DRS_SRCBLEND, src);
+  graphic_device->SetRenderState(D3DRS_DESTBLEND, dest);
+}
+
+template <typename BlendPair>
+void set_blend_pair(const graphic_device_handle &graphic_device) {
+  assert(graphic_device);
+  set_blend_mode(graphic_device, 
+                 BlendPair::src_type::value,
+                 BlendPair::dest_type::value);
+}
+
+/*
 template <typename Drawable>
 void set_blend_mode(const graphic_device_handle &graphic_device, 
                     typename boost::enable_if<
@@ -179,14 +194,69 @@ void set_blend_mode(const graphic_device_handle &graphic_device,
   graphic_device->SetRenderState(D3DRS_DESTBLEND, 
                                  default_blend::dest_type::value);
 }
-                    
+
+template <typename Drawable>
+void set_texture(const graphic_device_handle &graphic_device,
+                 const Drawable &drawable,
+                 typename boost::enable_if<
+                     has_image_type<Drawable>>::type * = nullptr) {
+  assert(graphic_device);
+  drawable_core_access::set_texture(graphic_device, drawable);
+}
+
+template <typename Drawable>
+void set_texture(const graphic_device_handle &graphic_device,
+                 const Drawable &,
+                 typename boost::disable_if<
+                     has_image_type<Drawable>>::type * = nullptr) {
+  assert(graphic_device);
+  graphic_device->SetTexture(0, nullptr);
+  graphic_device->SetTexture(1, nullptr);
+}
+*/
+
+template <typename Drawable>
+void common_draw(const graphic_device_handle &graphic_device,
+                 const Drawable &drawable) {
+  assert(graphic_device);
+  const Drawable::vertex_array_type 
+      vertex = drawable_core_access::copy_vertex(drawable);
+  graphic_device->SetFVF(Drawable::fvf_type::value);
+  graphic_device->DrawPrimitiveUP(Drawable::primitive_type::value,
+                                  Drawable::count_type::value, 
+                                  &(vertex.front()), 
+                                  sizeof(vertex.front()));
+}
+
+template <typename Drawable>
+void draw(const graphic_device_handle &graphic_device,
+          const Drawable &drawable,
+          typename boost::enable_if<
+              std::is_same<typename Drawable::blend_type,
+                           default_blend>>::type * = nullptr) {
+  assert(graphic_device);
+  common_draw(graphic_device, drawable);
+}
+
+template <typename Drawable>
+void draw(const graphic_device_handle &graphic_device,
+          const Drawable &drawable,
+          typename boost::disable_if<
+              std::is_same<typename Drawable::blend_type,
+                           default_blend>>::type * = nullptr) {
+  assert(graphic_device);
+  set_blend_pair<typename Drawable::blend_type>(graphic_device);
+  common_draw(graphic_device, drawable);
+  set_blend_pair<default_blend>(graphic_device);
+}
+ /*                   
 template <typename Drawable>
 void draw(const graphic_device_handle &graphic_device,
           const Drawable &drawable) {
   assert(graphic_device);
-  const auto vertex = drawable_core_access::copy_vertex(drawable);
-  graphic_device->SetTexture(0, nullptr);
-  graphic_device->SetTexture(1, nullptr);
+  const Drawable::vertex_array_type 
+      vertex = drawable_core_access::copy_vertex(drawable);
+  set_texture(graphic_device, drawable);
   set_blend_mode<Drawable>(graphic_device);
   graphic_device->SetFVF(Drawable::fvf_type::value);
   graphic_device->DrawPrimitiveUP(Drawable::primitive_type::value,
@@ -194,4 +264,5 @@ void draw(const graphic_device_handle &graphic_device,
                                   &(vertex.front()), 
                                   sizeof(vertex.front()));
 }
+*/
 }}

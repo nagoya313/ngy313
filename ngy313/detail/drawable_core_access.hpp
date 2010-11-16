@@ -1,5 +1,7 @@
 #pragma once
+#include <cassert>
 #include <pstade/oven/algorithm.hpp>
+#include "com_fwd.hpp"
 
 namespace ngy313 { namespace detail {
 struct drawable_core_access {
@@ -15,6 +17,13 @@ struct drawable_core_access {
     Drawable::vertex_array_type vertex;
     pstade::oven::copy(drawable.vertex_range(), vertex.begin());
     return vertex;
+  }
+
+  template <typename Drawable>
+  static void set_texture(const graphic_device_handle &graphic_device,
+                          const Drawable &drawable) {
+    assert(graphic_device);
+    drawable.set_texture(graphic_device);
   }
 };
 }}

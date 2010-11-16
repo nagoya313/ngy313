@@ -5,7 +5,7 @@
 #include "drawable_base.hpp"
 
 namespace ngy313 {
-template <typename Drawable>
+template <typename Drawable, typename Inherit>
 class all_vertex_adaptor;
 
 template <typename Drawable>
@@ -13,8 +13,8 @@ class index_vertex_adaptor;
 }
 
 namespace ngy313 { namespace detail {
-template <typename Drawable>
-class all_vertex_adaptor_base : public Drawable::base_type {
+template <typename Drawable, typename Inherit>
+class all_vertex_adaptor_base : public Inherit::type {
  public:
   explicit all_vertex_adaptor_base(const Drawable &drawable)
       : vertex_range_(drawable_core_access::vertex_range(drawable)) {}
@@ -24,13 +24,14 @@ class all_vertex_adaptor_base : public Drawable::base_type {
       : vertex_range_(drawable_core_access::vertex_range(drawable) | filter) {}
 
  private:
-  friend all_vertex_adaptor<Drawable>;
+  friend all_vertex_adaptor<Drawable, Inherit>;
 
   typename Drawable::vertex_range_type vertex_range_;
 };
 
 template <typename Drawable>
-class index_vertex_adaptor_base : public Drawable::base_type {
+class index_vertex_adaptor_base 
+    : public detail::copy_drawable_type<Drawable>::type {
  public:
   explicit index_vertex_adaptor_base(const Drawable &drawable)
       : vertex_array_(drawable_core_access::copy_vertex(drawable)) {}
@@ -43,15 +44,18 @@ class index_vertex_adaptor_base : public Drawable::base_type {
 }}
 
 namespace ngy313 {
-template <typename Drawable>
-class all_vertex_adaptor : public detail::all_vertex_adaptor_base<Drawable> {
+template <
+    typename Drawable,
+    typename Inherit = detail::copy_drawable_type<Drawable>>
+class all_vertex_adaptor : public detail::all_vertex_adaptor_base<Drawable,
+                                                                  Inherit> {
  public:
   explicit all_vertex_adaptor(const Drawable &drawable)
-      : detail::all_vertex_adaptor_base<Drawable>(drawable) {}
+      : detail::all_vertex_adaptor_base<Drawable, Inherit>(drawable) {}
 
   template <typename Filter>
   all_vertex_adaptor(const Drawable &drawable, const Filter &filter)
-      : detail::all_vertex_adaptor_base<Drawable>(drawable, filter) {}
+      : detail::all_vertex_adaptor_base<Drawable, Inherit>(drawable, filter) {}
  
  private:
   friend detail::drawable_core_access;

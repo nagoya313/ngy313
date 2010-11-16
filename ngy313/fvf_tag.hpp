@@ -10,44 +10,22 @@
 #include <boost/preprocessor/comparison/not_equal.hpp>
 #include <boost/preprocessor/arithmetic/inc.hpp>
 #include <boost/preprocessor/comma_if.hpp>
-#include <d3d9.h>
-
-namespace ngy313 {
-struct fvf_tag {};
-
-struct position_tag : public fvf_tag {};
-
-struct tex_tag : public fvf_tag {};
-
-struct dimension2_fvf_tag : public position_tag {};
-
-struct dimension3_fvf_tag : public position_tag {};
-
-struct normal_fvf_tag : public fvf_tag {};
-
-struct diffuse_fvf_tag : public fvf_tag {};
-
-struct specular_fvf_tag : public fvf_tag {};
-
-struct tex1_fvf_tag : public tex_tag {};
-
-struct tex2_fvf_tag : public tex_tag {};
-}
+#include "detail/graphic_fwd.hpp"
 
 namespace ngy313 { namespace detail {
 struct tag_inherit {
   template <typename Lhs, typename Rhs>
   struct apply {
     static_assert(!(std::is_base_of<
-                      position_tag, 
+                      position_fvf_tag, 
                       Lhs>::value && std::is_base_of<
-                                         position_tag, 
+                                         position_fvf_tag, 
                                          Rhs>::value), 
                   "");
     static_assert(!(std::is_base_of<
-                      tex_tag, 
+                      tex_fvf_tag, 
                       Lhs>::value && std::is_base_of<
-                                         tex_tag, 
+                                         tex_fvf_tag, 
                                          Rhs>::value), 
                   "");
     static_assert(std::is_base_of<fvf_tag, Lhs>::value,
@@ -84,4 +62,7 @@ struct make_fvf_tag {
 #undef NGY313_TAG_MAX
 
 typedef make_fvf_tag<dimension2_fvf_tag, diffuse_fvf_tag> shape_2d_fvf_tag;
+typedef make_fvf_tag<dimension2_fvf_tag, 
+                     diffuse_fvf_tag,
+                     tex1_fvf_tag> image_2d_fvf_tag;
 }

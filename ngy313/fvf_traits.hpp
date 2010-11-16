@@ -119,7 +119,7 @@ BOOST_PP_REPEAT(BOOST_PP_INC(NGY313_MEMBER_MAX), NGY313_MEMBER_GEN, _)
 #undef NGY313_MEMBER_MAX
 
 template <typename FVFTag>
-struct fvf_inherit {
+struct fvf_is_inherit {
   template <typename In>
   struct apply {
     typedef typename std::is_base_of<typename In::first, FVFTag> type;
@@ -138,7 +138,7 @@ struct fvf_traits {
   static_assert(std::is_base_of<fvf_tag, typename FVFTag::type>::value, "");
   typedef boost::mpl::filter_view<
              fvf_map, 
-             fvf_inherit<typename FVFTag::type>> fvf_map;
+             fvf_is_inherit<typename FVFTag::type>> fvf_map;
   typedef std::uint32_t value_type;
   static const value_type value = 
                    typename boost::mpl::fold<

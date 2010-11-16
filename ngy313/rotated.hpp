@@ -47,8 +47,7 @@ struct rotated_adaptor : public all_vertex_adaptor<Drawable> {
 template <typename BasePoint>
 struct rotated_t : public adaptor_result<rotated_adaptor> {
   explicit rotated_t(const BasePoint base_point, const float angle) 
-      : base_point_(base_point),
-        angle_(angle) {}
+      : base_point_(base_point), angle_(angle) {}
 
   template <typename Drawable>
   rotated_adaptor<Drawable> operator ()(const Drawable &drawable) const {

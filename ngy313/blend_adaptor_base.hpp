@@ -5,9 +5,11 @@
 
 namespace ngy313 { namespace detail {
 template <typename Drawable, typename SrcBlendTag, typename DestBlendTag>
-struct blend_adaptor_base : public all_vertex_adaptor<Drawable> {
-  typedef blend_pair<SrcBlendTag, DestBlendTag> blend_type;
-
+struct blend_adaptor_base
+    : public all_vertex_adaptor<Drawable, 
+                                insert_blend_pair<Drawable,
+                                                  blend_pair<SrcBlendTag, 
+                                                             DestBlendTag>>> {
   explicit blend_adaptor_base(const Drawable &drawable) 
       : all_vertex_adaptor(drawable) {}
 };

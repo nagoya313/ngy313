@@ -42,4 +42,14 @@ class string_piece {
   const char *str_;
   size_type length_;
 };
+
+inline
+bool operator ==(const string_piece &lhs, const string_piece &rhs) {
+  return !std::strcmp(lhs.c_str(), rhs.c_str());
+}
+
+inline
+bool operator !=(const string_piece &lhs, const string_piece &rhs) {
+  return std::strcmp(lhs.c_str(), rhs.c_str()) != 0;
+}
 }
