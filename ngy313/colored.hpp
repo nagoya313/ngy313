@@ -20,16 +20,12 @@ struct transform_color : public argument_result {
 template <typename Drawable>
 struct colored_adaptor : public all_vertex_adaptor<Drawable> {
   colored_adaptor(const Drawable &drawable, const std::uint32_t col) 
-      : all_vertex_adaptor(
-            drawable,
-            pstade::oven::transformed(detail::transform_color(col))) {}
+      : all_vertex_adaptor(drawable, pstade::oven::transformed(detail::transform_color(col))) {}
 };
 
 template <typename Drawable>
 struct colored_at_adaptor : public index_vertex_adaptor<Drawable> {
-  colored_at_adaptor(const Drawable &drawable,
-                     const std::uint32_t col,
-                     const std::size_t at) 
+  colored_at_adaptor(const Drawable &drawable, const std::uint32_t col, const std::size_t at) 
       : index_vertex_adaptor(drawable, at, transform_color(col)) {}
 };
 

@@ -26,14 +26,11 @@ std::string format_error_message() {
 
 class last_error : public std::runtime_error {
  public:
-  explicit last_error(const std::string &message)
-      : std::runtime_error(message + format_error_message()) {}
+  explicit last_error(const std::string &message) : std::runtime_error(message + format_error_message()) {}
 };
 
 class hresult_error : public std::runtime_error {
  public:
-  explicit hresult_error(const std::string &message,
-                         const HRESULT hr)
-      : std::runtime_error(message) {}
+  explicit hresult_error(const std::string &message, const HRESULT hr) : std::runtime_error(message) {}
 };
 }}

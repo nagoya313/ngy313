@@ -1,29 +1,47 @@
 #pragma once
 #include <boost/flyweight.hpp>
 #include <boost/flyweight/key_value.hpp>
-#include "detail/window_singleton.hpp"
-#include "detail/texture.hpp"
+#include "string_piece.hpp"
+#include "drawable_core_access.hpp"
+#include "texture.hpp"
 
 namespace ngy313 { namespace detail {
-template <typename Image>
 class image_base {
  public:
+  typedef image_base image_type;
+  typedef image_base image1_type;
+
   explicit image_base(const string_piece &file_name)
-      : texture_(init_key(file_name)) {}
+      : texture1_(init_key(file_name)) {}
 
- private:
-  friend typename Image;
-
-  texture_key init_key(const string_piece &file_name) {
-    const detail::texture_key key = {
-      detail::graphic_device(), file_name.string()
-    };
-    return key;
+  float width() const {
+    return texture1_.get().width;
   }
 
-  const boost::flyweights::flyweight<
-            boost::flyweights::key_value<detail::texture_key, 
-                                         detail::texture_data>> texture_;
+  float height() const {
+    return texture1_.get().height;
+  }
+
+ private:
+  friend drawable_core_access;
+
+  const texture_type texture1_;
 };
 
+class image2_base {
+ public:
+  typedef image_base image_type;
+  typedef image_base image2_type;
+
+  explicit image2_base(const string_piece &file_name1,
+                       const string_piece &file_name2)
+      : texture1_(init_key(file_name1)),
+        texture2_(init_key(file_name2)) {}
+
+ private:
+  friend drawable_core_access;
+
+  const texture_type texture1_;
+  const texture_type texture2_;
+};
 }}

@@ -12,8 +12,7 @@ struct copy_argument {
 };
 
 template <typename Drawable, typename Adaptor>
-typename std::result_of<Adaptor(const Drawable &)>::type operator |(
-    const Drawable &drawable, const Adaptor &adaptor) {
+typename std::result_of<Adaptor(const Drawable &)>::type operator |(const Drawable &drawable, const Adaptor &adaptor) {
   return adaptor(drawable);
 }
 }}

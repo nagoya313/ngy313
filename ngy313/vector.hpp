@@ -22,25 +22,19 @@ const float &BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)() const {\
 }\
 
 #define NGY313_CONSTRUCT_GEN(z, n, data)\
-expr.BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)() BOOST_PP_COMMA_IF(\
-                                                     BOOST_PP_NOT_EQUAL(\
-                                                         n,\
-                                                         data))
+expr.BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)() BOOST_PP_COMMA_IF(BOOST_PP_NOT_EQUAL(n, data))
 
 #define NGY313_SUBSTITUTION_GEN(z, n, data)\
-pos_.BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM) data\
-    expr.BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)();\
+pos_.BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM) data expr.BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)();\
 
 #define NGY313_VECTOR_GEN(z, n, data)\
 struct BOOST_PP_CAT(vector, n) {\
   BOOST_PP_CAT(vector, n)() : pos_() {}\
 \
-  BOOST_PP_CAT(vector, n)(BOOST_PP_ENUM_PARAMS(n, const float x))\
-      : pos_(BOOST_PP_ENUM_PARAMS(n, x)) {}\
+  BOOST_PP_CAT(vector, n)(BOOST_PP_ENUM_PARAMS(n, const float x)) : pos_(BOOST_PP_ENUM_PARAMS(n, x)) {}\
 \
   template <typename Expr>\
-  explicit BOOST_PP_CAT(vector, n)(const Expr &expr)\
-      : pos_(BOOST_PP_REPEAT(n, NGY313_CONSTRUCT_GEN, n)) {}\
+  explicit BOOST_PP_CAT(vector, n)(const Expr &expr) : pos_(BOOST_PP_REPEAT(n, NGY313_CONSTRUCT_GEN, n)) {}\
 \
   template <typename Expr>\
   BOOST_PP_CAT(vector, n) &operator =(const Expr &expr) {\

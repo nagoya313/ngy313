@@ -12,8 +12,7 @@ struct mutex_delete {
   }
 };
 
-typedef std::unique_ptr<std::remove_pointer<HANDLE>::type, mutex_delete> 
-    mutex_handle;
+typedef std::unique_ptr<std::remove_pointer<HANDLE>::type, mutex_delete> mutex_handle;
 
 struct window_delete {
   void operator ()(const HWND window) const {
@@ -25,6 +24,5 @@ struct window_delete {
 typedef std::unique_ptr<std::remove_pointer<HWND>::type, window_delete> 
     window_handle;
 
-const std::uint32_t kWindowStyle = 
-    WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
+const std::uint32_t kWindowStyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
 }}

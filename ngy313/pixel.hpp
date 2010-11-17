@@ -3,11 +3,7 @@
 
 namespace ngy313 {
 class pixel
-    : public drawable_base<pixel, 
-                           1,
-                           1,
-                           shape_2d_fvf_tag, 
-                           point_list_primitive_tag> {
+    : public drawable_base<pixel, 1, 1, shape_2d_fvf_tag, point_list_primitive_tag> {
  public:
   pixel(const float x, const float y) : drawable_base(init_vertex(x, y)) {}
 

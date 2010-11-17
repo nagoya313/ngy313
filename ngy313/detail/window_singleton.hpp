@@ -19,12 +19,9 @@ class window_singleton : public singleton<window_singleton> {
  private:
   typedef boost::mpl::string<'BASE'> window_class_name;
 
-  window_singleton()
-      : window_(init_window()),
-        graphic_base_(create_graphic_base()),
-        graphic_device_(create_graphic_device(window_,
-                                              graphic_base_,
-                                              true)) {
+  window_singleton() : window_(init_window()),
+                       graphic_base_(create_graphic_base()),
+                       graphic_device_(create_graphic_device(window_, graphic_base_, true)) {
     set_procedure(window_, &procedure);
     init_device(graphic_device_);
   }
@@ -34,10 +31,7 @@ class window_singleton : public singleton<window_singleton> {
     return create_window<window_class_name>();
   }
 
-  static LRESULT CALLBACK procedure(const HWND window_handle, 
-                                    const UINT message,
-                                    const WPARAM wp, 
-                                    const LPARAM lp) {
+  static LRESULT CALLBACK procedure(const HWND window_handle, const UINT message, const WPARAM wp, const LPARAM lp) {
     if (message == WM_CLOSE) {
       PostQuitMessage(0);
       return 0;

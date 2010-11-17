@@ -3,6 +3,7 @@
 #include <string>
 #include <boost/functional/hash.hpp>
 #include <d3dx9.h>
+#include "window_singleton.hpp"
 #include "com_fwd.hpp"
 
 namespace ngy313 { namespace detail {
@@ -13,8 +14,7 @@ struct texture_key {
 
 inline
 bool operator ==(const texture_key &lhs, const texture_key &rhs) {
-  return lhs.graphic_device == rhs.graphic_device && 
-         lhs.texture_name == rhs.texture_name;
+  return lhs.graphic_device == rhs.graphic_device && lhs.texture_name == rhs.texture_name;
 }
 
 inline
@@ -25,14 +25,13 @@ std::size_t hash_value(const texture_key &key) {
   return hash;
 }
 
-typedef std::unique_ptr<IDirect3DTexture9, detail::com_delete> texture_handle;
-
 struct texture_core_data {
   LPDIRECT3DTEXTURE9 texture;
   float width;
   float height;
 };
 
+inline
 texture_core_data create_texture(const texture_key &key) {
   assert(key.graphic_device);
   LPDIRECT3DTEXTURE9 texture = nullptr;
@@ -53,11 +52,7 @@ texture_core_data create_texture(const texture_key &key) {
                                          &texture))) {
     throw std::runtime_error("画像ファイルからテクスチャの作成に失敗しました");
   }
-  texture_core_data data = {
-    texture,
-    static_cast<float>(image_info.Width),
-    static_cast<float>(image_info.Height)
-  };
+  texture_core_data data = {texture, static_cast<float>(image_info.Width), static_cast<float>(image_info.Height)};
   return data;
 }
 
@@ -73,4 +68,12 @@ struct texture_data {
   float width;
   float height;
 };
+
+inline
+texture_key init_key(const string_piece &file_name) {
+  const texture_key key = {graphic_device(), file_name.string()};
+  return key;
+}
+
+typedef boost::flyweights::flyweight<boost::flyweights::key_value<texture_key, texture_data>> texture_type;
 }}

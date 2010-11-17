@@ -8,8 +8,7 @@ namespace ngy313 { namespace expr {
 #define NGY313_VECTOR_PARAM (x)(y)(z)(w)
 
 #define NGY313_MEMBER2_GEN(z, n, data)\
-static float BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)(const float lhs,\
-                                                       const float rhs) {\
+static float BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)(const float lhs, const float rhs) {\
   return lhs data rhs;\
 }
 
@@ -48,8 +47,7 @@ struct minus_t {
 
 #define NGY313_EXPR1_MEMBER_GEN(z, n, data)\
 float BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)() const {\
-  return Ope::BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)(\
-             rhs_.BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)());\
+  return Ope::BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)(rhs_.BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)());\
 }
 
 template <typename Rhs, typename Ope>
@@ -66,9 +64,8 @@ struct expr1 {
 
 #define NGY313_EXPR_MEMBER_GEN(z, n, data)\
 float BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)() const {\
-  return Ope::BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)(\
-             lhs_.BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)(),\
-             rhs_.BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)());\
+  return Ope::BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)(lhs_.BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)(),\
+                                                        rhs_.BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)());\
 }
 
 template <typename Lhs, typename Rhs, typename Ope>
@@ -86,9 +83,7 @@ struct expr2 {
 
 #define NGY313_EXPR_RIGHT_FLOAT_MEMBER_GEN(z, n, data)\
 float BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)() const {\
-  return Ope::BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)(\
-             lhs_.BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)(),\
-             rhs_);\
+  return Ope::BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)(lhs_.BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)(), rhs_);\
 }
 
 template <typename Lhs, typename Ope>
@@ -106,9 +101,7 @@ struct expr2<Lhs, float, Ope> {
 
 #define NGY313_EXPR_LEFT_FLOAT_MEMBER_GEN(z, n, data)\
 float BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)() const {\
-  return Ope::BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)(\
-             lhs_,\
-             rhs_.BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)());\
+  return Ope::BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)(lhs_, rhs_.BOOST_PP_SEQ_ELEM(n, NGY313_VECTOR_PARAM)());\
 }
 
 template <typename Rhs, typename Ope>

@@ -10,17 +10,13 @@ class string_piece {
 
   string_piece() : str_(nullptr), length_(0) {}
 
-  string_piece(const char * const str)
-    : str_(str), length_(str_ ? std::strlen(str_) : 0) {}
+  string_piece(const char * const str) : str_(str), length_(str_ ? std::strlen(str_) : 0) {}
 
-  string_piece(const char * const str, const size_type length)
-    : str_(str), length_(length) {}
+  string_piece(const char * const str, const size_type length) : str_(str), length_(length) {}
 
-  string_piece(const std::string &str) 
-    : str_(str.c_str()), length_(str.length()) {}
+  string_piece(const std::string &str) : str_(str.c_str()), length_(str.length()) {}
 
-  string_piece(const boost::filesystem::path &str) 
-    : str_(str.string().c_str()), length_(str.string().length()) {}
+  string_piece(const boost::filesystem::path &str) : str_(str.string().c_str()), length_(str.string().length()) {}
 
   const char *c_str() const {
     return str_;

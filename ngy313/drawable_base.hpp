@@ -28,9 +28,7 @@ struct drawable_base_type {
   typedef PrimitiveTag primitive_type;
   typedef BlendPair blend_type;
   typedef std::array<vertex_type, Size> vertex_array_type;
-  typedef pstade::oven::any_range<vertex_type, 
-                                  boost::random_access_traversal_tag> 
-              vertex_range_type;
+  typedef pstade::oven::any_range<vertex_type, boost::random_access_traversal_tag> vertex_range_type;
 };
 
 template <typename Drawable>
@@ -53,8 +51,7 @@ struct insert_blend_pair {
                              BlendPair> type;
 };
          
-template <template <class, std::size_t, std::uint32_t, class, class, class>
-              class DrawableBase,
+template <template <class, std::size_t, std::uint32_t, class, class, class> class DrawableBase,
           typename Drawable,
           std::size_t Size,
           std::uint32_t Count, 

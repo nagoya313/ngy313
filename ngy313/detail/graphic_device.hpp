@@ -3,16 +3,20 @@
 #include <stdexcept>
 #include <type_traits>
 #include <boost/utility/enable_if.hpp>
+#include <boost/mpl/and.hpp>
+#include <boost/mpl/has_xxx.hpp>
 #include "com_fwd.hpp"
 #include "graphic_fwd.hpp"
 #include "window_impl.hpp"
-#include "image_base.hpp"
 #include "drawable_core_access.hpp"
 
 namespace ngy313 { namespace detail {
+BOOST_MPL_HAS_XXX_TRAIT_DEF(image_type)
+BOOST_MPL_HAS_XXX_TRAIT_DEF(image1_type)
+BOOST_MPL_HAS_XXX_TRAIT_DEF(image2_type)
+
 inline
-D3DPRESENT_PARAMETERS init_present_parameters(const window_handle &window, 
-                                              const bool windowed) {
+D3DPRESENT_PARAMETERS init_present_parameters(const window_handle &window, const bool windowed) {
   assert(window);
   const D3DPRESENT_PARAMETERS present_parameters = {
     width(window),
@@ -43,14 +47,12 @@ graphic_base_handle create_graphic_base() {
 }
 
 inline
-graphic_device_handle create_graphic_device(
-    const window_handle &window, 
-    const graphic_base_handle &direct3d,
-    const bool windowed) {
+graphic_device_handle create_graphic_device(const window_handle &window, 
+                                            const graphic_base_handle &direct3d,
+                                            const bool windowed) {
   assert(window);
   assert(direct3d);
-  D3DPRESENT_PARAMETERS present_parameters = 
-      detail::init_present_parameters(window, windowed);
+  D3DPRESENT_PARAMETERS present_parameters = detail::init_present_parameters(window, windowed);
   LPDIRECT3DDEVICE9 graphic_device = nullptr;
   if (FAILED(direct3d->CreateDevice(D3DADAPTER_DEFAULT, 
                                     D3DDEVTYPE_HAL, 
@@ -89,8 +91,7 @@ void init_device(const graphic_device_handle &graphic_device) {
 }
 
 inline
-void clear(const graphic_device_handle &graphic_device,
-           const std::uint32_t col) {
+void clear(const graphic_device_handle &graphic_device, const std::uint32_t col) {
   assert(graphic_device);
   graphic_device->Clear(0, 
                         nullptr,
@@ -120,9 +121,7 @@ void present(const window_handle &window,
   assert(graphic_device);
   switch (graphic_device->Present(nullptr, nullptr, nullptr, nullptr)) {
     case D3DERR_DEVICELOST: {
-      D3DPRESENT_PARAMETERS present_parameter = detail::init_present_parameters(
-                                                    window,
-                                                    windowed);
+      D3DPRESENT_PARAMETERS present_parameter = detail::init_present_parameters(window, windowed);
 	    if (graphic_device->TestCooperativeLevel() == D3DERR_DEVICENOTRESET) {
         if (FAILED(graphic_device->Reset(&present_parameter))) {
            throw std::runtime_error("デバイスロストからの復旧に失敗しました");
@@ -142,23 +141,17 @@ void present(const window_handle &window,
 }
 
 inline
-void reset(const window_handle &window,
-           const graphic_device_handle &graphic_device,
-           const bool windowed) {
+void reset(const window_handle &window, const graphic_device_handle &graphic_device, const bool windowed) {
   assert(window);
   assert(graphic_device);
-  D3DPRESENT_PARAMETERS present_parameter = detail::init_present_parameters(
-                                                window,
-                                                windowed);
+  D3DPRESENT_PARAMETERS present_parameter = detail::init_present_parameters(window, windowed);
   if (FAILED(graphic_device->Reset(&present_parameter))) {
      throw std::runtime_error("デバイスリセットに失敗しました");
 	}
   init_device(graphic_device);
 }
 
-void set_blend_mode(const graphic_device_handle &graphic_device,
-                    const D3DBLEND src,
-                    const D3DBLEND dest) {
+void set_blend_mode(const graphic_device_handle &graphic_device, const D3DBLEND src, const D3DBLEND dest) {
   assert(graphic_device);
   graphic_device->SetRenderState(D3DRS_SRCBLEND, src);
   graphic_device->SetRenderState(D3DRS_DESTBLEND, dest);
@@ -167,60 +160,50 @@ void set_blend_mode(const graphic_device_handle &graphic_device,
 template <typename BlendPair>
 void set_blend_pair(const graphic_device_handle &graphic_device) {
   assert(graphic_device);
-  set_blend_mode(graphic_device, 
-                 BlendPair::src_type::value,
-                 BlendPair::dest_type::value);
-}
-
-/*
-template <typename Drawable>
-void set_blend_mode(const graphic_device_handle &graphic_device, 
-                    typename boost::enable_if<
-                        has_blend_type<Drawable>>::type * = nullptr) {
-  assert(graphic_device);
-  graphic_device->SetRenderState(D3DRS_SRCBLEND,
-                                 Drawable::blend_type::src_type::value);
-  graphic_device->SetRenderState(D3DRS_DESTBLEND, 
-                                 Drawable::blend_type::dest_type::value);
+  set_blend_mode(graphic_device, BlendPair::src_type::value, BlendPair::dest_type::value);
 }
 
 template <typename Drawable>
-void set_blend_mode(const graphic_device_handle &graphic_device, 
-                    typename boost::disable_if<
-                        has_blend_type<Drawable>>::type * = nullptr) {
+void set_texture12(const graphic_device_handle &graphic_device,
+                   const Drawable &drawable,
+                   typename boost::enable_if<has_image1_type<Drawable>>::type * = nullptr) {
   assert(graphic_device);
-  graphic_device->SetRenderState(D3DRS_SRCBLEND, 
-                                 default_blend::src_type::value);
-  graphic_device->SetRenderState(D3DRS_DESTBLEND, 
-                                 default_blend::dest_type::value);
+  graphic_device->SetTexture(0, drawable_core_access::texture1(drawable).get());
+  graphic_device->SetTexture(1, nullptr);
+}
+
+template <typename Drawable>
+void set_texture12(const graphic_device_handle &graphic_device,
+                   const Drawable &drawable,
+                   typename boost::enable_if<has_image2_type<Drawable>>::type * = nullptr) {
+  assert(graphic_device);
+  graphic_device->SetTexture(0, drawable_core_access::texture1(drawable).get());
+  graphic_device->SetTexture(1, drawable_core_access::texture2(drawable).get());
 }
 
 template <typename Drawable>
 void set_texture(const graphic_device_handle &graphic_device,
                  const Drawable &drawable,
-                 typename boost::enable_if<
-                     has_image_type<Drawable>>::type * = nullptr) {
+                 typename boost::enable_if<has_image_type<Drawable>>::type * = nullptr) {
   assert(graphic_device);
-  drawable_core_access::set_texture(graphic_device, drawable);
+  set_texture12(graphic_device, drawable);
 }
 
 template <typename Drawable>
 void set_texture(const graphic_device_handle &graphic_device,
                  const Drawable &,
-                 typename boost::disable_if<
-                     has_image_type<Drawable>>::type * = nullptr) {
+                 typename boost::disable_if<has_image_type<Drawable>>::type * = nullptr) {
   assert(graphic_device);
   graphic_device->SetTexture(0, nullptr);
   graphic_device->SetTexture(1, nullptr);
 }
-*/
 
 template <typename Drawable>
-void common_draw(const graphic_device_handle &graphic_device,
-                 const Drawable &drawable) {
+void common_draw(const graphic_device_handle &graphic_device, const Drawable &drawable) {
   assert(graphic_device);
   const Drawable::vertex_array_type 
       vertex = drawable_core_access::copy_vertex(drawable);
+  set_texture(graphic_device, drawable);
   graphic_device->SetFVF(Drawable::fvf_type::value);
   graphic_device->DrawPrimitiveUP(Drawable::primitive_type::value,
                                   Drawable::count_type::value, 
@@ -231,9 +214,8 @@ void common_draw(const graphic_device_handle &graphic_device,
 template <typename Drawable>
 void draw(const graphic_device_handle &graphic_device,
           const Drawable &drawable,
-          typename boost::enable_if<
-              std::is_same<typename Drawable::blend_type,
-                           default_blend>>::type * = nullptr) {
+          typename boost::enable_if<std::is_same<typename Drawable::blend_type,
+                                    default_blend>>::type * = nullptr) {
   assert(graphic_device);
   common_draw(graphic_device, drawable);
 }
@@ -241,28 +223,11 @@ void draw(const graphic_device_handle &graphic_device,
 template <typename Drawable>
 void draw(const graphic_device_handle &graphic_device,
           const Drawable &drawable,
-          typename boost::disable_if<
-              std::is_same<typename Drawable::blend_type,
-                           default_blend>>::type * = nullptr) {
+          typename boost::disable_if<std::is_same<typename Drawable::blend_type,
+                                     default_blend>>::type * = nullptr) {
   assert(graphic_device);
   set_blend_pair<typename Drawable::blend_type>(graphic_device);
   common_draw(graphic_device, drawable);
   set_blend_pair<default_blend>(graphic_device);
 }
- /*                   
-template <typename Drawable>
-void draw(const graphic_device_handle &graphic_device,
-          const Drawable &drawable) {
-  assert(graphic_device);
-  const Drawable::vertex_array_type 
-      vertex = drawable_core_access::copy_vertex(drawable);
-  set_texture(graphic_device, drawable);
-  set_blend_mode<Drawable>(graphic_device);
-  graphic_device->SetFVF(Drawable::fvf_type::value);
-  graphic_device->DrawPrimitiveUP(Drawable::primitive_type::value,
-                                  Drawable::count_type::value, 
-                                  &(vertex.front()), 
-                                  sizeof(vertex.front()));
-}
-*/
 }}

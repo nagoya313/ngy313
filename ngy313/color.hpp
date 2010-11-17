@@ -9,8 +9,7 @@ struct color {
 
   explicit color(const std::uint32_t code) : color_(code) {}
 
-  color(const float r, const float g, const float b, const float a = 1.f)
-      : color_(r, g, b, a) {}
+  color(const float r, const float g, const float b, const float a = 1.f) : color_(r, g, b, a) {}
 
   operator std::uint32_t() const {
     return color_;

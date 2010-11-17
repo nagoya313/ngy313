@@ -12,8 +12,7 @@ const blend_adaptor<dest_color_blend_tag, src_color_blend_tag> mul2_blend = {};
 
 const blend_adaptor<inv_dest_color_blend_tag, one_blend_tag> screen_blend = {};
 
-const blend_adaptor<inv_dest_color_blend_tag, 
-                    inv_src_color_blend_tag> reverse_blend = {};
+const blend_adaptor<inv_dest_color_blend_tag, inv_src_color_blend_tag> reverse_blend = {};
 }}
 
 namespace ngy313 {

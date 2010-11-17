@@ -90,9 +90,7 @@ struct vertex<List, n> {\
   BOOST_PP_REPEAT(n, NGY313_VERTEX_MENBER_GEN, list)\
 };
 
-BOOST_PP_REPEAT_FROM_TO(1, 
-                        BOOST_PP_INC(NGY313_MEMBER_MAX),
-                        NGY313_VERTEX_STRUCT_GEN, _)
+BOOST_PP_REPEAT_FROM_TO(1, BOOST_PP_INC(NGY313_MEMBER_MAX), NGY313_VERTEX_STRUCT_GEN, _)
 
 #undef NGY313_VERTEX_MENBER_GEN
 
@@ -136,15 +134,11 @@ struct fvf_value {
 template <typename FVFTag>
 struct fvf_traits {
   static_assert(std::is_base_of<fvf_tag, typename FVFTag::type>::value, "");
-  typedef boost::mpl::filter_view<
-             fvf_map, 
-             fvf_is_inherit<typename FVFTag::type>> fvf_map;
+  typedef boost::mpl::filter_view<fvf_map, fvf_is_inherit<typename FVFTag::type>> fvf_map;
   typedef std::uint32_t value_type;
-  static const value_type value = 
-                   typename boost::mpl::fold<
-                       boost::mpl::transform_view<fvf_map, fvf_value>,
-                       boost::mpl::integral_c<std::uint32_t, 0>,
-                       boost::mpl::bitor_<>>::type::value;
+  static const value_type value = typename boost::mpl::fold<boost::mpl::transform_view<fvf_map, fvf_value>,
+                                                            boost::mpl::integral_c<std::uint32_t, 0>,
+                                                            boost::mpl::bitor_<>>::type::value;
   typedef typename vertex<fvf_map, boost::mpl::size<fvf_map>::value> type;
 };
 
@@ -152,26 +146,19 @@ template <typename Member, typename Vertex, typename List>
 struct member_at_impl {
   typedef typename member<Member,
                           Vertex,
-                          boost::mpl::distance<
-                              typename boost::mpl::begin<List>::type,
-                              typename boost::mpl::find<
-                                   List, 
-                                   Member>::type>::value> type;
+                          boost::mpl::distance<typename boost::mpl::begin<List>::type,
+                                               typename boost::mpl::find<List, Member>::type>::value> type;
 };
 }}
 
 namespace ngy313 {
 template <typename Member, typename Vertex>
 Member &vertex_member_at(Vertex &vertex) {
-  return detail::member_at_impl<Member, 
-                                Vertex, 
-                                typename Vertex::list>::type::at(vertex);
+  return detail::member_at_impl<Member, Vertex, typename Vertex::list>::type::at(vertex);
 }
 
 template <typename Member, typename Vertex>
 const Member &vertex_member_at(const Vertex &vertex) {
-  return detail::member_at_impl<Member,
-                                Vertex,
-                                typename Vertex::list>::type::at(vertex);
+  return detail::member_at_impl<Member, Vertex, typename Vertex::list>::type::at(vertex);
 }
 }
