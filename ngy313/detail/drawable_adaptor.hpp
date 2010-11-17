@@ -5,10 +5,8 @@
 namespace ngy313 { namespace detail {
 template <typename Signature>
 struct copy_argument {
-  typedef typename std::remove_const<
-      typename std::remove_reference<
-          typename boost::function_traits<
-              Signature>::arg1_type>::type>::type type;
+  typedef typename std::remove_const<typename std::remove_reference<typename boost::function_traits<
+                                                                        Signature>::arg1_type>::type>::type type;
 };
 
 template <typename Drawable, typename Adaptor>

@@ -1,7 +1,6 @@
 #pragma once
-#include "detail/graphic_fwd.hpp"
+#include "detail/blend_tag.hpp"
 #include "drawable_adaptor_base.hpp"
-#include "blend_tag.hpp"
 
 namespace ngy313 { namespace detail {
 template <typename Drawable, typename SrcBlendTag, typename DestBlendTag>

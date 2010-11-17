@@ -10,7 +10,28 @@
 #include <boost/preprocessor/comparison/not_equal.hpp>
 #include <boost/preprocessor/arithmetic/inc.hpp>
 #include <boost/preprocessor/comma_if.hpp>
-#include "detail/graphic_fwd.hpp"
+
+namespace ngy313 {
+struct fvf_tag {};
+
+struct position_fvf_tag : public fvf_tag {};
+
+struct tex_fvf_tag : public fvf_tag {};
+
+struct dimension2_fvf_tag : public position_fvf_tag {};
+
+struct dimension3_fvf_tag : public position_fvf_tag {};
+
+struct normal_fvf_tag : public fvf_tag {};
+
+struct diffuse_fvf_tag : public fvf_tag {};
+
+struct specular_fvf_tag : public fvf_tag {};
+
+struct tex1_fvf_tag : public tex_fvf_tag {};
+
+struct tex2_fvf_tag : public tex_fvf_tag {};
+}
 
 namespace ngy313 { namespace detail {
 struct tag_inherit {

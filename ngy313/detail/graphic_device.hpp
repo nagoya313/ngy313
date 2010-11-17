@@ -6,9 +6,10 @@
 #include <boost/mpl/and.hpp>
 #include <boost/mpl/has_xxx.hpp>
 #include "com_fwd.hpp"
-#include "graphic_fwd.hpp"
 #include "window_impl.hpp"
 #include "drawable_core_access.hpp"
+#include "fvf_tag.hpp"
+#include "blend_tag.hpp"
 
 namespace ngy313 { namespace detail {
 BOOST_MPL_HAS_XXX_TRAIT_DEF(image_type)

@@ -6,10 +6,9 @@
 #include <pstade/oven/make_range.hpp>
 #include <pstade/oven/transformed.hpp>
 #include "detail/drawable_core_access.hpp"
-#include "detail/graphic_fwd.hpp"
-#include "fvf_traits.hpp"
-#include "primitive_tag.hpp"
-#include "fvf_tag.hpp"
+#include "detail/fvf_tag.hpp"
+#include "detail/fvf_traits.hpp"
+#include "detail/primitive_tag.hpp"
 
 namespace ngy313 { namespace detail {
 template <typename Drawable, 
