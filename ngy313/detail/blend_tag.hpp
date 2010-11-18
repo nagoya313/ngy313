@@ -2,6 +2,11 @@
 #include <d3d9.h>
 
 namespace ngy313 {
+template <typename BlendPair>
+struct blend_type {
+  typedef BlendPair blend_pair_type;
+};
+
 template <typename Src, typename Dest>
 struct blend_pair {
   typedef Src src_type;

@@ -18,13 +18,13 @@ struct drawable_core_access {
   }
 
   template <typename Drawable>
-  static const texture_handle &texture1(const Drawable &drawable) {
-   return drawable.texture1_.get().texture;
+  static auto texture1(const Drawable &drawable) -> const decltype(drawable.texture1_) & {
+   return drawable.texture1_;
   }
 
-  template <typename Drawable>
-  static const texture_handle &texture2(const Drawable &drawable) {
-   return drawable.texture2_.get().texture;
+  template <typename Drawable, typename TextureType>
+  static const TextureType &texture2(const Drawable &drawable) {
+   return drawable.texture2_;
   }
 };
 }}

@@ -1,5 +1,6 @@
 #pragma once
 #include <cassert>
+#include <cstdint>
 #include <stdexcept>
 #include <type_traits>
 #include <boost/utility/enable_if.hpp>
@@ -10,11 +11,14 @@
 #include "drawable_core_access.hpp"
 #include "fvf_tag.hpp"
 #include "blend_tag.hpp"
+#include "texture_stage_tag.hpp"
 
 namespace ngy313 { namespace detail {
 BOOST_MPL_HAS_XXX_TRAIT_DEF(image_type)
 BOOST_MPL_HAS_XXX_TRAIT_DEF(image1_type)
 BOOST_MPL_HAS_XXX_TRAIT_DEF(image2_type)
+BOOST_MPL_HAS_XXX_TRAIT_DEF(blend_pair_type)
+BOOST_MPL_HAS_XXX_TRAIT_DEF(texture_stage_pair_type)
 
 inline
 D3DPRESENT_PARAMETERS init_present_parameters(const window_handle &window, const bool windowed) {
@@ -84,9 +88,122 @@ graphic_device_handle create_graphic_device(const window_handle &window,
 }
 
 inline
+void set_blend_mode(const graphic_device_handle &graphic_device, const D3DBLEND src, const D3DBLEND dest) {
+  assert(graphic_device);
+  graphic_device->SetRenderState(D3DRS_SRCBLEND, src);
+  graphic_device->SetRenderState(D3DRS_DESTBLEND, dest);
+}
+
+template <typename BlendPair>
+void set_blend_pair(const graphic_device_handle &graphic_device) {
+  assert(graphic_device);
+  set_blend_mode(graphic_device, BlendPair::src_type::value, BlendPair::dest_type::value);
+}
+
+inline
+void set_color_option(const graphic_device_handle &graphic_device, const std::uint32_t stage, const std::uint32_t op) {
+  assert(graphic_device);
+  graphic_device->SetTextureStageState(stage, D3DTSS_COLOROP, op);
+}
+
+inline
+void set_color_arg1(const graphic_device_handle &graphic_device, const std::uint32_t stage,  const std::uint32_t op) {
+  assert(graphic_device);
+  graphic_device->SetTextureStageState(stage, D3DTSS_COLORARG1, op);
+}
+
+inline
+void set_color_arg2(const graphic_device_handle &graphic_device, const std::uint32_t stage,  const std::uint32_t op) {
+  assert(graphic_device);
+  graphic_device->SetTextureStageState(stage, D3DTSS_COLORARG2, op);
+}
+
+template <typename ColorTuple>
+void set_texture_color(const graphic_device_handle &graphic_device,
+                       const std::uint32_t stage,
+                       typename boost::enable_if<std::is_same<typename ColorTuple::operator_type, 
+                                                              arg1_texture_operator_tag>>::type * = nullptr) {
+  assert(graphic_device);
+  set_color_arg1(graphic_device, stage, ColorTuple::arg1_type::value);
+  set_color_option(graphic_device, stage, ColorTuple::operator_type::value);
+}
+
+template <typename ColorTuple>
+void set_texture_color(const graphic_device_handle &graphic_device,
+                       const std::uint32_t stage,
+                       typename boost::disable_if<std::is_same<typename ColorTuple::operator_type, 
+                                                               arg1_texture_operator_tag>>::type * = nullptr) {
+  assert(graphic_device);
+  set_color_arg1(graphic_device, stage, ColorTuple::arg1_type::value);
+  set_color_option(graphic_device, stage, ColorTuple::operator_type::value);
+  set_color_arg2(graphic_device, stage, ColorTuple::arg2_type::value);
+}
+
+inline
+void set_alpha_option(const graphic_device_handle &graphic_device, const std::uint32_t stage, const std::uint32_t op) {
+  assert(graphic_device);
+  graphic_device->SetTextureStageState(stage, D3DTSS_ALPHAOP, op);
+}
+
+inline
+void set_alpha_arg1(const graphic_device_handle &graphic_device, const std::uint32_t stage, const std::uint32_t op) {
+  assert(graphic_device);
+  graphic_device->SetTextureStageState(stage, D3DTSS_ALPHAARG1, op);
+}
+
+inline
+void set_alpha_arg2(const graphic_device_handle &graphic_device, const std::uint32_t stage, const std::uint32_t op) {
+  assert(graphic_device);
+  graphic_device->SetTextureStageState(stage, D3DTSS_ALPHAARG1, op);
+}
+
+template <typename AlphaTuple>
+void set_texture_alpha(const graphic_device_handle &graphic_device,
+                       const std::uint32_t stage,
+                       typename boost::enable_if<std::is_same<typename AlphaTuple::operator_type, 
+                                                              arg1_texture_operator_tag>>::type * = nullptr) {
+  assert(graphic_device);
+  set_alpha_arg1(graphic_device, stafe, AlphaTuple::arg1_type::value);
+  set_alpha_option(graphic_device, stage, AlphaTuple::operator_type::value);
+}
+
+template <typename AlphaTuple>
+void set_texture_alpha(const graphic_device_handle &graphic_device,
+                        const std::uint32_t stage,
+                        typename boost::disable_if<std::is_same<typename AlphaTuple::operator_type, 
+                                                                arg1_texture_operator_tag>>::type * = nullptr) {
+  assert(graphic_device);
+  set_alpha_arg1(graphic_device, stage, AlphaTuple::arg1_type::value);
+  set_alpha_option(graphic_device, stage, AlphaTuple::operator_type::value);
+  set_alpha_arg2(graphic_device, stage, AlphaTuple::arg2_type::value);
+}
+
+template <typename TextureStagePair>
+void set_texture_stage(const graphic_device_handle &graphic_device,
+                       const std::uint32_t stage,
+                       typename boost::enable_if<std::is_same<typename TextureStagePair::alpha_type, 
+                                                              void>>::type * = nullptr) {
+  assert(graphic_device);
+  set_texture_color<typename TextureStagePair::color_type>(graphic_device, stage);
+}
+
+template <typename TextureStagePair>
+void set_texture_stage(const graphic_device_handle &graphic_device,
+                       const std::uint32_t stage,
+                       typename boost::disable_if<std::is_same<typename TextureStagePair::alpha_type, 
+                                                               void>>::type * = nullptr) {
+  assert(graphic_device);
+  set_texture_color<TextureStagePair::color_type>(graphic_device, stage);
+  set_texture_alpha<TextureStagePair::alpha_type>(graphic_device, stage);
+}
+
+inline
 void init_device(const graphic_device_handle &graphic_device) {
   assert(graphic_device);
   graphic_device->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+  set_blend_pair<default_blend>(graphic_device);
+  set_texture_stage<default_stage0>(graphic_device, 0);
+  set_texture_stage<default_stage1>(graphic_device, 1);
   graphic_device->SetRenderState(D3DRS_LIGHTING, FALSE);
   graphic_device->SetRenderState(D3DRS_ZENABLE, FALSE);
 }
@@ -115,9 +232,7 @@ void end_scene(const graphic_device_handle &graphic_device) {
 }
 
 inline
-void present(const window_handle &window, 
-             const graphic_device_handle &graphic_device, 
-             const bool windowed) {
+void present(const window_handle &window, const graphic_device_handle &graphic_device, const bool windowed) {
   assert(window);
   assert(graphic_device);
   switch (graphic_device->Present(nullptr, nullptr, nullptr, nullptr)) {
@@ -152,24 +267,12 @@ void reset(const window_handle &window, const graphic_device_handle &graphic_dev
   init_device(graphic_device);
 }
 
-void set_blend_mode(const graphic_device_handle &graphic_device, const D3DBLEND src, const D3DBLEND dest) {
-  assert(graphic_device);
-  graphic_device->SetRenderState(D3DRS_SRCBLEND, src);
-  graphic_device->SetRenderState(D3DRS_DESTBLEND, dest);
-}
-
-template <typename BlendPair>
-void set_blend_pair(const graphic_device_handle &graphic_device) {
-  assert(graphic_device);
-  set_blend_mode(graphic_device, BlendPair::src_type::value, BlendPair::dest_type::value);
-}
-
 template <typename Drawable>
 void set_texture12(const graphic_device_handle &graphic_device,
                    const Drawable &drawable,
                    typename boost::enable_if<has_image1_type<Drawable>>::type * = nullptr) {
   assert(graphic_device);
-  graphic_device->SetTexture(0, drawable_core_access::texture1(drawable).get());
+  graphic_device->SetTexture(0, drawable_core_access::texture1(drawable).get().texture.get());
   graphic_device->SetTexture(1, nullptr);
 }
 
@@ -178,8 +281,8 @@ void set_texture12(const graphic_device_handle &graphic_device,
                    const Drawable &drawable,
                    typename boost::enable_if<has_image2_type<Drawable>>::type * = nullptr) {
   assert(graphic_device);
-  graphic_device->SetTexture(0, drawable_core_access::texture1(drawable).get());
-  graphic_device->SetTexture(1, drawable_core_access::texture2(drawable).get());
+  graphic_device->SetTexture(0, drawable_core_access::texture1(drawable).get().texture.get());
+  graphic_device->SetTexture(1, drawable_core_access::texture2(drawable).get().texture.get());
 }
 
 template <typename Drawable>
@@ -212,23 +315,37 @@ void common_draw(const graphic_device_handle &graphic_device, const Drawable &dr
                                   sizeof(vertex.front()));
 }
 
+template <typename BlendPair>
+class scoped_blend {
+ public:
+  explicit scoped_blend(const graphic_device_handle &graphic_device) : graphic_device_(graphic_device) {
+    assert(graphic_device_);
+    set_blend_pair<BlendPair>(graphic_device_);
+  }
+
+  ~scoped_blend() {
+    assert(graphic_device_);
+    set_blend_pair<default_blend>(graphic_device_);
+  }
+
+ private:
+  const graphic_device_handle &graphic_device_;
+};
+
 template <typename Drawable>
 void draw(const graphic_device_handle &graphic_device,
           const Drawable &drawable,
-          typename boost::enable_if<std::is_same<typename Drawable::blend_type,
-                                    default_blend>>::type * = nullptr) {
+          typename boost::enable_if<has_blend_pair_type<Drawable>>::type * = nullptr) {
   assert(graphic_device);
+  const scoped_blend<typename Drawable::blend_pair_type> blend(graphic_device);
   common_draw(graphic_device, drawable);
 }
 
 template <typename Drawable>
 void draw(const graphic_device_handle &graphic_device,
           const Drawable &drawable,
-          typename boost::disable_if<std::is_same<typename Drawable::blend_type,
-                                     default_blend>>::type * = nullptr) {
+          typename boost::disable_if<has_blend_pair_type<Drawable>>::type * = nullptr) {
   assert(graphic_device);
-  set_blend_pair<typename Drawable::blend_type>(graphic_device);
   common_draw(graphic_device, drawable);
-  set_blend_pair<default_blend>(graphic_device);
 }
 }}

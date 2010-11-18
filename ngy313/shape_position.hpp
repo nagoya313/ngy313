@@ -2,7 +2,7 @@
 #include <pstade/oven/numeric.hpp>
 #include <pstade/oven/at.hpp>
 #include "detail/drawable_core_access.hpp"
-#include "fvf_traits.hpp"
+#include "detail/fvf_traits.hpp"
 
 namespace ngy313 { namespace detail {
 struct add_position_x {

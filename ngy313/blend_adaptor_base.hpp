@@ -3,9 +3,10 @@
 #include "drawable_adaptor_base.hpp"
 
 namespace ngy313 { namespace detail {
-template <typename Drawable, typename SrcBlendTag, typename DestBlendTag>
+template <typename Drawable, typename SrcBlendTag, typename DestBlendTag = void>
 struct blend_adaptor_base
-    : public all_vertex_adaptor<Drawable, insert_blend_pair<Drawable, blend_pair<SrcBlendTag, DestBlendTag>>> {
+    : public all_vertex_adaptor<Drawable>,
+      public blend_type<blend_pair<SrcBlendTag, DestBlendTag>> {
   explicit blend_adaptor_base(const Drawable &drawable) : all_vertex_adaptor(drawable) {}
 };
 }}
