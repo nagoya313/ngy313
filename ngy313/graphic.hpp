@@ -27,7 +27,7 @@ void clear_screen(const std::uint32_t &col) {
 
 inline
 void present() {
-  detail::present(detail::window(), detail::graphic_device(), true);
+  detail::present(detail::window(), detail::graphic_device(), true, detail::before_reset(), detail::after_reset());
 }
 
 template <typename Drawable>

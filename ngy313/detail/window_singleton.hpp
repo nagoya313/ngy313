@@ -1,5 +1,6 @@
 #pragma once
 #include <boost/mpl/string.hpp>
+#include <boost/signals2/signal.hpp>
 #include "singleton.hpp"
 #include "window_fwd.hpp"
 #include "window_impl.hpp"
@@ -15,6 +16,10 @@ class window_singleton : public singleton<window_singleton> {
   const graphic_device_handle &graphic_device() const {
     return graphic_device_;
   }
+
+  boost::signals2::signal<void ()> before_reset;
+
+  boost::signals2::signal<void ()> after_reset;
 
  private:
   typedef boost::mpl::string<'BASE'> window_class_name;
@@ -42,6 +47,7 @@ class window_singleton : public singleton<window_singleton> {
   const window_handle window_;
   const graphic_base_handle graphic_base_;
   const graphic_device_handle graphic_device_;
+
   friend singleton<window_singleton>;
 };
 
@@ -51,5 +57,13 @@ const window_handle &window() {
 
 const graphic_device_handle &graphic_device() {
   return window_singleton::instance().graphic_device();
+}
+
+const boost::signals2::signal<void ()> &before_reset() {
+  return window_singleton::instance().before_reset;
+}
+
+const boost::signals2::signal<void ()> &after_reset() {
+  return window_singleton::instance().after_reset;
 }
 }}

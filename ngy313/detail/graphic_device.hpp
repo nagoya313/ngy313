@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <stdexcept>
 #include <type_traits>
+#include <boost/signals2/signal.hpp>
 #include <boost/utility/enable_if.hpp>
 #include <boost/mpl/has_xxx.hpp>
 #include "com_fwd.hpp"
@@ -251,16 +252,22 @@ void end_scene(const graphic_device_handle &graphic_device) {
 }
 
 inline
-void present(const window_handle &window, const graphic_device_handle &graphic_device, const bool windowed) {
+void present(const window_handle &window,
+             const graphic_device_handle &graphic_device,
+             const bool windowed,
+             const boost::signals2::signal<void ()> &before_reset,
+             const boost::signals2::signal<void ()> &after_reset) {
   assert(window);
   assert(graphic_device);
   switch (graphic_device->Present(nullptr, nullptr, nullptr, nullptr)) {
     case D3DERR_DEVICELOST: {
       D3DPRESENT_PARAMETERS present_parameter = init_present_parameters(window, windowed);
 	    if (graphic_device->TestCooperativeLevel() == D3DERR_DEVICENOTRESET) {
+        before_reset();
         if (FAILED(graphic_device->Reset(&present_parameter))) {
            throw std::runtime_error("デバイスロストからの復旧に失敗しました");
 	      }
+        after_reset();
         init_device(graphic_device);
       }
 	    break;
@@ -276,13 +283,19 @@ void present(const window_handle &window, const graphic_device_handle &graphic_d
 }
 
 inline
-void reset(const window_handle &window, const graphic_device_handle &graphic_device, const bool windowed) {
+void reset(const window_handle &window, 
+           const graphic_device_handle &graphic_device,
+           const bool windowed,
+           const boost::signals2::signal<void ()> &before_reset,
+           const boost::signals2::signal<void ()> &after_reset) {
   assert(window);
   assert(graphic_device);
   D3DPRESENT_PARAMETERS present_parameter = init_present_parameters(window, windowed);
+  before_reset();
   if (FAILED(graphic_device->Reset(&present_parameter))) {
      throw std::runtime_error("デバイスリセットに失敗しました");
 	}
+  after_reset();
   init_device(graphic_device);
 }
 
