@@ -105,6 +105,7 @@ struct member<Member, Vertex, n> {\
   static Member &at(Vertex &vertex) {\
     return vertex.BOOST_PP_CAT(m, n);\
   }\
+\
   static const Member &at(const Vertex &vertex) {\
     return vertex.BOOST_PP_CAT(m, n);\
   }\
@@ -118,9 +119,9 @@ BOOST_PP_REPEAT(BOOST_PP_INC(NGY313_MEMBER_MAX), NGY313_MEMBER_GEN, _)
 
 template <typename FVFTag>
 struct fvf_is_inherit {
-  template <typename In>
+  template <typename Rhs>
   struct apply {
-    typedef typename std::is_base_of<typename In::first, FVFTag> type;
+    typedef typename std::is_base_of<typename Rhs::first, FVFTag> type;
   };
 };
 

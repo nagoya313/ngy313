@@ -18,7 +18,6 @@ struct add_position_y {
     return lhs + vertex_member_at<rhw_position_t>(vertex).y;
   }
 };
-
 }}
 
 namespace ngy313 {

@@ -19,5 +19,5 @@ struct com_delete {
 
 typedef std::unique_ptr<IDirect3D9, com_delete> graphic_base_handle;
 typedef std::unique_ptr<IDirect3DDevice9, com_delete> graphic_device_handle;
-typedef std::unique_ptr<IDirect3DTexture9, detail::com_delete> texture_handle;
+typedef std::unique_ptr<IDirect3DTexture9, com_delete> texture_handle;
 }}

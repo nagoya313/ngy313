@@ -1,7 +1,5 @@
 #pragma once
-#include <cassert>
 #include <pstade/oven/algorithm.hpp>
-#include "com_fwd.hpp"
 
 namespace ngy313 { namespace detail {
 struct drawable_core_access {
@@ -22,8 +20,8 @@ struct drawable_core_access {
    return drawable.texture1_;
   }
 
-  template <typename Drawable, typename TextureType>
-  static const TextureType &texture2(const Drawable &drawable) {
+  template <typename Drawable>
+  static auto texture2(const Drawable &drawable) -> const decltype(drawable.texture2_) & {
    return drawable.texture2_;
   }
 };

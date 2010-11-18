@@ -4,7 +4,6 @@
 #include <stdexcept>
 #include <type_traits>
 #include <boost/utility/enable_if.hpp>
-#include <boost/mpl/and.hpp>
 #include <boost/mpl/has_xxx.hpp>
 #include "com_fwd.hpp"
 #include "window_impl.hpp"
@@ -12,6 +11,7 @@
 #include "fvf_tag.hpp"
 #include "blend_tag.hpp"
 #include "texture_stage_tag.hpp"
+#include "addressing_tag.hpp"
 
 namespace ngy313 { namespace detail {
 BOOST_MPL_HAS_XXX_TRAIT_DEF(image_type)
@@ -19,6 +19,7 @@ BOOST_MPL_HAS_XXX_TRAIT_DEF(image1_type)
 BOOST_MPL_HAS_XXX_TRAIT_DEF(image2_type)
 BOOST_MPL_HAS_XXX_TRAIT_DEF(blend_pair_type)
 BOOST_MPL_HAS_XXX_TRAIT_DEF(texture_stage_pair_type)
+BOOST_MPL_HAS_XXX_TRAIT_DEF(addressing_pair_type)
 
 inline
 D3DPRESENT_PARAMETERS init_present_parameters(const window_handle &window, const bool windowed) {
@@ -197,6 +198,22 @@ void set_texture_stage(const graphic_device_handle &graphic_device,
   set_texture_alpha<TextureStagePair::alpha_type>(graphic_device, stage);
 }
 
+inline 
+void set_addressing_mode(const graphic_device_handle &graphic_device, 
+                         const std::uint32_t stage,
+                         const D3DTEXTUREADDRESS u,
+                         const D3DTEXTUREADDRESS v) {
+  assert(graphic_device);
+  graphic_device->SetSamplerState(stage, D3DSAMP_ADDRESSU, u);
+  graphic_device->SetSamplerState(stage, D3DSAMP_ADDRESSV, v);
+}
+
+template <typename AddressingPair>
+void set_addressing_pair(const graphic_device_handle &graphic_device, const std::uint32_t stage) {
+  assert(graphic_device);
+  set_addressing_mode(graphic_device, stage, AddressingPair::u_type::value, AddressingPair::v_type::value);
+}
+
 inline
 void init_device(const graphic_device_handle &graphic_device) {
   assert(graphic_device);
@@ -204,6 +221,8 @@ void init_device(const graphic_device_handle &graphic_device) {
   set_blend_pair<default_blend>(graphic_device);
   set_texture_stage<default_stage0>(graphic_device, 0);
   set_texture_stage<default_stage1>(graphic_device, 1);
+  set_addressing_pair<default_addressing>(graphic_device, 0);
+  set_addressing_pair<default_addressing>(graphic_device, 1);
   graphic_device->SetRenderState(D3DRS_LIGHTING, FALSE);
   graphic_device->SetRenderState(D3DRS_ZENABLE, FALSE);
 }
@@ -237,12 +256,12 @@ void present(const window_handle &window, const graphic_device_handle &graphic_d
   assert(graphic_device);
   switch (graphic_device->Present(nullptr, nullptr, nullptr, nullptr)) {
     case D3DERR_DEVICELOST: {
-      D3DPRESENT_PARAMETERS present_parameter = detail::init_present_parameters(window, windowed);
+      D3DPRESENT_PARAMETERS present_parameter = init_present_parameters(window, windowed);
 	    if (graphic_device->TestCooperativeLevel() == D3DERR_DEVICENOTRESET) {
         if (FAILED(graphic_device->Reset(&present_parameter))) {
            throw std::runtime_error("デバイスロストからの復旧に失敗しました");
 	      }
-        detail::init_device(graphic_device);
+        init_device(graphic_device);
       }
 	    break;
     }
@@ -260,7 +279,7 @@ inline
 void reset(const window_handle &window, const graphic_device_handle &graphic_device, const bool windowed) {
   assert(window);
   assert(graphic_device);
-  D3DPRESENT_PARAMETERS present_parameter = detail::init_present_parameters(window, windowed);
+  D3DPRESENT_PARAMETERS present_parameter = init_present_parameters(window, windowed);
   if (FAILED(graphic_device->Reset(&present_parameter))) {
      throw std::runtime_error("デバイスリセットに失敗しました");
 	}
@@ -305,8 +324,7 @@ void set_texture(const graphic_device_handle &graphic_device,
 template <typename Drawable>
 void common_draw(const graphic_device_handle &graphic_device, const Drawable &drawable) {
   assert(graphic_device);
-  const Drawable::vertex_array_type 
-      vertex = drawable_core_access::copy_vertex(drawable);
+  const Drawable::vertex_array_type vertex = drawable_core_access::copy_vertex(drawable);
   set_texture(graphic_device, drawable);
   graphic_device->SetFVF(Drawable::fvf_type::value);
   graphic_device->DrawPrimitiveUP(Drawable::primitive_type::value,
@@ -349,13 +367,47 @@ class scoped_stage {
   const graphic_device_handle &graphic_device_;
 };
 
+template <typename AddressingPair>
+class scoped_addressing {
+ public:
+  explicit scoped_addressing(const graphic_device_handle &graphic_device) : graphic_device_(graphic_device) {
+    assert(graphic_device_);
+    set_addressing_pair<AddressingPair>(graphic_device_, 0);
+  }
+
+  ~scoped_addressing() {
+    assert(graphic_device_);
+    set_addressing_pair<default_addressing>(graphic_device_, 0);
+  }
+
+ private:
+  const graphic_device_handle &graphic_device_;
+};
+
+template <typename Drawable>
+void addressing_draw(const graphic_device_handle &graphic_device,
+                const Drawable &drawable,
+                typename boost::enable_if<has_addressing_pair_type<Drawable>>::type * = nullptr) {
+  assert(graphic_device);
+  const scoped_addressing<typename Drawable::addressing_pair_type> addressing(graphic_device);
+  common_draw(graphic_device, drawable);
+}
+
+template <typename Drawable>
+void addressing_draw(const graphic_device_handle &graphic_device,
+                const Drawable &drawable,
+                typename boost::disable_if<has_addressing_pair_type<Drawable>>::type * = nullptr) {
+  assert(graphic_device);
+  common_draw(graphic_device, drawable);
+}
+
 template <typename Drawable>
 void stage_draw(const graphic_device_handle &graphic_device,
                 const Drawable &drawable,
                 typename boost::enable_if<has_texture_stage_pair_type<Drawable>>::type * = nullptr) {
   assert(graphic_device);
-  const scoped_stage<typename Drawable::texture_stage_pair_type> blend(graphic_device);
-  common_draw(graphic_device, drawable);
+  const scoped_stage<typename Drawable::texture_stage_pair_type> stage(graphic_device);
+  addressing_draw(graphic_device, drawable);
 }
 
 template <typename Drawable>
@@ -363,7 +415,7 @@ void stage_draw(const graphic_device_handle &graphic_device,
                 const Drawable &drawable,
                 typename boost::disable_if<has_texture_stage_pair_type<Drawable>>::type * = nullptr) {
   assert(graphic_device);
-  common_draw(graphic_device, drawable);
+  addressing_draw(graphic_device, drawable);
 }
 
 template <typename Drawable>

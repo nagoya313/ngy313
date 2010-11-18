@@ -2,23 +2,20 @@
 #include <pstade/oven/any_range.hpp>
 #include <pstade/oven/iteration.hpp>
 #include <pstade/oven/taken_while.hpp>
-#include <Windows.h>
+#include "detail/process.hpp"
 
 namespace ngy313 {
 inline
 pstade::oven::any_range<int, boost::forward_traversal_tag> process_message() {
-  return pstade::oven::iteration(0, [](int) -> int {
-    MSG message;
-    return PeekMessage(&message, nullptr, 0, 0, PM_NOREMOVE);
-  }) | pstade::oven::taken_while([](const int x) -> bool {
+  return pstade::oven::iteration(false, [](bool) {
+    return detail::has_message();
+  }) | pstade::oven::taken_while([](const bool x) -> bool {
     if (x) {
-      MSG message;
-      const BOOL result = GetMessage(&message, nullptr, 0, 0);
-      if (!(result && ~result)) {
+      const detail::message mes = detail::get_message();
+      if (!mes) {
         return false;
       } else {
-        TranslateMessage(&message);
-        DispatchMessage(&message);
+        detail::translate_and_dispatch_message(mes);
       }
     }
     return true;
@@ -38,6 +35,6 @@ struct main_loop {
 
 inline
 void quit() {
-  PostQuitMessage(0);
+  detail::post_quit_message(0);
 }
 }
