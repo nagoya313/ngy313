@@ -5,7 +5,7 @@
 namespace ngy313 {
 template <typename TextureStagePair>
 struct texture_stage_type {
-  TextureStagePair texture_stage_pair_type;
+  typedef TextureStagePair texture_stage_pair_type;
 };
 
 template <typename Lhs, typename Op, typename Rhs = void>

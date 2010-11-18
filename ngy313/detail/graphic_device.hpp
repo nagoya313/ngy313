@@ -332,20 +332,60 @@ class scoped_blend {
   const graphic_device_handle &graphic_device_;
 };
 
+template <typename StagePair>
+class scoped_stage {
+ public:
+  explicit scoped_stage(const graphic_device_handle &graphic_device) : graphic_device_(graphic_device) {
+    assert(graphic_device_);
+    set_texture_stage<StagePair>(graphic_device_, 0);
+  }
+
+  ~scoped_stage() {
+    assert(graphic_device_);
+    set_texture_stage<default_stage0>(graphic_device_, 0);
+  }
+
+ private:
+  const graphic_device_handle &graphic_device_;
+};
+
 template <typename Drawable>
-void draw(const graphic_device_handle &graphic_device,
-          const Drawable &drawable,
-          typename boost::enable_if<has_blend_pair_type<Drawable>>::type * = nullptr) {
+void stage_draw(const graphic_device_handle &graphic_device,
+                const Drawable &drawable,
+                typename boost::enable_if<has_texture_stage_pair_type<Drawable>>::type * = nullptr) {
   assert(graphic_device);
-  const scoped_blend<typename Drawable::blend_pair_type> blend(graphic_device);
+  const scoped_stage<typename Drawable::texture_stage_pair_type> blend(graphic_device);
   common_draw(graphic_device, drawable);
 }
 
 template <typename Drawable>
-void draw(const graphic_device_handle &graphic_device,
-          const Drawable &drawable,
-          typename boost::disable_if<has_blend_pair_type<Drawable>>::type * = nullptr) {
+void stage_draw(const graphic_device_handle &graphic_device,
+                const Drawable &drawable,
+                typename boost::disable_if<has_texture_stage_pair_type<Drawable>>::type * = nullptr) {
   assert(graphic_device);
   common_draw(graphic_device, drawable);
+}
+
+template <typename Drawable>
+void blend_draw(const graphic_device_handle &graphic_device,
+                const Drawable &drawable,
+                typename boost::enable_if<has_blend_pair_type<Drawable>>::type * = nullptr) {
+  assert(graphic_device);
+  const scoped_blend<typename Drawable::blend_pair_type> blend(graphic_device);
+  stage_draw(graphic_device, drawable);
+}
+
+template <typename Drawable>
+void blend_draw(const graphic_device_handle &graphic_device,
+                const Drawable &drawable,
+                typename boost::disable_if<has_blend_pair_type<Drawable>>::type * = nullptr) {
+  assert(graphic_device);
+  stage_draw(graphic_device, drawable);
+}
+
+template <typename Drawable>
+void draw(const graphic_device_handle &graphic_device, const Drawable &drawable) {
+  assert(graphic_device);
+  blend_draw(graphic_device, drawable);
 }
 }}
