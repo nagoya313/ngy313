@@ -59,11 +59,11 @@ const graphic_device_handle &graphic_device() {
   return window_singleton::instance().graphic_device();
 }
 
-const boost::signals2::signal<void ()> &before_reset() {
+boost::signals2::signal<void ()> &before_reset() {
   return window_singleton::instance().before_reset;
 }
 
-const boost::signals2::signal<void ()> &after_reset() {
+boost::signals2::signal<void ()> &after_reset() {
   return window_singleton::instance().after_reset;
 }
 }}

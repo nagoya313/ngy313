@@ -304,7 +304,7 @@ void set_texture12(const graphic_device_handle &graphic_device,
                    const Drawable &drawable,
                    typename boost::enable_if<has_image1_type<Drawable>>::type * = nullptr) {
   assert(graphic_device);
-  graphic_device->SetTexture(0, drawable_core_access::texture1(drawable).get().texture.get());
+  graphic_device->SetTexture(0, drawable_core_access::texture1(drawable).get());
   graphic_device->SetTexture(1, nullptr);
 }
 
@@ -313,8 +313,8 @@ void set_texture12(const graphic_device_handle &graphic_device,
                    const Drawable &drawable,
                    typename boost::enable_if<has_image2_type<Drawable>>::type * = nullptr) {
   assert(graphic_device);
-  graphic_device->SetTexture(0, drawable_core_access::texture1(drawable).get().texture.get());
-  graphic_device->SetTexture(1, drawable_core_access::texture2(drawable).get().texture.get());
+  graphic_device->SetTexture(0, drawable_core_access::texture1(drawable).get());
+  graphic_device->SetTexture(1, drawable_core_access::texture2(drawable).get());
 }
 
 template <typename Drawable>
@@ -452,5 +452,93 @@ template <typename Drawable>
 void draw(const graphic_device_handle &graphic_device, const Drawable &drawable) {
   assert(graphic_device);
   blend_draw(graphic_device, drawable);
+}
+
+inline
+D3DVIEWPORT9 view_port(const graphic_device_handle &graphic_device) {
+  assert(graphic_device);
+  D3DVIEWPORT9 view_port;
+  graphic_device->GetViewport(&view_port);
+  return view_port;
+}
+
+inline
+surface_handle render_target(const graphic_device_handle &graphic_device) {
+  assert(graphic_device);
+  LPDIRECT3DSURFACE9 target = nullptr;
+  graphic_device->GetRenderTarget(0, &target);
+  return surface_handle(target);
+}
+
+inline
+surface_handle z_and_stencil(const graphic_device_handle &graphic_device) {
+  assert(graphic_device);
+  LPDIRECT3DSURFACE9 z_s = nullptr;
+  graphic_device->GetDepthStencilSurface(&z_s);
+  return surface_handle(z_s);
+}
+
+inline
+texture_handle create_texture(const graphic_device_handle &graphic_device, const float width, const float height) {
+  assert(graphic_device);
+  LPDIRECT3DTEXTURE9 tex = nullptr;
+  if (FAILED(graphic_device->CreateTexture(static_cast<std::uint32_t>(width), 
+                                           static_cast<std::uint32_t>(height),
+                                           1,
+                                           D3DUSAGE_RENDERTARGET,
+                                           D3DFMT_A8R8G8B8, 
+                                           D3DPOOL_DEFAULT, 
+                                           &tex, 
+                                           nullptr))) {
+    throw std::runtime_error("テクスチャの作成に失敗しました");
+  }
+  return texture_handle(tex);
+}
+
+inline
+surface_handle create_z_and_stencil(const graphic_device_handle &graphic_device, const float width, const float height) {
+  assert(graphic_device);
+  LPDIRECT3DSURFACE9 suf = nullptr;
+  if (FAILED(graphic_device->CreateDepthStencilSurface(static_cast<std::uint32_t>(width), 
+                                                       static_cast<std::uint32_t>(height),
+                                                       D3DFMT_D24S8,
+                                                       D3DMULTISAMPLE_NONE,
+                                                       0, 
+                                                       TRUE, 
+                                                       &suf, 
+                                                       nullptr))) {
+    throw std::runtime_error("深度及びステンシルバッファの作成に失敗しました");
+  }
+  return surface_handle(suf);
+}
+
+inline
+surface_handle surface_level(const texture_handle &tex) {
+  assert(tex);
+  LPDIRECT3DSURFACE9 surface = nullptr;
+  if (FAILED(tex->GetSurfaceLevel(0, &surface))) {
+    throw std::runtime_error("サーフェイスレベルの取得に失敗しました");
+  }
+  return surface_handle(surface);
+}
+
+inline
+void set_view_port(const graphic_device_handle &graphic_device, const D3DVIEWPORT9 &view_port) {
+  assert(graphic_device);
+  graphic_device->SetViewport(&view_port);
+}
+
+inline
+void set_render_target(const graphic_device_handle &graphic_device, const surface_handle &surface) {
+  assert(graphic_device);
+  assert(surface);
+  graphic_device->SetRenderTarget(0, surface.get());
+}
+
+inline
+void set_z_and_stencil(const graphic_device_handle &graphic_device, const surface_handle &surface) {
+  assert(graphic_device);
+  assert(surface);
+  graphic_device->SetDepthStencilSurface(surface.get());
 }
 }}

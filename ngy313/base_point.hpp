@@ -25,12 +25,12 @@ struct base_point_set_at {
 
   template <typename Drawable>
   float x(const Drawable &drawable) const {
-    return ngy313::shape_position_at_x(drawable, at_);
+    return shape_position_at_x(drawable, at_);
   }
 
   template <typename Drawable>
   float y(const Drawable &drawable) const {
-    return ngy313::shape_position_at_y(drawable, at_);
+    return shape_position_at_y(drawable, at_);
   }
 
  private:
@@ -40,12 +40,12 @@ struct base_point_set_at {
 const struct base_point_set_center_t {
   template <typename Drawable>
   float x(const Drawable &drawable) const {
-    return ngy313::shape_center_x(drawable);
+    return shape_center_x(drawable);
   }
 
   template <typename Drawable>
   float y(const Drawable &drawable) const {
-    return ngy313::shape_center_y(drawable);
+    return shape_center_y(drawable);
   }
 } base_point_set_center;
 }

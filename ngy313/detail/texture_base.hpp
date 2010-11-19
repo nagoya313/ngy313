@@ -11,12 +11,16 @@ class texture_base {
   typedef texture_base image_type;
   typedef texture_base image1_type;
 
-  explicit texture_base(const texture_type &texture) : texture1_(texture) {}
+  explicit texture_base(const texture_handle &texture) : texture1_(texture) {}
 
  private:
   friend drawable_core_access;
 
-  const texture_type texture1_;
+  const texture_handle &texture1() const {
+    return texture1_;
+  }
+
+  const texture_handle &texture1_;
 };
 
 class texture2_base {
@@ -24,13 +28,21 @@ class texture2_base {
   typedef texture2_base image_type;
   typedef texture2_base image2_type;
 
-  texture2_base(const texture_type &texture1, const texture_type &texture2) 
+  texture2_base(const texture_handle &texture1, const texture_handle &texture2) 
       : texture1_(texture1), texture2_(texture2) {}
 
  private:
   friend drawable_core_access;
 
-  const texture_type texture1_;
-  const texture_type texture2_;
+  const texture_handle &texture1() const {
+    return texture1_;
+  }
+
+  const texture_handle &texture2() const {
+    return texture2_;
+  }
+
+  const texture_handle &texture1_;
+  const texture_handle &texture2_;
 };
 }}
