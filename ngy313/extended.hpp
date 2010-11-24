@@ -1,13 +1,8 @@
 #pragma once
-#include <functional>
-#include "drawable_adaptor_base.hpp"
+#include "detail/shape_position.hpp"
+#include "drawable_adaptor.hpp"
 
 namespace ngy313 { namespace detail {
-inline
-float extend_position_impl(const float pos, const float base, const float extend) {
-  return (pos - base) * extend + base;
-}
-
 struct extend_position : public argument_result {
   template <typename Drawable, typename BasePoint>
   extend_position(const Drawable &drawable, const BasePoint &base_point, const float extend_x, const float extend_y)

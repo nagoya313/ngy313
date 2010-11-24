@@ -71,8 +71,6 @@ typedef boost::mpl::vector<boost::mpl::pair<dimension2_fvf_tag, dimension2_fvf>,
 template <typename List, std::size_t Size>
 struct vertex;
 
-#define NGY313_MEMBER_MAX 8
-
 #define NGY313_VERTEX_MENBER_GEN(z, n, data)\
 typename boost::mpl::at_c<data, n>::type BOOST_PP_CAT(m, n);
 
@@ -89,6 +87,8 @@ struct vertex<List, n> {\
   typedef boost::mpl::transform_view<List, fvf_type> list;\
   BOOST_PP_REPEAT(n, NGY313_VERTEX_MENBER_GEN, list)\
 };
+
+#define NGY313_MEMBER_MAX 8
 
 BOOST_PP_REPEAT_FROM_TO(1, BOOST_PP_INC(NGY313_MEMBER_MAX), NGY313_VERTEX_STRUCT_GEN, _)
 
@@ -111,7 +111,7 @@ struct member<Member, Vertex, n> {\
   }\
 };
 
-BOOST_PP_REPEAT(BOOST_PP_INC(NGY313_MEMBER_MAX), NGY313_MEMBER_GEN, _)
+BOOST_PP_REPEAT(NGY313_MEMBER_MAX, NGY313_MEMBER_GEN, _)
 
 #undef NGY313_MEMBER_GEN
 
@@ -121,7 +121,7 @@ template <typename FVFTag>
 struct fvf_is_inherit {
   template <typename Rhs>
   struct apply {
-    typedef typename std::is_base_of<typename Rhs::first, FVFTag> type;
+    typedef std::is_base_of<typename Rhs::first, FVFTag> type;
   };
 };
 
@@ -140,15 +140,15 @@ struct fvf_traits {
   static const value_type value = typename boost::mpl::fold<boost::mpl::transform_view<fvf_map, fvf_value>,
                                                             boost::mpl::integral_c<std::uint32_t, 0>,
                                                             boost::mpl::bitor_<>>::type::value;
-  typedef typename vertex<fvf_map, boost::mpl::size<fvf_map>::value> type;
+  typedef vertex<fvf_map, boost::mpl::size<fvf_map>::value> type;
 };
 
 template <typename Member, typename Vertex, typename List>
 struct member_at_impl {
-  typedef typename member<Member,
-                          Vertex,
-                          boost::mpl::distance<typename boost::mpl::begin<List>::type,
-                                               typename boost::mpl::find<List, Member>::type>::value> type;
+  typedef member<Member,
+                 Vertex,
+                 boost::mpl::distance<typename boost::mpl::begin<List>::type,
+                 typename boost::mpl::find<List, Member>::type>::value> type;
 };
 }}
 

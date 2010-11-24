@@ -2,8 +2,7 @@
 #include <boost/mpl/string.hpp>
 #include <boost/signals2/signal.hpp>
 #include "singleton.hpp"
-#include "window_fwd.hpp"
-#include "window_impl.hpp"
+#include "window.hpp"
 #include "graphic_device.hpp"
 
 namespace ngy313 { namespace detail {

@@ -1,33 +1,9 @@
 #pragma once
 #include <cstdint>
 #include <d3d9.h>
+#include "drawable_adaptor.hpp"
 
-namespace ngy313 {
-template <typename TextureStagePair>
-struct texture_stage_type {
-  typedef TextureStagePair texture_stage_pair_type;
-};
-
-template <typename Lhs, typename Op, typename Rhs = void>
-struct color_stage {
-  typedef Lhs arg1_type;
-  typedef Op operator_type;
-  typedef Rhs arg2_type;
-};
-
-template <typename Lhs, typename Op, typename Rhs = void>
-struct alpha_stage {
-  typedef Lhs arg1_type;
-  typedef Op operator_type;
-  typedef Rhs arg2_type;
-};
-
-template <typename ColorStage, typename AlphaStage = void>
-struct texture_stage_pair {
-  typedef ColorStage color_type;
-  typedef AlphaStage alpha_type;
-};
-
+namespace ngy313 { namespace detail {
 struct texture_operator_tag {
   typedef D3DTEXTUREOP value_type;
 };
@@ -45,7 +21,7 @@ struct modulate_texture_operator_tag : public texture_operator_tag {
 };
 
 struct modulate2_texture_operator_tag : public texture_operator_tag {
-  static const value_type value = D3DTOP_MODULATE4X;
+  static const value_type value = D3DTOP_MODULATE2X;
 };
 
 struct modulate4_texture_operator_tag : public texture_operator_tag {
@@ -176,12 +152,54 @@ struct alpha_peplicate_texture_arg_tag : public texture_arg_tag {
   static const value_type value = D3DTA_ALPHAREPLICATE;
 };
 
+template <typename TextureStagePair>
+struct texture_stage_type {
+  typedef TextureStagePair texture_stage_pair_type;
+};
+
+template <typename Lhs, typename Op, typename Rhs = void>
+struct color_stage {
+  typedef Lhs arg1_type;
+  typedef Op operator_type;
+  typedef Rhs arg2_type;
+};
+
+template <typename Lhs, typename Op, typename Rhs = void>
+struct alpha_stage {
+  typedef Lhs arg1_type;
+  typedef Op operator_type;
+  typedef Rhs arg2_type;
+};
+
+template <typename ColorStage, typename AlphaStage = void>
+struct texture_stage_pair {
+  typedef ColorStage color_type;
+  typedef AlphaStage alpha_type;
+};
+
 typedef texture_stage_pair<color_stage<texture_texture_arg_tag,
                                        modulate_texture_operator_tag, 
                                        diffuse_texture_arg_tag>,
-                           alpha_stage<texture_texture_arg_tag,
-                                       modulate_texture_operator_tag,
-                                       diffuse_texture_arg_tag>> default_stage0;
+                           alpha_stage<texture_texture_arg_tag, arg1_texture_operator_tag>> default_stage0;
 
 typedef texture_stage_pair<color_stage<texture_texture_arg_tag, arg1_texture_operator_tag>> default_stage1;
-}
+
+template <typename Drawable, typename ColorStage, typename AlphaStage>
+struct texture_stage_adaptor_base
+    : public all_vertex_adaptor<Drawable>, public texture_stage_type<texture_stage_pair<ColorStage, AlphaStage>> {
+  explicit texture_stage_adaptor_base(const Drawable &drawable) : all_vertex_adaptor(drawable) {}
+};
+
+template <typename ColorStage, typename AlphaStage = void>
+struct texture_stage_adaptor {
+  template <typename Signature>
+  struct result {
+    typedef texture_stage_adaptor_base<typename copy_argument<Signature>::type, ColorStage, AlphaStage> type;
+  };
+
+  template <typename Drawable>
+  texture_stage_adaptor_base<Drawable, ColorStage, AlphaStage> operator ()(const Drawable &drawable) const {
+    return texture_stage_adaptor_base<Drawable, ColorStage, AlphaStage>(drawable);
+  }
+};
+}}

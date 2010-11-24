@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 #include <pstade/oven/any_range.hpp>
 #include <pstade/oven/iteration.hpp>
 #include <pstade/oven/taken_while.hpp>
@@ -36,5 +37,10 @@ struct main_loop {
 inline
 void quit() {
   detail::post_quit_message(0);
+}
+
+inline
+void sleep(const std::uint32_t time) {
+  detail::sleep_process(time);
 }
 }

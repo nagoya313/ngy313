@@ -1,7 +1,7 @@
 #pragma once
 #include <d3d9.h>
 
-namespace ngy313 {
+namespace ngy313 { namespace detail {
 struct primitive_tag {
   typedef D3DPRIMITIVETYPE value_type;
 };
@@ -29,4 +29,4 @@ struct triangle_strip_primitive_tag : public primitive_tag {
 struct triangle_fan_primitive_tag : public primitive_tag {
   static const value_type value = D3DPT_TRIANGLEFAN;
 };
-}
+}}

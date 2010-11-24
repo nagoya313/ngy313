@@ -1,6 +1,6 @@
 #pragma once
 #include <cmath>
-#include "drawable_adaptor_base.hpp"
+#include "drawable_adaptor.hpp"
 
 namespace ngy313 { namespace detail {
 struct rotate_position : public argument_result {

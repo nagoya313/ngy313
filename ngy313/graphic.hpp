@@ -1,7 +1,9 @@
 #pragma once
-#include <cstdint>
 #include <boost/noncopyable.hpp>
+#include <boost/signals2/trackable.hpp>
+#include <boost/bind.hpp>
 #include "detail/window_singleton.hpp"
+#include "detail/drawable_core_access.hpp"
 
 namespace ngy313 {
 class scoped_render : private boost::noncopyable {
@@ -34,4 +36,85 @@ template <typename Drawable>
 void draw(const Drawable &drawable) {
   detail::draw(detail::graphic_device(), drawable);
 }
+
+template <typename Camera>
+void set_camera(const Camera &cam) {
+  detail::set_camera(detail::graphic_device(), cam);
+}
+
+class render_target : public boost::signals2::trackable, private boost::noncopyable {
+ public:
+  render_target(const float width, const float height) 
+      : width_(width),
+        height_(height),
+        target_(detail::create_texture(detail::graphic_device(), width_, height_)),
+        target_surface_(detail::surface_level(target_)),
+        z_and_stencil_(detail::create_z_and_stencil(detail::graphic_device(), width_, height_)),
+        view_port_(detail::init_viewport(width, height)) {
+    detail::before_reset().connect(boost::bind(&render_target::release, this));
+    detail::after_reset().connect(boost::bind(&render_target::reset, this));
+  }
+
+  void begin() const {
+    detail::set_render_target(detail::graphic_device(), target_surface_);
+    detail::set_z_and_stencil(detail::graphic_device(), z_and_stencil_);
+    detail::set_view_port(detail::graphic_device(), view_port_);
+    detail::init_device(detail::graphic_device());
+  }
+
+  float width() const {
+    return width_;
+  }
+
+  float height() const {
+    return height_;
+  }
+
+  void release() {
+    target_.reset();
+    target_surface_.reset();
+    z_and_stencil_.reset();
+  }
+
+  void reset() {
+    target_ = detail::create_texture(detail::graphic_device(), width_, height_);
+    target_surface_ = detail::surface_level(target_);
+    z_and_stencil_ = detail::create_z_and_stencil(detail::graphic_device(), width_, height_);
+  }
+
+ private:
+  friend detail::drawable_core_access;
+
+  const detail::texture_handle &texture1() const {
+    return target_;
+  }
+
+  const float width_;
+  const float height_;
+  detail::texture_handle target_;
+  detail::surface_handle target_surface_;
+  detail::surface_handle z_and_stencil_;
+  const detail::viewport view_port_;
+};
+
+class scoped_render_target : private boost::noncopyable {
+ public:
+  explicit scoped_render_target(const render_target &target) 
+      : view_port_(detail::view_port(detail::graphic_device())),
+        back_buffer_(detail::render_target(detail::graphic_device())),
+        back_z_and_stencil_(detail::z_and_stencil(detail::graphic_device())) {
+    target.begin();
+  }
+
+  ~scoped_render_target() {
+    detail::set_view_port(detail::graphic_device(), view_port_);
+    detail::set_render_target(detail::graphic_device(), back_buffer_);
+    detail::set_z_and_stencil(detail::graphic_device(), back_z_and_stencil_);
+  }
+
+ private:
+  const detail::viewport view_port_;
+  const detail::surface_handle back_buffer_;
+  const detail::surface_handle back_z_and_stencil_;
+};
 }

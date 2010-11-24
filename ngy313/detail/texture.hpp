@@ -1,10 +1,11 @@
 #pragma once
-#include <cassert>
 #include <string>
 #include <boost/functional/hash.hpp>
-#include <d3dx9.h>
+#include <boost/flyweight.hpp>
+#include <boost/flyweight/key_value.hpp>
+#include "drawable_core_access.hpp"
 #include "window_singleton.hpp"
-#include "com_fwd.hpp"
+#include "string_piece.hpp"
 
 namespace ngy313 { namespace detail {
 struct texture_key {
@@ -32,7 +33,7 @@ struct texture_core_data {
 };
 
 inline
-texture_core_data create_texture(const texture_key &key) {
+texture_core_data create_texture_from_file(const texture_key &key) {
   assert(key.graphic_device);
   LPDIRECT3DTEXTURE9 texture = nullptr;
   D3DXIMAGE_INFO image_info;
@@ -52,13 +53,13 @@ texture_core_data create_texture(const texture_key &key) {
                                          &texture))) {
     throw std::runtime_error("画像ファイルからテクスチャの作成に失敗しました");
   }
-  texture_core_data data = {texture, static_cast<float>(image_info.Width), static_cast<float>(image_info.Height)};
+  const texture_core_data data = {texture, static_cast<float>(image_info.Width), static_cast<float>(image_info.Height)};
   return data;
 }
 
 struct texture_data {
   explicit texture_data(const texture_key &key) {
-    const texture_core_data data = create_texture(key);
+    const texture_core_data data = create_texture_from_file(key);
     texture.reset(data.texture);
     width = data.width;
     height = data.height;
@@ -76,4 +77,44 @@ texture_key init_key(const string_piece &file_name) {
 }
 
 typedef boost::flyweights::flyweight<boost::flyweights::key_value<texture_key, texture_data>> texture_type;
+
+class texture_base {
+ public:
+  typedef texture_base image_type;
+  typedef texture_base image1_type;
+
+  explicit texture_base(const texture_handle &texture) : texture1_(texture) {}
+
+ private:
+  friend drawable_core_access;
+
+  const texture_handle &texture1() const {
+    return texture1_;
+  }
+
+  const texture_handle &texture1_;
+};
+
+class texture2_base {
+ public:
+  typedef texture2_base image_type;
+  typedef texture2_base image2_type;
+
+  texture2_base(const texture_handle &texture1, const texture_handle &texture2) 
+      : texture1_(texture1), texture2_(texture2) {}
+
+ private:
+  friend drawable_core_access;
+
+  const texture_handle &texture1() const {
+    return texture1_;
+  }
+
+  const texture_handle &texture2() const {
+    return texture2_;
+  }
+
+  const texture_handle &texture1_;
+  const texture_handle &texture2_;
+};
 }}

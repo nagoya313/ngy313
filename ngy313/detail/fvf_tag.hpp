@@ -2,7 +2,6 @@
 #include <type_traits>
 #include <boost/mpl/vector.hpp>
 #include <boost/mpl/fold.hpp>
-#include <boost/mpl/and.hpp>
 #include <boost/mpl/inherit.hpp>
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/repeat_from_to.hpp>
@@ -11,7 +10,7 @@
 #include <boost/preprocessor/arithmetic/inc.hpp>
 #include <boost/preprocessor/comma_if.hpp>
 
-namespace ngy313 {
+namespace ngy313 { namespace detail {
 struct fvf_tag {};
 
 struct position_fvf_tag : public fvf_tag {};
@@ -31,9 +30,7 @@ struct specular_fvf_tag : public fvf_tag {};
 struct tex1_fvf_tag : public tex_fvf_tag {};
 
 struct tex2_fvf_tag : public tex_fvf_tag {};
-}
 
-namespace ngy313 { namespace detail {
 struct tag_inherit {
   template <typename Lhs, typename Rhs>
   struct apply {
@@ -41,15 +38,14 @@ struct tag_inherit {
                   "");
     static_assert(!(std::is_base_of<tex_fvf_tag, Lhs>::value && std::is_base_of<tex_fvf_tag, Rhs>::value), 
                   "");
-    static_assert(std::is_base_of<fvf_tag, Lhs>::value,
-                  "");
+    static_assert(std::is_base_of<fvf_tag, Rhs>::value, "");
     typedef typename boost::mpl::inherit<Lhs, Rhs>::type type;
   };
 };
 }}
 
 namespace ngy313 {
-#define NGY313_TAG_MAX 16
+#define NGY313_TAG_MAX 8
 
 #define NGY313_MAKE_TAG_GEN(z, n, data)\
 typename BOOST_PP_CAT(T, n) = boost::mpl::na BOOST_PP_COMMA_IF(BOOST_PP_NOT_EQUAL(n, NGY313_TAG_MAX))
@@ -64,7 +60,4 @@ struct make_fvf_tag {
 #undef NGY313_MAKE_TAG_GEN
 
 #undef NGY313_TAG_MAX
-
-typedef make_fvf_tag<dimension2_fvf_tag, diffuse_fvf_tag> shape_2d_fvf_tag;
-typedef make_fvf_tag<dimension2_fvf_tag, diffuse_fvf_tag, tex1_fvf_tag> image_2d_fvf_tag;
 }

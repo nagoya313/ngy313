@@ -1,7 +1,7 @@
 #pragma once
-#include "detail/texture_base.hpp"
 #include "detail/drawable_core_access.hpp"
-#include "drawable_adaptor_base.hpp"
+#include "detail/texture.hpp"
+#include "drawable_adaptor.hpp"
 #include "image.hpp"
 
 namespace ngy313 { namespace detail {

@@ -3,24 +3,23 @@
 #include <cstdint>
 #include <stdexcept>
 #include <type_traits>
-#include <boost/signals2/signal.hpp>
-#include <boost/utility/enable_if.hpp>
-#include <boost/mpl/has_xxx.hpp>
 #include "com_fwd.hpp"
-#include "window_impl.hpp"
+#include "window.hpp"
 #include "drawable_core_access.hpp"
 #include "fvf_tag.hpp"
-#include "blend_tag.hpp"
-#include "texture_stage_tag.hpp"
-#include "addressing_tag.hpp"
+#include "blend.hpp"
+#include "texture_stage.hpp"
+#include "addressing.hpp"
+#include "string_piece.hpp"
 
 namespace ngy313 { namespace detail {
-BOOST_MPL_HAS_XXX_TRAIT_DEF(image_type)
-BOOST_MPL_HAS_XXX_TRAIT_DEF(image1_type)
-BOOST_MPL_HAS_XXX_TRAIT_DEF(image2_type)
-BOOST_MPL_HAS_XXX_TRAIT_DEF(blend_pair_type)
-BOOST_MPL_HAS_XXX_TRAIT_DEF(texture_stage_pair_type)
-BOOST_MPL_HAS_XXX_TRAIT_DEF(addressing_pair_type)
+typedef D3DVIEWPORT9 viewport;
+
+inline
+viewport init_viewport(const float width, const float height) {
+  const viewport v = {0, 0, static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height), 0.f, 1.f};
+  return v;
+}
 
 inline
 D3DPRESENT_PARAMETERS init_present_parameters(const window_handle &window, const bool windowed) {
@@ -60,7 +59,7 @@ graphic_device_handle create_graphic_device(const window_handle &window,
   assert(window);
   assert(direct3d);
   D3DPRESENT_PARAMETERS present_parameters = detail::init_present_parameters(window, windowed);
-  LPDIRECT3DDEVICE9 graphic_device = nullptr;
+  LPDIRECT3DDEVICE9 graphic_device;
   if (FAILED(direct3d->CreateDevice(D3DADAPTER_DEFAULT, 
                                     D3DDEVTYPE_HAL, 
                                     window.get(), 
@@ -73,16 +72,14 @@ graphic_device_handle create_graphic_device(const window_handle &window,
                                       D3DCREATE_SOFTWARE_VERTEXPROCESSING,
                                       &present_parameters,
                                       &graphic_device))) {
-      const HRESULT ref_hr = direct3d->CreateDevice(
-                                 D3DADAPTER_DEFAULT,
-                                 D3DDEVTYPE_REF,
-                                 window.get(), 
-                                 D3DCREATE_SOFTWARE_VERTEXPROCESSING,
-                                 &present_parameters, 
-                                 &graphic_device);
+      const HRESULT ref_hr = direct3d->CreateDevice(D3DADAPTER_DEFAULT,
+                                                    D3DDEVTYPE_REF,
+                                                    window.get(), 
+                                                    D3DCREATE_SOFTWARE_VERTEXPROCESSING,
+                                                    &present_parameters, 
+                                                    &graphic_device);
       if (FAILED(ref_hr)) {								
-	       throw hresult_error("Direct3Dデバイスの作成に失敗しました\n詳細：",
-                             ref_hr);
+	       throw hresult_error("Direct3Dデバイスの作成に失敗しました\n詳細：", ref_hr);
 	    }  
     }
   }
@@ -123,8 +120,8 @@ void set_color_arg2(const graphic_device_handle &graphic_device, const std::uint
 template <typename ColorTuple>
 void set_texture_color(const graphic_device_handle &graphic_device,
                        const std::uint32_t stage,
-                       typename boost::enable_if<std::is_same<typename ColorTuple::operator_type, 
-                                                              arg1_texture_operator_tag>>::type * = nullptr) {
+                       typename std::enable_if<std::is_same<typename ColorTuple::operator_type, 
+                                                            arg1_texture_operator_tag>::value>::type * = nullptr) {
   assert(graphic_device);
   set_color_arg1(graphic_device, stage, ColorTuple::arg1_type::value);
   set_color_option(graphic_device, stage, ColorTuple::operator_type::value);
@@ -133,8 +130,8 @@ void set_texture_color(const graphic_device_handle &graphic_device,
 template <typename ColorTuple>
 void set_texture_color(const graphic_device_handle &graphic_device,
                        const std::uint32_t stage,
-                       typename boost::disable_if<std::is_same<typename ColorTuple::operator_type, 
-                                                               arg1_texture_operator_tag>>::type * = nullptr) {
+                       typename std::enable_if<!std::is_same<typename ColorTuple::operator_type, 
+                                                             arg1_texture_operator_tag>::value>::type * = nullptr) {
   assert(graphic_device);
   set_color_arg1(graphic_device, stage, ColorTuple::arg1_type::value);
   set_color_option(graphic_device, stage, ColorTuple::operator_type::value);
@@ -162,18 +159,18 @@ void set_alpha_arg2(const graphic_device_handle &graphic_device, const std::uint
 template <typename AlphaTuple>
 void set_texture_alpha(const graphic_device_handle &graphic_device,
                        const std::uint32_t stage,
-                       typename boost::enable_if<std::is_same<typename AlphaTuple::operator_type, 
-                                                              arg1_texture_operator_tag>>::type * = nullptr) {
+                       typename std::enable_if<std::is_same<typename AlphaTuple::operator_type, 
+                                                            arg1_texture_operator_tag>::value>::type * = nullptr) {
   assert(graphic_device);
-  set_alpha_arg1(graphic_device, stafe, AlphaTuple::arg1_type::value);
+  set_alpha_arg1(graphic_device, stage, AlphaTuple::arg1_type::value);
   set_alpha_option(graphic_device, stage, AlphaTuple::operator_type::value);
 }
 
 template <typename AlphaTuple>
 void set_texture_alpha(const graphic_device_handle &graphic_device,
                         const std::uint32_t stage,
-                        typename boost::disable_if<std::is_same<typename AlphaTuple::operator_type, 
-                                                                arg1_texture_operator_tag>>::type * = nullptr) {
+                        typename std::enable_if<!std::is_same<typename AlphaTuple::operator_type, 
+                                                              arg1_texture_operator_tag>::value>::type * = nullptr) {
   assert(graphic_device);
   set_alpha_arg1(graphic_device, stage, AlphaTuple::arg1_type::value);
   set_alpha_option(graphic_device, stage, AlphaTuple::operator_type::value);
@@ -302,7 +299,7 @@ void reset(const window_handle &window,
 template <typename Drawable>
 void set_texture12(const graphic_device_handle &graphic_device,
                    const Drawable &drawable,
-                   typename boost::enable_if<has_image1_type<Drawable>>::type * = nullptr) {
+                   typename std::enable_if<has_image1_type<Drawable>::value>::type * = nullptr) {
   assert(graphic_device);
   graphic_device->SetTexture(0, drawable_core_access::texture1(drawable).get());
   graphic_device->SetTexture(1, nullptr);
@@ -311,7 +308,7 @@ void set_texture12(const graphic_device_handle &graphic_device,
 template <typename Drawable>
 void set_texture12(const graphic_device_handle &graphic_device,
                    const Drawable &drawable,
-                   typename boost::enable_if<has_image2_type<Drawable>>::type * = nullptr) {
+                   typename std::enable_if<has_image2_type<Drawable>::value>::type * = nullptr) {
   assert(graphic_device);
   graphic_device->SetTexture(0, drawable_core_access::texture1(drawable).get());
   graphic_device->SetTexture(1, drawable_core_access::texture2(drawable).get());
@@ -320,7 +317,7 @@ void set_texture12(const graphic_device_handle &graphic_device,
 template <typename Drawable>
 void set_texture(const graphic_device_handle &graphic_device,
                  const Drawable &drawable,
-                 typename boost::enable_if<has_image_type<Drawable>>::type * = nullptr) {
+                 typename std::enable_if<has_image_type<Drawable>::value>::type * = nullptr) {
   assert(graphic_device);
   set_texture12(graphic_device, drawable);
 }
@@ -328,7 +325,7 @@ void set_texture(const graphic_device_handle &graphic_device,
 template <typename Drawable>
 void set_texture(const graphic_device_handle &graphic_device,
                  const Drawable &,
-                 typename boost::disable_if<has_image_type<Drawable>>::type * = nullptr) {
+                 typename std::enable_if<!has_image_type<Drawable>::value>::type * = nullptr) {
   assert(graphic_device);
   graphic_device->SetTexture(0, nullptr);
   graphic_device->SetTexture(1, nullptr);
@@ -399,8 +396,8 @@ class scoped_addressing {
 
 template <typename Drawable>
 void addressing_draw(const graphic_device_handle &graphic_device,
-                const Drawable &drawable,
-                typename boost::enable_if<has_addressing_pair_type<Drawable>>::type * = nullptr) {
+                     const Drawable &drawable,
+                     typename std::enable_if<has_addressing_pair_type<Drawable>::value>::type * = nullptr) {
   assert(graphic_device);
   const scoped_addressing<typename Drawable::addressing_pair_type> addressing(graphic_device);
   common_draw(graphic_device, drawable);
@@ -408,8 +405,8 @@ void addressing_draw(const graphic_device_handle &graphic_device,
 
 template <typename Drawable>
 void addressing_draw(const graphic_device_handle &graphic_device,
-                const Drawable &drawable,
-                typename boost::disable_if<has_addressing_pair_type<Drawable>>::type * = nullptr) {
+                     const Drawable &drawable,
+                     typename std::enable_if<!has_addressing_pair_type<Drawable>::value>::type * = nullptr) {
   assert(graphic_device);
   common_draw(graphic_device, drawable);
 }
@@ -417,7 +414,7 @@ void addressing_draw(const graphic_device_handle &graphic_device,
 template <typename Drawable>
 void stage_draw(const graphic_device_handle &graphic_device,
                 const Drawable &drawable,
-                typename boost::enable_if<has_texture_stage_pair_type<Drawable>>::type * = nullptr) {
+                typename std::enable_if<has_texture_stage_pair_type<Drawable>::value>::type * = nullptr) {
   assert(graphic_device);
   const scoped_stage<typename Drawable::texture_stage_pair_type> stage(graphic_device);
   addressing_draw(graphic_device, drawable);
@@ -426,7 +423,7 @@ void stage_draw(const graphic_device_handle &graphic_device,
 template <typename Drawable>
 void stage_draw(const graphic_device_handle &graphic_device,
                 const Drawable &drawable,
-                typename boost::disable_if<has_texture_stage_pair_type<Drawable>>::type * = nullptr) {
+                typename std::enable_if<!has_texture_stage_pair_type<Drawable>::value>::type * = nullptr) {
   assert(graphic_device);
   addressing_draw(graphic_device, drawable);
 }
@@ -434,7 +431,7 @@ void stage_draw(const graphic_device_handle &graphic_device,
 template <typename Drawable>
 void blend_draw(const graphic_device_handle &graphic_device,
                 const Drawable &drawable,
-                typename boost::enable_if<has_blend_pair_type<Drawable>>::type * = nullptr) {
+                typename std::enable_if<has_blend_pair_type<Drawable>::value>::type * = nullptr) {
   assert(graphic_device);
   const scoped_blend<typename Drawable::blend_pair_type> blend(graphic_device);
   stage_draw(graphic_device, drawable);
@@ -443,7 +440,7 @@ void blend_draw(const graphic_device_handle &graphic_device,
 template <typename Drawable>
 void blend_draw(const graphic_device_handle &graphic_device,
                 const Drawable &drawable,
-                typename boost::disable_if<has_blend_pair_type<Drawable>>::type * = nullptr) {
+                typename std::enable_if<!has_blend_pair_type<Drawable>::value>::type * = nullptr) {
   assert(graphic_device);
   stage_draw(graphic_device, drawable);
 }
@@ -465,7 +462,7 @@ D3DVIEWPORT9 view_port(const graphic_device_handle &graphic_device) {
 inline
 surface_handle render_target(const graphic_device_handle &graphic_device) {
   assert(graphic_device);
-  LPDIRECT3DSURFACE9 target = nullptr;
+  LPDIRECT3DSURFACE9 target;
   graphic_device->GetRenderTarget(0, &target);
   return surface_handle(target);
 }
@@ -473,7 +470,7 @@ surface_handle render_target(const graphic_device_handle &graphic_device) {
 inline
 surface_handle z_and_stencil(const graphic_device_handle &graphic_device) {
   assert(graphic_device);
-  LPDIRECT3DSURFACE9 z_s = nullptr;
+  LPDIRECT3DSURFACE9 z_s;
   graphic_device->GetDepthStencilSurface(&z_s);
   return surface_handle(z_s);
 }
@@ -481,7 +478,7 @@ surface_handle z_and_stencil(const graphic_device_handle &graphic_device) {
 inline
 texture_handle create_texture(const graphic_device_handle &graphic_device, const float width, const float height) {
   assert(graphic_device);
-  LPDIRECT3DTEXTURE9 tex = nullptr;
+  LPDIRECT3DTEXTURE9 tex;
   if (FAILED(graphic_device->CreateTexture(static_cast<std::uint32_t>(width), 
                                            static_cast<std::uint32_t>(height),
                                            1,
@@ -540,5 +537,21 @@ void set_z_and_stencil(const graphic_device_handle &graphic_device, const surfac
   assert(graphic_device);
   assert(surface);
   graphic_device->SetDepthStencilSurface(surface.get());
+}
+
+template <typename Camera>
+void set_camera(const graphic_device_handle &graphic_device, const Camera &cam) {
+  assert(graphic_device);
+  D3DXMATRIX view;
+  D3DXMatrixIdentity(&view);
+  const D3DXVECTOR3 eye(cam.view().x(), cam.view().y(), cam.view().z());
+  const D3DXVECTOR3 at(cam.target().x(), cam.target().y(), cam.target().z());
+  const D3DXVECTOR3 up(cam.up().x(), cam.up().y(), cam.up().z());
+  D3DXMatrixLookAtLH(&view, &eye, &at, &up);
+  graphic_device->SetTransform(D3DTS_VIEW, &view);
+  D3DXMATRIX proj;
+  D3DXMatrixIdentity(&proj);
+  D3DXMatrixPerspectiveFovLH(&proj, cam.zoom(), cam.aspect(), 0.f, 100.f);
+  graphic_device->SetTransform(D3DTS_PROJECTION, &proj);
 }
 }}

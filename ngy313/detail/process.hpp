@@ -1,5 +1,6 @@
 #pragma once
 #include <cassert>
+#include <cstdint>
 #include <boost/optional.hpp>
 #include <Windows.h>
 
@@ -32,5 +33,10 @@ void translate_and_dispatch_message(const message &mes) {
 inline
 void post_quit_message(const int code) {
   PostQuitMessage(0);
+}
+
+inline 
+void sleep_process(const std::uint32_t time) {
+  Sleep(time);
 }
 }}

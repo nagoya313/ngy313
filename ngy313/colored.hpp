@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <pstade/oven/transformed.hpp>
-#include "drawable_adaptor_base.hpp"
+#include "drawable_adaptor.hpp"
 
 namespace ngy313 { namespace detail {
 struct transform_color : public argument_result {
@@ -42,8 +42,7 @@ struct colored : public adaptor_result<colored_adaptor> {
 };
 
 struct colored_at : public adaptor_result<colored_at_adaptor> {  
-  explicit colored_at(const std::size_t at, const std::uint32_t col)
-      : at_(at), color_(col) {}
+  explicit colored_at(const std::size_t at, const std::uint32_t col) : at_(at), color_(col) {}
 
   template <typename Drawable>
   colored_at_adaptor<Drawable> operator ()(const Drawable &drawable) const {

@@ -47,5 +47,5 @@ const struct base_point_set_center_t {
   float y(const Drawable &drawable) const {
     return shape_center_y(drawable);
   }
-} base_point_set_center;
+} base_point_set_center = {};
 }

@@ -1,8 +1,6 @@
 #pragma once
-#include <string>
-#include <vector>
+#include "detail/window.hpp"
 #include "detail/window_singleton.hpp"
-#include "detail/window_impl.hpp"
 
 namespace ngy313 {
 inline

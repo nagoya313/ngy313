@@ -7,7 +7,7 @@ namespace ngy313 {
 class string_piece {
  public:
   typedef std::size_t size_type;
-
+  
   string_piece() : str_(nullptr), length_(0) {}
 
   string_piece(const char * const str) : str_(str), length_(str_ ? std::strlen(str_) : 0) {}
@@ -34,9 +34,11 @@ class string_piece {
     return std::string(!empty() ? c_str() : "", length());
   }
 
+  typedef char value_type;
+
  private:
-  const char *str_;
-  size_type length_;
+  const char * const str_;
+  const size_type length_;
 };
 
 inline

@@ -1,12 +1,25 @@
 #pragma once
 #include <cassert>
+#include <memory>
 #include <string>
 #include <vector>
-#include "window_fwd.hpp"
+#include <boost/mpl/string.hpp>
+#include <Windows.h>
 #include "string_piece.hpp"
 #include "last_error.hpp"
 
 namespace ngy313 { namespace detail {
+const std::uint32_t kWindowStyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
+
+struct window_delete {
+  void operator ()(const HWND window) const {
+    assert(window);
+    DestroyWindow(window);
+  }
+};
+
+typedef std::unique_ptr<std::remove_pointer<HWND>::type, window_delete>  window_handle;
+
 template <typename MPLString>
 void regist_window_class() {
   const WNDCLASSEX window_class  = {
@@ -61,9 +74,7 @@ inline
 void set_procedure(const window_handle &window, const WNDPROC procedure) {
   assert(window);
   SetLastError(0);
-  if (!SetWindowLongPtr(window.get(), 
-                        GWLP_WNDPROC,
-                        reinterpret_cast<LONG_PTR>(procedure))) {
+  if (!SetWindowLongPtr(window.get(), GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(procedure))) {
     if (GetLastError()) {
       throw last_error("プロシージャの設定に失敗しました\n詳細：");
     }
@@ -107,28 +118,16 @@ void resize(const window_handle &window, const int width, const int height) {
   RECT rect = {
     0, 0, width, height
   };
-  if (!AdjustWindowRect(&rect, detail::kWindowStyle, FALSE)) {
+  if (!AdjustWindowRect(&rect, kWindowStyle, FALSE)) {
     throw last_error("ウィンドウサイズの取得に失敗しました\n詳細：");
   }
-  SetWindowPos(window.get(), 
-               nullptr, 
-               0,
-               0,
-               rect.right - rect.left, 
-               rect.bottom - rect.top, 
-               SWP_NOMOVE | SWP_NOZORDER);
+  SetWindowPos(window.get(), nullptr, 0, 0, rect.right - rect.left, rect.bottom - rect.top, SWP_NOMOVE | SWP_NOZORDER);
 }
 
 inline
 void move(const window_handle &window, const int y, const int x) {
   assert(window);
-  SetWindowPos(window.get(),
-               nullptr, 
-               x,
-               y,
-               0,
-               0,
-               SWP_NOSIZE | SWP_NOZORDER);
+  SetWindowPos(window.get(), nullptr, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 }
 
 inline
