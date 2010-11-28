@@ -3,7 +3,7 @@
 #include "drawable_adaptor.hpp"
 #include "font.hpp"
 #include "imaged.hpp"
-#include "render_target.hpp"
+#include "graphic.hpp"
 
 namespace ngy313 { namespace detail {
 inline

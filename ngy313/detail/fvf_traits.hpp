@@ -137,9 +137,9 @@ struct fvf_traits {
   static_assert(std::is_base_of<fvf_tag, typename FVFTag::type>::value, "");
   typedef boost::mpl::filter_view<fvf_map, fvf_is_inherit<typename FVFTag::type>> fvf_map;
   typedef std::uint32_t value_type;
-  static const value_type value = typename boost::mpl::fold<boost::mpl::transform_view<fvf_map, fvf_value>,
-                                                            boost::mpl::integral_c<std::uint32_t, 0>,
-                                                            boost::mpl::bitor_<>>::type::value;
+  static const value_type value = boost::mpl::fold<boost::mpl::transform_view<fvf_map, fvf_value>,
+                                                   boost::mpl::integral_c<std::uint32_t, 0>,
+                                                   boost::mpl::bitor_<>>::type::value;
   typedef vertex<fvf_map, boost::mpl::size<fvf_map>::value> type;
 };
 

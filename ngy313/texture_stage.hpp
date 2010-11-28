@@ -13,6 +13,8 @@ const texture_stage_adaptor<color_stage<texture_texture_arg_tag,
 const texture_stage_adaptor<color_stage<texture_texture_arg_tag, 
                                         modulate4_texture_operator_tag,
                                         diffuse_texture_arg_tag>> modultate4_color = {};
+
+const texture_stage_adaptor<color_stage<diffuse_texture_arg_tag, arg1_texture_operator_tag>> shadow = {};
 }}
 
 namespace ngy313 {
@@ -58,4 +60,5 @@ using detail::texture_stage_adaptor;
 using detail::add_color;
 using detail::modultate2_color;
 using detail::modultate4_color;
+using detail::shadow;
 }

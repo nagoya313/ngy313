@@ -1,36 +1,35 @@
 #pragma once
+#include <type_traits>
+#include <boost/mpl/if.hpp>
 #include "shape_position.hpp"
 
 namespace ngy313 {
-struct base_point_set {
-  base_point_set(const float x, const float y) : x_(x), y_(y) {}
+template <typename Vector>
+struct base_point_set_t {
+  static_assert(std::is_same<Vector, vector2>::value || std::is_same<Vector, vector3>::value, "");
+
+  explicit base_point_set_t(const Vector &pos) : pos_(pos) {}
 
   template <typename Drawable>
-  float x(const Drawable &) const {
-    return x_;
-  }
-
-  template <typename Drawable>
-  float y(const Drawable &) const {
-    return y_;
+  Vector pos(const Drawable &) const {
+    return pos_;
   }
 
  private:
-  const float x_;
-  const float y_;
+  const Vector pos_;
 };
+
+template <typename Vector>
+base_point_set_t<Vector> base_point_set(const Vector &pos) {
+  return base_point_set_t<Vector>(pos);
+}
 
 struct base_point_set_at {
   explicit base_point_set_at(const std::size_t at) : at_(at) {}
 
   template <typename Drawable>
-  float x(const Drawable &drawable) const {
-    return shape_position_at_x(drawable, at_);
-  }
-
-  template <typename Drawable>
-  float y(const Drawable &drawable) const {
-    return shape_position_at_y(drawable, at_);
+  typename detail::vector_type<Drawable>::type pos(const Drawable &drawable) const {
+    return shape_position_at(drawable, at_);
   }
 
  private:
@@ -39,13 +38,8 @@ struct base_point_set_at {
 
 const struct base_point_set_center_t {
   template <typename Drawable>
-  float x(const Drawable &drawable) const {
-    return shape_center_x(drawable);
-  }
-
-  template <typename Drawable>
-  float y(const Drawable &drawable) const {
-    return shape_center_y(drawable);
+  typename detail::vector_type<Drawable>::type pos(const Drawable &drawable) const {
+    return shape_center(drawable);
   }
 } base_point_set_center = {};
 }
