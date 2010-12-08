@@ -4,6 +4,8 @@
 #include <ngy313/graphic.hpp>
 #include <ngy313/color_code.hpp>
 #include <ngy313/shape.hpp>
+#include <ngy313/moved.hpp>
+#include <ngy313/colored.hpp>
 
 using namespace boost;
 using namespace ngy313;
@@ -17,7 +19,7 @@ int main() {
       const scoped_render render;
       if (render.succeeded()) {
         clear_screen(kBlack);
-        draw(box(vector2(0.f, 0.f), vector2(320.f, 240.f)));
+        draw(box(vector2(0.f, 0.f), vector2(320.f, 240.f)) | moved(vector2(320.f, 240.f)) | colored(kRed));
       }
     }
     present();

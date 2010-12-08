@@ -20,8 +20,7 @@ class pixel : public drawable_base<pixel, 1, 1, shape_2d_fvf_tag, point_list_pri
 
 class line : public drawable_base<line, 2, 2, shape_2d_fvf_tag, line_list_primitive_tag> {
  public:
-  line(const vector2 &pos1, const vector2 &pos2) 
-      : drawable_base(init_vertex(pos1, pos2)) {}
+  line(const vector2 &pos1, const vector2 &pos2) : drawable_base(init_vertex(pos1, pos2)) {}
 
  private:
   static vertex_array_type init_vertex(const vector2 &pos1, const vector2 &pos2) {
@@ -65,8 +64,7 @@ class line_triangle : public drawable_base<line_triangle, 4, 3, shape_2d_fvf_tag
 
 class box : public drawable_base<box, 4, 2, shape_2d_fvf_tag, triangle_strip_primitive_tag> {
  public:
-  box(const vector2 &pos, const vector2 &size)
-      : drawable_base(init_vertex(pos, size)) {}
+  box(const vector2 &pos, const vector2 &size) : drawable_base(init_vertex(pos, size)) {}
 
  private:
   static vertex_array_type init_vertex(const vector2 &pos, const vector2 &size) {
@@ -82,8 +80,7 @@ class box : public drawable_base<box, 4, 2, shape_2d_fvf_tag, triangle_strip_pri
 
 class line_box : public drawable_base<line_box, 5, 4, shape_2d_fvf_tag, line_strip_primitive_tag> {
  public:
-  line_box(const vector2 &pos, const vector2 &size) 
-      : drawable_base(init_vertex(pos, size)) {}
+  line_box(const vector2 &pos, const vector2 &size) : drawable_base(init_vertex(pos, size)) {}
 
  private:
   static vertex_array_type init_vertex(const vector2 &pos, const vector2 &size) {
