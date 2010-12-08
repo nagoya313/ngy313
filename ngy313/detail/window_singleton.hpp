@@ -20,6 +20,8 @@ class window_singleton : public singleton<window_singleton> {
 
   boost::signals2::signal<void ()> after_reset;
 
+  boost::signals2::signal<void ()> input_callback;
+
  private:
   typedef boost::mpl::string<'BASE'> window_class_name;
 
@@ -36,11 +38,14 @@ class window_singleton : public singleton<window_singleton> {
   }
 
   static LRESULT CALLBACK procedure(const HWND window_handle, const UINT message, const WPARAM wp, const LPARAM lp) {
-    if (message == WM_CLOSE) {
-      PostQuitMessage(0);
-      return 0;
+    switch (message) {
+      case WM_CLOSE:
+        PostQuitMessage(0);
+        break;
+      default:
+        return DefWindowProc(window_handle, message, wp, lp);
     }
-    return DefWindowProc(window_handle, message, wp, lp);
+    return 0;
   }
 
   const window_handle window_;
@@ -64,5 +69,9 @@ boost::signals2::signal<void ()> &before_reset() {
 
 boost::signals2::signal<void ()> &after_reset() {
   return window_singleton::instance().after_reset;
+}
+
+boost::signals2::signal<void ()> &input_callback() {
+  return window_singleton::instance().input_callback;
 }
 }}

@@ -115,9 +115,7 @@ void set_icon(const window_handle &window) {
 inline
 void resize(const window_handle &window, const int width, const int height) {
   assert(window);
-  RECT rect = {
-    0, 0, width, height
-  };
+  RECT rect = {0, 0, width, height};
   if (!AdjustWindowRect(&rect, kWindowStyle, FALSE)) {
     throw last_error("ウィンドウサイズの取得に失敗しました\n詳細：");
   }

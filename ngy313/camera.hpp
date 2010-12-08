@@ -4,7 +4,7 @@
 #include "vector.hpp"
 
 namespace ngy313 {
-class camera_t {
+const class camera_t {
  public:
   vector3 sten() const {
     return vector3(0.f, -1.f, 0.f);

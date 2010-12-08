@@ -4,6 +4,7 @@
 #include <pstade/oven/iteration.hpp>
 #include <pstade/oven/taken_while.hpp>
 #include "detail/process.hpp"
+#include "detail/window_singleton.hpp"
 
 namespace ngy313 {
 inline
@@ -27,6 +28,7 @@ struct main_loop {
   explicit main_loop(const std::function<void ()> &func) : func_(func) {}
 
   void operator ()(int) const {
+    detail::input_callback()();
     func_();
   }
 

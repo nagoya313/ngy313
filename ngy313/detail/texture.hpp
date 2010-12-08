@@ -27,7 +27,7 @@ std::size_t hash_value(const texture_key &key) {
 }
 
 struct texture_core_data {
-  LPDIRECT3DTEXTURE9 texture;
+  texture_handle texture;
   float width;
   float height;
 };
@@ -53,14 +53,16 @@ texture_core_data create_texture_from_file(const texture_key &key) {
                                          &texture))) {
     throw std::runtime_error("画像ファイルからテクスチャの作成に失敗しました");
   }
-  const texture_core_data data = {texture, static_cast<float>(image_info.Width), static_cast<float>(image_info.Height)};
+  const texture_core_data data = {
+    texture_handle(texture, false), static_cast<float>(image_info.Width), static_cast<float>(image_info.Height)
+  };
   return data;
 }
 
 struct texture_data {
   explicit texture_data(const texture_key &key) {
     const texture_core_data data = create_texture_from_file(key);
-    texture.reset(data.texture);
+    texture = data.texture;
     width = data.width;
     height = data.height;
   }
@@ -92,7 +94,7 @@ class texture_base {
     return texture1_;
   }
 
-  const texture_handle &texture1_;
+  const texture_handle texture1_;
 };
 
 class texture2_base {
@@ -114,7 +116,7 @@ class texture2_base {
     return texture2_;
   }
 
-  const texture_handle &texture1_;
-  const texture_handle &texture2_;
+  const texture_handle texture1_;
+  const texture_handle texture2_;
 };
 }}

@@ -55,8 +55,8 @@ const struct add_position_z_t {
   }
 } add_position_z = {};
 
-inline
-float extend_position_impl(const float pos, const float base, const float extend) {
+template <typename Vector>
+Vector extend_position_impl(const float pos, const Vector &base, const Vector &extend) {
   return (pos - base) * extend + base;
 }
 }}

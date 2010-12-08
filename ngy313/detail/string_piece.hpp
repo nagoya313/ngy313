@@ -7,6 +7,15 @@ namespace ngy313 {
 class string_piece {
  public:
   typedef std::size_t size_type;
+  typedef char value_type;
+  typedef const char *pointer;
+  typedef const char &reference;
+  typedef const char &const_reference;
+  typedef std::ptrdiff_t difference_type;
+  typedef const char *const_iterator;
+  typedef const char *iterator;
+  typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+  typedef std::reverse_iterator<iterator> reverse_iterator;
   
   string_piece() : str_(nullptr), length_(0) {}
 
@@ -34,7 +43,9 @@ class string_piece {
     return std::string(!empty() ? c_str() : "", length());
   }
 
-  typedef char value_type;
+  value_type operator [](const size_type i) const { 
+    return str_[i];
+  }
 
  private:
   const char * const str_;
@@ -48,6 +59,31 @@ bool operator ==(const string_piece &lhs, const string_piece &rhs) {
 
 inline
 bool operator !=(const string_piece &lhs, const string_piece &rhs) {
-  return std::strcmp(lhs.c_str(), rhs.c_str()) != 0;
+  return !(lhs == rhs);
+}
+
+inline
+bool operator >(const string_piece &lhs, const string_piece &rhs) {
+  return std::strcmp(lhs.c_str(), rhs.c_str()) > 0;
+}
+
+inline
+bool operator <(const string_piece &lhs, const string_piece &rhs) {
+  return rhs > lhs;
+}
+
+inline
+bool operator >=(const string_piece &lhs, const string_piece &rhs) {
+  return !(lhs < rhs);
+}
+
+inline
+bool operator <=(const string_piece &lhs, const string_piece &rhs) {
+  return !(lhs > rhs);
+}
+
+inline
+std::ostream &operator <<(std::ostream &o, const string_piece &piece) {
+  return o << piece.c_str();
 }
 }

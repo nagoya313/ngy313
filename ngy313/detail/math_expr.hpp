@@ -1,6 +1,7 @@
 #pragma once
 #include <boost/preprocessor/repeat.hpp>
 #include <boost/preprocessor/cat.hpp>
+#include <boost/preprocessor/seq/elem.hpp>
 
 namespace ngy313 { namespace expr { 
 #define NGY313_ELEM_MAX 4

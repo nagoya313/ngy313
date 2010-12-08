@@ -26,8 +26,7 @@ class line : public drawable_base<line, 2, 2, shape_2d_fvf_tag, line_list_primit
  private:
   static vertex_array_type init_vertex(const vector2 &pos1, const vector2 &pos2) {
     const vertex_array_type vertex = {{
-      {{pos1, 0.f, 1.f}, 0xFFFFFFFF},
-      {{pos2, 0.f, 1.f}, 0xFFFFFFFF}
+      {{pos1, 0.f, 1.f}, 0xFFFFFFFF}, {{pos2, 0.f, 1.f}, 0xFFFFFFFF}
     }};
     return vertex;
   }
@@ -41,9 +40,7 @@ class triangle : public drawable_base<triangle, 3, 1, shape_2d_fvf_tag, triangle
  private:
   static vertex_array_type init_vertex(const vector2 &pos1, const vector2 &pos2, const vector2 &pos3) {
     const vertex_array_type vertex = {{
-      {{pos1, 0.f, 1.f}, 0xFFFFFFFF},
-      {{pos2, 0.f, 1.f}, 0xFFFFFFFF},
-      {{pos3, 0.f, 1.f}, 0xFFFFFFFF}
+      {{pos1, 0.f, 1.f}, 0xFFFFFFFF}, {{pos2, 0.f, 1.f}, 0xFFFFFFFF}, {{pos3, 0.f, 1.f}, 0xFFFFFFFF}
     }};
     return vertex;
   }
