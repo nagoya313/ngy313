@@ -77,7 +77,7 @@ typedef blend_pair<src_alpha_blend_tag, inv_src_alpha_blend_tag> default_blend;
 
 template <typename Drawable, typename SrcBlendTag, typename DestBlendTag>
 struct blend_adaptor_base
-    : public all_vertex_adaptor<Drawable>,
+    : public vertex_adaptor<Drawable>,
       public blend_type<blend_pair<SrcBlendTag, DestBlendTag>> {
   explicit blend_adaptor_base(const Drawable &drawable) : all_vertex_adaptor(drawable) {}
 };

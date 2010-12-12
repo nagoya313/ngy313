@@ -32,10 +32,10 @@ struct uv_extend_position : public argument_result {
 };
 
 template <typename Drawable, std::size_t Stage, std::size_t Index>
-struct uv_extended_adaptor : public all_vertex_adaptor<Drawable> {
+struct uv_extended_adaptor : public vertex_adaptor<Drawable> {
   template <typename BasePoint>
   uv_extended_adaptor(const Drawable &drawable, const BasePoint &base_point, const float extend_x, const float extend_y)
-      : all_vertex_adaptor(
+      : vertex_adaptor(
             drawable,
             pstade::oven::transformed(uv_extend_position<Stage, Index>(drawable, base_point, extend_x, extend_y))) {}
 };

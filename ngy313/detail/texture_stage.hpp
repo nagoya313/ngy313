@@ -186,7 +186,7 @@ typedef texture_stage_pair<color_stage<texture_texture_arg_tag, arg1_texture_ope
 
 template <typename Drawable, typename ColorStage, typename AlphaStage>
 struct texture_stage_adaptor_base
-    : public all_vertex_adaptor<Drawable>, public texture_stage_type<texture_stage_pair<ColorStage, AlphaStage>> {
+    : public vertex_adaptor<Drawable>, public texture_stage_type<texture_stage_pair<ColorStage, AlphaStage>> {
   explicit texture_stage_adaptor_base(const Drawable &drawable) : all_vertex_adaptor(drawable) {}
 };
 

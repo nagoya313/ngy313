@@ -42,6 +42,14 @@ struct controller_data : public boost::signals2::trackable {
 }}
 
 namespace ngy313 {
+struct key_state {
+  bool down;
+  bool triger;
+  bool up;
+  bool repeat_triger;
+  std::uint32_t repeat_count_;
+};
+
 template <std::size_t N>
 class controller {
  public:

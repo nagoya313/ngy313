@@ -28,10 +28,10 @@ struct rotate_position : public argument_result {
 };
 
 template <typename Drawable>
-struct rotated_adaptor : public all_vertex_adaptor<Drawable> {
+struct rotated_adaptor : public vertex_adaptor<Drawable> {
   template <typename BasePoint>
   rotated_adaptor(const Drawable &drawable, const BasePoint &base_point, const float angle)
-      : all_vertex_adaptor(drawable, pstade::oven::transformed(rotate_position(drawable, base_point, angle))) {}
+      : vertex_adaptor(drawable, pstade::oven::transformed(rotate_position(drawable, base_point, angle))) {}
 };
 
 template <typename BasePoint>

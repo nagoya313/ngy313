@@ -9,8 +9,8 @@ namespace ngy313 {
 class texture : public drawable_base<texture, 4, 2, image_2d_fvf_tag, triangle_strip_primitive_tag>,
                 public detail::texture_base {
  public:
-  texture(const vector2 &pos, const image &img)
-      : drawable_base(init_vertex(pos, img)), detail::texture_base(detail::drawable_core_access::texture1(img)) {}
+  texture(const float x, const float y, const image &img)
+      : drawable_base(init_vertex(x, y, img)), detail::texture_base(detail::drawable_core_access::texture1(img)) {}
 
  private:
   static vertex_array_type init_vertex(const vector2 &pos, const image &img) {

@@ -1,40 +1,12 @@
 #pragma once
 #include <functional>
-#include <pstade/oven/any_range.hpp>
-#include <pstade/oven/iteration.hpp>
-#include <pstade/oven/taken_while.hpp>
 #include "detail/process.hpp"
-#include "detail/window_singleton.hpp"
 
 namespace ngy313 {
 inline
-pstade::oven::any_range<int, boost::forward_traversal_tag> process_message() {
-  return pstade::oven::iteration(false, [](bool) {
-    return detail::has_message();
-  }) | pstade::oven::taken_while([](const bool x) -> bool {
-    if (x) {
-      const detail::message mes = detail::get_message();
-      if (!mes) {
-        return false;
-      } else {
-        detail::translate_and_dispatch_message(mes);
-      }
-    }
-    return true;
-  });
+int run(const std::function<void ()> work) {
+  return detail::run(work);
 }
-
-struct main_loop {
-  explicit main_loop(const std::function<void ()> &func) : func_(func) {}
-
-  void operator ()(int) const {
-    detail::input_callback()();
-    func_();
-  }
-
- private:
-  const std::function<void ()> func_;
-};
 
 inline
 void quit() {
@@ -43,6 +15,6 @@ void quit() {
 
 inline
 void sleep(const std::uint32_t time) {
-  detail::sleep_process(time);
+  detail::sleep(time);
 }
 }

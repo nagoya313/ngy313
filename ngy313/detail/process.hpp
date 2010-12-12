@@ -1,42 +1,35 @@
 #pragma once
-#include <cassert>
 #include <cstdint>
-#include <boost/optional.hpp>
 #include <Windows.h>
+#include "input.hpp"
 
 namespace ngy313 { namespace detail {
-typedef boost::optional<MSG> message; 
-
 inline
-bool has_message() {
+int run(const std::function<void ()> work) {
   MSG mes;
-  return PeekMessage(&mes, nullptr, 0, 0, PM_NOREMOVE) != 0;
-}
-
-inline
-message get_message() {
-  MSG mes;
-  const BOOL result = GetMessage(&mes, nullptr, 0, 0);
-  if (!(result && ~result)) {
-    return message();
+  for (;;) {
+    if (PeekMessage(&mes, nullptr, 0, 0, PM_NOREMOVE)) {
+      const BOOL result = GetMessage(&mes, nullptr, 0, 0);
+      if (!(result && ~result)) {
+        break;
+      } 
+      TranslateMessage(&mes);
+      DispatchMessage(&mes);
+    } else {
+      input_callback()();
+      work();
+    }
   }
-  return message(mes);
-}
-
-inline
-void translate_and_dispatch_message(const message &mes) {
-  assert(mes);
-  TranslateMessage(&(*mes));
-  DispatchMessage(&(*mes));
+  return mes.wParam;
 }
 
 inline
 void post_quit_message(const int code) {
-  PostQuitMessage(0);
+  PostQuitMessage(code);
 }
 
 inline 
-void sleep_process(const std::uint32_t time) {
+void sleep(const std::uint32_t time) {
   Sleep(time);
 }
 }}

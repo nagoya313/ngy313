@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <stdexcept>
 #include <type_traits>
+#include <boost/noncopyable.hpp>
 #include "com_fwd.hpp"
 #include "window.hpp"
 #include "drawable_core_access.hpp"
@@ -539,19 +540,47 @@ void set_z_and_stencil(const graphic_device_handle &graphic_device, const surfac
   graphic_device->SetDepthStencilSurface(surface.get());
 }
 
-template <typename Camera>
-void set_camera(const graphic_device_handle &graphic_device, const Camera &cam) {
-  assert(graphic_device);
-  D3DXMATRIX view;
-  D3DXMatrixIdentity(&view);
-  const D3DXVECTOR3 eye(cam.view().x(), cam.view().y(), cam.view().z());
-  const D3DXVECTOR3 at(cam.target().x(), cam.target().y(), cam.target().z());
-  const D3DXVECTOR3 up(cam.up().x(), cam.up().y(), cam.up().z());
-  D3DXMatrixLookAtLH(&view, &eye, &at, &up);
-  graphic_device->SetTransform(D3DTS_VIEW, &view);
-  D3DXMATRIX proj;
-  D3DXMatrixIdentity(&proj);
-  D3DXMatrixPerspectiveFovLH(&proj, cam.zoom(), cam.aspect(), 0.f, 100.f);
-  graphic_device->SetTransform(D3DTS_PROJECTION, &proj);
-}
+class scoped_viewport : private boost::noncopyable {
+ public:
+  explicit scoped_viewport(const graphic_device_handle &graphic_device) : graphic_device_(graphic_device),
+                                                                          view_port_(view_port(graphic_device_)) {}
+
+  ~scoped_viewport() {
+    set_view_port(graphic_device_, view_port_);
+  }
+
+ private:
+  const graphic_device_handle &graphic_device_;
+  const viewport view_port_;
+};
+
+class scoped_back_buffer : private boost::noncopyable {
+ public:
+  explicit scoped_back_buffer(const graphic_device_handle &graphic_device)
+      : graphic_device_(graphic_device),
+        back_buffer_(render_target(graphic_device_)) {}
+
+  ~scoped_back_buffer() {
+    set_render_target(graphic_device_, back_buffer_);
+  }
+
+ private:
+  const graphic_device_handle &graphic_device_;
+  const detail::surface_handle back_buffer_;
+};
+
+class scoped_back_z_and_stencil : private boost::noncopyable {
+ public:
+  explicit scoped_back_z_and_stencil(const graphic_device_handle &graphic_device)
+      : graphic_device_(graphic_device),
+        back_z_and_stencil_(z_and_stencil(graphic_device_)) {}
+
+  ~scoped_back_z_and_stencil() {
+    set_z_and_stencil(graphic_device_, back_z_and_stencil_);
+  }
+
+ private:
+  const graphic_device_handle &graphic_device_;
+  const surface_handle back_z_and_stencil_;
+};
 }}

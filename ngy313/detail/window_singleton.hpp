@@ -20,8 +20,6 @@ class window_singleton : public singleton<window_singleton> {
 
   boost::signals2::signal<void ()> after_reset;
 
-  boost::signals2::signal<void ()> input_callback;
-
  private:
   typedef boost::mpl::string<'BASE'> window_class_name;
 
@@ -55,23 +53,23 @@ class window_singleton : public singleton<window_singleton> {
   friend singleton<window_singleton>;
 };
 
+inline
 const window_handle &window() {
   return window_singleton::instance().window();
 }
 
+inline
 const graphic_device_handle &graphic_device() {
   return window_singleton::instance().graphic_device();
 }
 
+inline
 boost::signals2::signal<void ()> &before_reset() {
   return window_singleton::instance().before_reset;
 }
 
+inline
 boost::signals2::signal<void ()> &after_reset() {
   return window_singleton::instance().after_reset;
-}
-
-boost::signals2::signal<void ()> &input_callback() {
-  return window_singleton::instance().input_callback;
 }
 }}

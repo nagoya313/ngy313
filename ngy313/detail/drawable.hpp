@@ -95,8 +95,8 @@ class drawable_base : public drawable_base_type<Drawable, Size, Count, FVFTag, P
  private:
   friend drawable_core_access;
 
-  vertex_range_type vertex_range() const {
-    return pstade::oven::make_range(vertex_);
+  vertex_array_type vertex() const {
+    return vertex_;
   }
 
   const vertex_array_type vertex_;

@@ -1,10 +1,10 @@
 #pragma once
+#include <functional>
 #include <boost/noncopyable.hpp>
 #include <boost/signals2/trackable.hpp>
 #include <boost/bind.hpp>
 #include "detail/window_singleton.hpp"
 #include "detail/drawable_core_access.hpp"
-#include "vector.hpp"
 
 namespace ngy313 {
 class scoped_render : private boost::noncopyable {
@@ -38,19 +38,15 @@ void draw(const Drawable &drawable) {
   detail::draw(detail::graphic_device(), drawable);
 }
 
-template <typename Camera>
-void set_camera(const Camera &cam) {
-  detail::set_camera(detail::graphic_device(), cam);
-}
-
 class render_target : public boost::signals2::trackable, private boost::noncopyable {
  public:
-  render_target(const vector2 &size) 
-      : size_(size),
-        target_(detail::create_texture(detail::graphic_device(), size_.x(), size_.y())),
+  render_target(const float width, const float height) 
+      : width_(width),
+        height_(height),
+        target_(detail::create_texture(detail::graphic_device(), width_, height_)),
         target_surface_(detail::surface_level(target_)),
-        z_and_stencil_(detail::create_z_and_stencil(detail::graphic_device(), size_.x(), size_.y())),
-        view_port_(detail::init_viewport(size_.x(), size_.y())) {
+        z_and_stencil_(detail::create_z_and_stencil(detail::graphic_device(), width_, height_)),
+        view_port_(detail::init_viewport(width_, height_)) {
     detail::before_reset().connect(boost::bind(&render_target::release, this));
     detail::after_reset().connect(boost::bind(&render_target::reset, this));
   }
@@ -63,11 +59,11 @@ class render_target : public boost::signals2::trackable, private boost::noncopya
   }
 
   float width() const {
-    return size_.x();
+    return width_;
   }
 
   float height() const {
-    return size_.y();
+    return height_;
   }
 
   void release() {
@@ -77,9 +73,9 @@ class render_target : public boost::signals2::trackable, private boost::noncopya
   }
 
   void reset() {
-    target_ = detail::create_texture(detail::graphic_device(), size_.x(), size_.y());
+    target_ = detail::create_texture(detail::graphic_device(), width_, height_);
     target_surface_ = detail::surface_level(target_);
-    z_and_stencil_ = detail::create_z_and_stencil(detail::graphic_device(), size_.x(), size_.y());
+    z_and_stencil_ = detail::create_z_and_stencil(detail::graphic_device(), width_, height_);
   }
 
  private:
@@ -89,7 +85,8 @@ class render_target : public boost::signals2::trackable, private boost::noncopya
     return target_;
   }
 
-  const vector2 size_;
+  const float width_;
+  const float height_;
   detail::texture_handle target_;
   detail::surface_handle target_surface_;
   detail::surface_handle z_and_stencil_;
@@ -99,21 +96,15 @@ class render_target : public boost::signals2::trackable, private boost::noncopya
 class scoped_render_target : private boost::noncopyable {
  public:
   explicit scoped_render_target(const render_target &target) 
-      : view_port_(detail::view_port(detail::graphic_device())),
-        back_buffer_(detail::render_target(detail::graphic_device())),
-        back_z_and_stencil_(detail::z_and_stencil(detail::graphic_device())) {
+      : viewport_(detail::graphic_device()),
+        back_buffer_(detail::graphic_device()),
+        back_z_and_stencil_(detail::graphic_device()) {
     target.begin();
   }
 
-  ~scoped_render_target() {
-    detail::set_view_port(detail::graphic_device(), view_port_);
-    detail::set_render_target(detail::graphic_device(), back_buffer_);
-    detail::set_z_and_stencil(detail::graphic_device(), back_z_and_stencil_);
-  }
-
  private:
-  const detail::viewport view_port_;
-  const detail::surface_handle back_buffer_;
-  const detail::surface_handle back_z_and_stencil_;
+  const detail::scoped_viewport viewport_;
+  const detail::scoped_back_buffer back_buffer_;
+  const detail::scoped_back_z_and_stencil back_z_and_stencil_;
 };
 }

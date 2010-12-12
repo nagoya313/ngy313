@@ -21,19 +21,6 @@ template <typename Drawable, int Index>
 const float line_vertex_radian<Drawable, Index>::value = 
     D3DX_PI * 2.f * static_cast<float>(Index) / static_cast<float>(typename Drawable::size_type::value - 1);
 
-struct point2 {
-  point2(const float ix, const float iy) : x(ix), y(iy) {}
-  float x;
-  float y;
-};
-
-struct point3 {
-  point3(const float ix, const float iy, const float iz) : x(ix), y(iy), z(iz) {}
-  float x;
-  float y;
-  float z;
-};
-
 const struct add_position_x_t {
   template <typename Vertex>
   float operator ()(const float lhs, const Vertex &vertex) const {
@@ -48,15 +35,8 @@ const struct add_position_y_t {
   }
 } add_position_y = {};
 
-const struct add_position_z_t {
-  template <typename Vertex>
-  float operator ()(const float lhs, const Vertex &vertex) const {
-    return lhs + vertex_member_at<rhw_position_t>(vertex).z;
-  }
-} add_position_z = {};
-
-template <typename Vector>
-Vector extend_position_impl(const float pos, const Vector &base, const Vector &extend) {
+inline
+float extend_position_impl(const float pos, const float base, const float extend) {
   return (pos - base) * extend + base;
 }
 }}

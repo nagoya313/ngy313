@@ -43,7 +43,7 @@ typedef addressing_pair<wrap_addressing_tag, wrap_addressing_tag> default_addres
 
 template <typename Drawable, typename AddressingU, typename AddressingV>
 struct addressing_adaptor_base
-    : public all_vertex_adaptor<Drawable>,
+    : public vertex_adaptor<Drawable>,
       public addressing_type<addressing_pair<AddressingU, AddressingV>> {
   explicit addressing_adaptor_base(const Drawable &drawable) : all_vertex_adaptor(drawable) {}
 };

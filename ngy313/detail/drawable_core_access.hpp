@@ -3,16 +3,16 @@
 
 namespace ngy313 { namespace detail {
 struct drawable_core_access {
-  template <typename Drawable>
-  static typename Drawable::vertex_range_type vertex_range(const Drawable &drawable) {
-    return drawable.vertex_range();
+  template <typename Drawable, typename Filter>
+  static typename Drawable::vertex_array_type copy_vertex(const Drawable &drawable, const Filter &filter) {
+    typename Drawable::vertex_array_type vertex = drawable.vertex();
+    pstade::oven::copy(vertex | filter, vertex.begin());
+    return vertex;
   }
 
   template <typename Drawable>
   static typename Drawable::vertex_array_type copy_vertex(const Drawable &drawable) {
-    typename Drawable::vertex_array_type vertex;
-    pstade::oven::copy(drawable.vertex_range(), vertex.begin());
-    return vertex;
+    return drawable.vertex();
   }
 
   template <typename Drawable>

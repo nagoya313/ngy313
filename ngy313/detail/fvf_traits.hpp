@@ -30,24 +30,9 @@ struct dimension2_fvf : public fvf_base {
   typedef rhw_position_t type;
 };
 
-struct dimension3_fvf : public fvf_base {
-  static const value_type value = D3DFVF_XYZ;
-  typedef position_t type;
-};
-
-struct normal_fvf : public fvf_base {
-  static const value_type value = D3DFVF_NORMAL;
-  typedef normal_t type;
-};
-
 struct diffuse_fvf : public fvf_base {
   static const value_type value = D3DFVF_DIFFUSE;
   typedef diffuse_t type;
-};
-
-struct specular_fvf : public fvf_base {
-  static const value_type value = D3DFVF_SPECULAR;
-  typedef specular_t type;
 };
 
 struct tex1_fvf : public fvf_base {
@@ -61,10 +46,7 @@ struct tex2_fvf : public fvf_base {
 };
 
 typedef boost::mpl::vector<boost::mpl::pair<dimension2_fvf_tag, dimension2_fvf>,
-                           boost::mpl::pair<dimension3_fvf_tag, dimension3_fvf>,
-                           boost::mpl::pair<normal_fvf_tag, normal_fvf>,
                            boost::mpl::pair<diffuse_fvf_tag, diffuse_fvf>,
-                           boost::mpl::pair<specular_fvf_tag, specular_fvf>,
                            boost::mpl::pair<tex1_fvf_tag, tex1_fvf>,
                            boost::mpl::pair<tex2_fvf_tag, tex2_fvf>> fvf_map;
 
@@ -88,7 +70,7 @@ struct vertex<List, n> {\
   BOOST_PP_REPEAT(n, NGY313_VERTEX_MENBER_GEN, list)\
 };
 
-#define NGY313_MEMBER_MAX 8
+#define NGY313_MEMBER_MAX 3
 
 BOOST_PP_REPEAT_FROM_TO(1, BOOST_PP_INC(NGY313_MEMBER_MAX), NGY313_VERTEX_STRUCT_GEN, _)
 
