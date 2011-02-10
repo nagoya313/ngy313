@@ -48,12 +48,14 @@ struct alpha_stage {
 };
 
 typedef texture_stage_tuple<0, 
-                            color_stage<texture_texture_arg_tag,
+                            color_stage<diffuse_texture_arg_tag,
                                         modulate_texture_operator_tag, 
-                                        diffuse_texture_arg_tag>,
-                            alpha_stage<texture_texture_arg_tag, 
+                                        texture_texture_arg_tag>,
+                            alpha_stage<diffuse_texture_arg_tag, 
                                         modulate_texture_operator_tag,
-                                        diffuse_texture_arg_tag>> default_stage0;
+                                        texture_texture_arg_tag>> default_stage0;
 
-typedef texture_stage_tuple<1, color_stage<texture_texture_arg_tag, arg1_texture_operator_tag>> default_stage1;
+typedef texture_stage_tuple<1, 
+                            color_stage<diffuse_texture_arg_tag, disable_texture_operator_tag, texture_texture_arg_tag>,
+                            alpha_stage<diffuse_texture_arg_tag, disable_texture_operator_tag, texture_texture_arg_tag>> default_stage1;
 }}

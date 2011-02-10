@@ -30,7 +30,6 @@ struct empty {};
 template <typename Adaptor, typename Drawable>
 struct drawable_adaptor : public ngy313::graphic::copy_drawable<Drawable>::type,
                           public boost::mpl::if_<std::is_base_of<texture, Drawable>, texture, empty>::type {
-  
   template <typename Draw>
   drawable_adaptor(const Draw &drawable,
                    typename std::enable_if<!std::is_base_of<texture, Draw>::value>::type * = nullptr)
@@ -56,7 +55,6 @@ struct drawable_adaptor : public ngy313::graphic::copy_drawable<Drawable>::type,
 template <typename Drawable, typename AddType>
 struct add_drawable_adaptor : public AddType::type,
                               public boost::mpl::if_<std::is_base_of<texture, Drawable>, texture, empty>::type {
-
   template <typename Draw>
   add_drawable_adaptor(const Draw &drawable,
                    typename std::enable_if<!std::is_base_of<texture, Draw>::value>::type * = nullptr)
