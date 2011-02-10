@@ -32,7 +32,7 @@ template <typename Drawable, std::size_t Index>
 struct uv_extended_adaptor : public drawable_adaptor<uv_extended_adaptor<Drawable, Index>, Drawable> {
   template <typename BasePoint>
   uv_extended_adaptor(const Drawable &drawable, const BasePoint &base_point, const float extend)
-      : drawable_adaptor<extended_adaptor<Drawable>, Drawable>(drawable), 
+      : drawable_adaptor<uv_extended_adaptor<Drawable, Index>, Drawable>(drawable), 
         extend_(base_point.u<Index>(drawable), base_point.v<Index>(drawable), extend) {}
 
  private:
@@ -88,11 +88,11 @@ struct transform_uv_extend_one {
 };
 
 template <std::size_t Index, typename Tex, typename Drawable>
-struct uv_extended_one_adaptor : public drawable_adaptor<uv_extended_one_adaptor<Index, Drawable, Tex>, Drawable> {
+struct uv_extended_one_adaptor : public drawable_adaptor<uv_extended_one_adaptor<Index, Tex, Drawable>, Drawable> {
   template <typename BasePoint>
   uv_extended_one_adaptor(const Drawable &drawable, const BasePoint &base_point, const float extend)
-      : drawable_adaptor<extended_one_adaptor<Index, Drawable, Position>, Drawable>(drawable),  
-        extend_(base_position<Tex>::at<Index>(drawable), extend) {}
+      : drawable_adaptor<uv_extended_one_adaptor<Index, Tex, Drawable>, Drawable>(drawable),  
+        extend_(base_position<Tex>::at<Index>(drawable, base_point), extend) {}
 
  private:
   void transform(typename Drawable::vertex_array_type &vertex) const {
@@ -131,8 +131,8 @@ struct uv_extended_one_t : public adaptor::base<uv_extended_one_t<Index, BasePoi
       : base_point_(base_point), extend_(extend) {}
 
   template <typename Drawable>
-  uv_extended_one_adaptor<Index, Drawable, Tex> operator ()(const Drawable &drawable) const {
-    return make_uv_extended_one<Tex, Index>(drawable, base_point_, extend_);
+  uv_extended_one_adaptor<Index, Tex, Drawable> operator ()(const Drawable &drawable) const {
+    return make_uv_extended_one<Index, Tex>(drawable, base_point_, extend_);
   }
 
  private:

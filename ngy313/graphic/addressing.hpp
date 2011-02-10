@@ -8,7 +8,7 @@
 namespace ngy313 { namespace graphic {
 template <typename Drawable, typename AddressingTuple>
 struct addressing_adaptor {
-  typedef add_drawable_adaptor<Drawable, AddressingTuple> type;
+  typedef add_drawable_adaptor<Drawable, add_addressing_tuple<AddressingTuple>> type;
 };
 
 template <std::size_t Stage, typename Drawable, typename Address>

@@ -17,7 +17,7 @@ struct addressing_tuple {
   typedef V v_type;
 
  private:
-  typedef boost::mpl::vector<wrap_addressing_tag, mirror_addressing_tag, clamp_addressing_tag>> addressing_tag_list;
+  typedef boost::mpl::vector<wrap_addressing_tag, mirror_addressing_tag, clamp_addressing_tag> addressing_tag_list;
 
   // エラーメッセージが日本語で書けないのはつらい
   static_assert(boost::mpl::contains<addressing_tag_list, U>::value, "");

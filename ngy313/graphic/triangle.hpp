@@ -22,7 +22,7 @@ class triangle_base
 
  private:
   vertex_array_type vertex() const {
-    return vertex_.cbegin();
+    return vertex_;
   }
 
   template <bool Fill>

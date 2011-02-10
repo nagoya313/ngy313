@@ -11,21 +11,21 @@ namespace ngy313 { namespace graphic {
 #define NGY313_OVAL_VERTEX_SIZE 62
 
 #define NGY313_OVAL_VERTEX_ELEM_GEN(z, n, data)\
-{{x + std::cos(detail::vertex_radian<oval, n>::value) * rx,\
-  y + std::sin(detail::vertex_radian<oval, n>::value) * ry,\
+{{x + std::cos(vertex_radian<oval, n>::value) * rx,\
+  y + std::sin(vertex_radian<oval, n>::value) * ry,\
   0.f,\
   1.f}, 0xFFFFFFFF},
 
 #define NGY313_LINE_OVAL_VERTEX_SIZE 60
 
 #define NGY313_LINE_OVAL_VERTEX_ELEM_GEN(z, n, data)\
-{{x + std::cos(detail::line_vertex_radian<line_oval, n>::value) * rx,\
-  y + std::sin(detail::line_vertex_radian<line_oval, n>::value) * ry,\
+{{x + std::cos(line_vertex_radian<line_oval, n>::value) * rx,\
+  y + std::sin(line_vertex_radian<line_oval, n>::value) * ry,\
   0.f,\
   1.f}, 0xFFFFFFFF},
 
 template <bool Filled>
-class oval_base : public drawable<circle_base<Filled>, 
+class oval_base : public drawable<oval_base<Filled>, 
                                   utility::if_cc<Filled, std::size_t, 62, 60>::value,
                                   utility::if_cc<Filled, std::uint32_t, 60, 59>::value,
                                   shape_2d_fvf_tag, 

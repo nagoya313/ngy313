@@ -1,4 +1,5 @@
 #pragma once
+#include <ngy313/adaptor/adaptor.hpp>
 #include <ngy313/graphic/adaptor.hpp>
 #include <ngy313/graphic/blend_tag.hpp>
 #include <ngy313/graphic/drawable.hpp>
@@ -15,7 +16,7 @@ blend_adaptor<Drawable, typename Blend::pair_type> make_blend(const Drawable &dr
 }
 
 template <typename SrcBlendTag, typename DestBlendTag>
-struct blend : public adaptor::base<blend> {
+struct blend : public adaptor::base<blend<SrcBlendTag, DestBlendTag>> {
   typedef blend_pair<SrcBlendTag, DestBlendTag> pair_type;
 
   template <typename Drawable>

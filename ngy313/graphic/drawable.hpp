@@ -24,8 +24,8 @@ struct drawable {
   typedef PrimitiveTag primitive_type;
   typedef std::array<vertex_type, Size> vertex_array_type;
   typedef BlendPair blend_pair_type;
-  typedef AddressingPair addressing_pair_type;
-  typedef TextureStagePair texture_stage_pair_type;
+  typedef AddressingPair addressing_tuple_type;
+  typedef TextureStagePair texture_stage_tuple_type;
 };
 
 template <typename Drawable>
@@ -36,8 +36,8 @@ struct copy_drawable {
                    typename Drawable::fvf_tag,
                    typename Drawable::primitive_type,
                    typename Drawable::blend_pair_type,
-                   typename Drawable::addressing_pair_type,
-                   typename Drawable::texture_stage_pair_type> type;
+                   typename Drawable::addressing_tuple_type,
+                   typename Drawable::texture_stage_tuple_type> type;
 };
 
 template <typename Drawable, typename BlendPair>
@@ -48,31 +48,31 @@ struct add_blend_pair {
                    typename Drawable::fvf_tag,
                    typename Drawable::primitive_type,
                    BlendPair,
-                   typename Drawable::addressing_pair_type,
-                   typename Drawable::texture_stage_pair_type> type;
+                   typename Drawable::addressing_tuple_type,
+                   typename Drawable::texture_stage_tuple_type> type;
 };
 
-template <typename Drawable, typename AddressingPair>
-struct add_addressing_pair {
+template <typename Drawable, typename AddressingTuple>
+struct add_addressing_tuple {
   typedef drawable<Drawable, 
                    Drawable::size_type::value, 
                    Drawable::count_type::value,
                    typename Drawable::fvf_tag,
                    typename Drawable::primitive_type,
                    typename Drawable::blend_pair_type,
-                   AddressingPair,
-                   typename Drawable::texture_stage_pair_type> type;
+                   AddressingTuple,
+                   typename Drawable::texture_stage_tuple_type> type;
 };
 
-template <typename Drawable, typename TextureStagePair>
-struct add_texture_stage_pair {
+template <typename Drawable, typename TextureStageTuple>
+struct add_texture_stage_tuple {
   typedef drawable<Drawable, 
                    Drawable::size_type::value, 
                    Drawable::count_type::value,
                    typename Drawable::fvf_tag,
                    typename Drawable::primitive_type,
                    typename Drawable::blend_pair_type,
-                   typename Drawable::addressing_pair_type,
-                   TextureStagePair> type;
+                   typename Drawable::addressing_tuple_type,
+                   TextureStageTuple> type;
 };
 }}

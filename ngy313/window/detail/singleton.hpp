@@ -20,6 +20,7 @@ class singleton : private boost::noncopyable {
 
   singleton() : window_(init_window()) {
     set_procedure(window_, &procedure);
+    resize(window_, 640, 480);
   }
 
   static handle init_window() {

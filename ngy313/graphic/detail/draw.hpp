@@ -2,7 +2,9 @@
 #include <cassert>
 #include <boost/noncopyable.hpp>
 #include <ngy313/graphic/detail/device.hpp>
+#include <ngy313/graphic/detail/scoped_addressing.hpp>
 #include <ngy313/graphic/detail/scoped_blend.hpp>
+#include <ngy313/graphic/detail/scoped_texture_stage.hpp>
 #include <ngy313/graphic/detail/texture.hpp>
 #include <ngy313/graphic/drawable_access.hpp>
 
@@ -19,6 +21,7 @@ class draw : private boost::noncopyable {
   void common_draw() const {
     assert(device_);
     // ‹ó‚ÌƒNƒ‰ƒX‚ª“WŠJ‚³‚ê‚½‚Æ‚«Å“K‰»‚ª‚©‚©‚é‚©R‹c
+    const scoped_addressing<typename Drawable::addressing_tuple_type> addressing(device_);
     const scoped_blend<typename Drawable::blend_pair_type> blend(device_);
     set_texture(device_, drawable_);
     const auto vertex = drawable_access::copy_vertex(drawable_);

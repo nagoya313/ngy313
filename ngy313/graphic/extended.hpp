@@ -88,8 +88,8 @@ template <typename Position, typename Drawable>
 struct extended_one_adaptor : public drawable_adaptor<extended_one_adaptor<Position, Drawable>, Drawable> {
   template <typename BasePoint>
   extended_one_adaptor(const Drawable &drawable, const BasePoint &base_point, const float extend)
-      : drawable_adaptor<extended_one_adaptor<Drawable, Position>, Drawable>(drawable),  
-        extend_(base_position<Position>::at(drawable), extend) {}
+      : drawable_adaptor<extended_one_adaptor<Position, Drawable>, Drawable>(drawable),  
+        extend_(base_position<Position>::at(drawable, base_point), extend) {}
 
  private:
   void transform(typename Drawable::vertex_array_type &vertex) const {
@@ -128,7 +128,7 @@ struct extended_one_t : public adaptor::base<extended_one_t<BasePoint, Position>
       : base_point_(base_point), extend_(extend) {}
 
   template <typename Drawable>
-  extended_one_adaptor<Drawable, Position> operator ()(const Drawable &drawable) const {
+  extended_one_adaptor<Position, Drawable> operator ()(const Drawable &drawable) const {
     return make_extended_one<Position>(drawable, base_point_, extend_);
   }
 

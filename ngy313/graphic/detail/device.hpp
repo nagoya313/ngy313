@@ -3,7 +3,9 @@
 #include <cstdint>
 #include <stdexcept>
 #include <ngy313/graphic/detail/fwd.hpp>
+#include <ngy313/graphic/detail/scoped_addressing.hpp>
 #include <ngy313/graphic/detail/scoped_blend.hpp>
+#include <ngy313/graphic/detail/scoped_texture_stage.hpp>
 #include <ngy313/utility/com_delete.hpp>
 #include <ngy313/utility/intrusive_com_delete.hpp>
 #include <ngy313/window/detail/fwd.hpp>
@@ -79,6 +81,10 @@ void init_device(const device_handle &device) {
   assert(device);
   device->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
   set_blend_pair<default_blend>(device);
+  set_addressing_tuple<default_addressing<0>::type>(device);
+  set_addressing_tuple<default_addressing<1>::type>(device);
+  set_texture_stage<default_stage0>(device);
+  set_texture_stage<default_stage1>(device);
   device->SetRenderState(D3DRS_LIGHTING, FALSE);
   device->SetRenderState(D3DRS_ZENABLE, FALSE);
   device->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR); 

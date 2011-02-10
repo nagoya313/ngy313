@@ -65,8 +65,8 @@ struct moved_at_adaptor : public drawable_adaptor<moved_at_adaptor<Drawable>, Dr
 
  private:
   void transform(typename Drawable::vertex_array_type &vertex) const {
-    vertex_member_at<position>(vertex[at]).x += move_x_;
-    vertex_member_at<position>(vertex[at]).x += move_y_;
+    vertex_member_at<position>(vertex[at_]).x += move_x_;
+    vertex_member_at<position>(vertex[at_]).x += move_y_;
   }
 
   const std::size_t at_;

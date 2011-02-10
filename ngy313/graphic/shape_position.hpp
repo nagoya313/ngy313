@@ -101,15 +101,15 @@ float shape_center_y(const Drawable &drawable) {
          static_cast<float>(Drawable::size_type::value);
 }
 
-template <typename Drawable, std::size_t Index>
+template <std::size_t Index, typename Drawable>
 float shape_center_u(const Drawable &drawable) {
-  return boost::accumulate(drawable_access::copy_vertex(drawable), 0.f, add_position_x) / 
+  return boost::accumulate(drawable_access::copy_vertex(drawable), 0.f, add_position_u_t<Index>()) / 
          static_cast<float>(Drawable::size_type::value);
 }
 
-template <typename Drawable, std::size_t Index>
+template <std::size_t Index, typename Drawable>
 float shape_center_v(const Drawable &drawable) {
-  return boost::accumulate(drawable_access::copy_vertex(drawable), 0.f, add_position_y) / 
+  return boost::accumulate(drawable_access::copy_vertex(drawable), 0.f, add_position_v_t<Index>()) / 
          static_cast<float>(Drawable::size_type::value);
 }
 
@@ -132,6 +132,22 @@ struct base_position<position_y> {
   }
 };
 
+template <>
+struct base_position<tex_u> {
+  template <std::size_t Index, typename Drawable, typename Base>
+  static float at(const Drawable &drawable, const Base &base) {
+    return base.u<Index>(drawable);
+  }
+};
+
+template <>
+struct base_position<tex_v> {
+  template <std::size_t Index, typename Drawable, typename Base>
+  static float at(const Drawable &drawable, const Base &base) {
+    return base.v<Index>(drawable);
+  }
+};
+
 inline
 float extend_position(const float pos, const float base, const float extend) {
   return (pos - base) * extend + base;
@@ -142,7 +158,7 @@ struct extend_position_selecter {};
 
 template <>
 struct extend_position_selecter<position_x> {
-  template <typename Vertex, typename Base>
+  template <typename Vertex>
   static void transform(Vertex &vertex, const float base, const float extend) {
     vertex_member_at<position>(vertex).x = (vertex_member_at<position>(vertex).x - base) * extend + base;
   }
@@ -150,9 +166,27 @@ struct extend_position_selecter<position_x> {
 
 template <>
 struct extend_position_selecter<position_y> {
-  template <typename Vertex, typename Base>
+  template <typename Vertex>
   static void transform(Vertex &vertex, const float base, const float extend) {
     vertex_member_at<position>(vertex).y = (vertex_member_at<position>(vertex).y - base) * extend + base;
+  }
+};
+
+template <>
+struct extend_position_selecter<tex_u> {
+  template <std::size_t Index, typename Vertex>
+  static void transform(Vertex &vertex, const float base, const float extend) {
+    vertex_member_at<tex>(vertex).tex_array[Index].u = 
+        (vertex_member_at<tex>(vertex).tex_array[Index].u - base) * extend + base;
+  }
+};
+
+template <>
+struct extend_position_selecter<tex_v> {
+  template <std::size_t Index, typename Vertex>
+  static void transform(Vertex &vertex, const float base, const float extend) {
+    vertex_member_at<tex>(vertex).tex_array[Index].v = 
+        (vertex_member_at<tex>(vertex).tex_array[Index].v - base) * extend + base;
   }
 };
 }}

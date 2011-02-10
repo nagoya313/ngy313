@@ -11,16 +11,16 @@ namespace ngy313 { namespace graphic {
 #define NGY313_CIRCLE_VERTEX_SIZE 62
 
 #define NGY313_CIRCLE_VERTEX_ELEM_GEN(z, n, data)\
-{{x + std::cos(detail::vertex_radian<circle, n>::value) * r,\
-  y + std::sin(detail::vertex_radian<circle, n>::value) * r,\
+{{x + std::cos(vertex_radian<circle, n>::value) * r,\
+  y + std::sin(vertex_radian<circle, n>::value) * r,\
   0.f,\
   1.f}, 0xFFFFFFFF},
 
 #define NGY313_LINE_CIRCLE_VERTEX_SIZE 60
 
 #define NGY313_LINE_CIRCLE_VERTEX_ELEM_GEN(z, n, data)\
-{{x + std::cos(detail::line_vertex_radian<line_circle, n>::value) * r,\
-  y + std::sin(detail::line_vertex_radian<line_circle, n>::value) * r,\
+{{x + std::cos(line_vertex_radian<line_circle, n>::value) * r,\
+  y + std::sin(line_vertex_radian<line_circle, n>::value) * r,\
   0.f,\
   1.f}, 0xFFFFFFFF},
 

@@ -51,7 +51,7 @@ rotated_adaptor<Drawable> make_rotated(const Drawable &drawable, const BasePoint
 }
 
 template <typename BasePoint>
-struct rotated_t : public adaptor::base<rotated_t> {
+struct rotated_t : public adaptor::base<rotated_t<BasePoint>> {
   explicit rotated_t(const BasePoint &base_point, const float angle) : base_point_(base_point), angle_(angle) {}
 
   template <typename Drawable>

@@ -2,11 +2,12 @@
 #include <cstdint>
 #include <d3d9.h>
 
-namespace ngy313 { namespace graphic {
+namespace ngy313 { namespace graphic { namespace detail {
 typedef D3DTEXTUREOP texture_option;
 
 const texture_option kTextureOptionDisable = D3DTOP_DISABLE;
 const texture_option kTextureOptionSelectArg1 = D3DTOP_SELECTARG1;
+const texture_option kTextureOptionSelectArg2 = D3DTOP_SELECTARG2;
 const texture_option kTextureOptionModulate = D3DTOP_MODULATE;
 const texture_option kTextureOptionModulate2 = D3DTOP_MODULATE2X;
 const texture_option kTextureOptionModulate4 = D3DTOP_MODULATE4X;
@@ -44,4 +45,4 @@ const texture_arg kTextureArgTemp = D3DTA_TEMP;
 const texture_arg kTextureArgConstant = D3DTA_CONSTANT;
 const texture_arg kTextureArgComplement = D3DTA_COMPLEMENT;
 const texture_arg kTextureArgAlphaReplicate = D3DTA_ALPHAREPLICATE;
-}}
+}}}
