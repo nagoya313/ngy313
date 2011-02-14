@@ -10,9 +10,7 @@
 #include <boost/range/algorithm/for_each.hpp>
 #include <boost/range/irange.hpp>
 #include <boost/variant.hpp>
-#include <ngy313/input/joypad.hpp>
-#include <ngy313/input/keybord.hpp>
-#include <ngy313/input/mouse.hpp>
+#include <ngy313/input/detail/controller.hpp>
 
 namespace ngy313 { namespace input {
 typedef boost::variant<keybord::key_code, mouse::key_code, joypad::key_data> key_code_type; 
@@ -38,37 +36,6 @@ boost::fusion::vector<key_code_type, key_code_type, key_code_type>
   return boost::fusion::make_vector(code1, code2, code3);
 }
 
-// ここいらは非公開化と名前をもう少しなんとかする
-const struct pressed_t : public boost::static_visitor<bool> {
-  bool operator ()(const keybord::key_code code) const {
-    return keybord::key_pressed(code);
-  }
-
-  bool operator ()(const mouse::key_code code) const {
-    return mouse::key_pressed(code);
-  }
-
-  // ジョイパッドは頑張れば最適化かけられる可能性がある
-  bool operator ()(const joypad::key_data &code) const {
-    return joypad::key_pressed(code.num, code.code);
-  }
-} pressed = pressed_t();
-
-const struct pressed_pred_t {
-  template <typename Fusion>
-  bool operator ()(const Fusion &fusion) const {
-    return boost::apply_visitor(pressed, fusion);
-  }
-} pressed_pred = {};
-
-const struct key_pressed_t : public boost::static_visitor<bool> {
-  template <typename Fusion>
-  bool operator ()(const Fusion &fusion) const {
-    return boost::fusion::count_if(fusion, pressed_pred) != 0;
-  }
-} key_pressed = key_pressed_t();
-// なんとかするここまで
-
 template <std::size_t N>
 class controller {
  public:
@@ -86,7 +53,7 @@ class controller {
   void pool() {
     before_bit_ = down_bit_;
     boost::for_each(boost::irange(0u, N), [this](const int x) {
-      down_bit_[x] = boost::apply_visitor(key_pressed, key_[x]);
+      down_bit_[x] = boost::apply_visitor(detail::key_pressed, key_[x]);
       repeat_[x] = down_bit_[x] ? (std::min)(repeat_cnt_, repeat_[x] + 1) : 0;
     });
     trig_bit_ = down_bit_ & ~before_bit_;

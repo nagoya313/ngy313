@@ -70,10 +70,4 @@ std::array<std::uint8_t, 256> all_key_state() {
   GetKeyboardState(&key_state.front());
   return key_state;
 }
-
-inline
-void set_all_key_state(const std::array<std::uint8_t, 256> &state) {
-  std::array<std::uint8_t, 256> temp = state;
-  SetKeyboardState(&temp.front());
-}
 }}}

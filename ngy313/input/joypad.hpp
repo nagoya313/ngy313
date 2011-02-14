@@ -2,7 +2,7 @@
 #include <cassert>
 #include <array>
 #include <boost/range/algorithm/count.hpp>
-#include <ngy313/input/detail/input.hpp>
+#include <ngy313/input/detail/joypad.hpp>
 
 namespace ngy313 { namespace input { namespace joypad {
 enum key_code {
@@ -23,16 +23,42 @@ enum key_code {
   kY = XINPUT_GAMEPAD_Y
 };
 
+class pad_state {
+ public:
+  explicit pad_state(const int num) : state_(detail::state(num).Gamepad) {}
+
+  bool key_pressed(const key_code key) const {
+    return (state_.wButtons & key) != 0;
+  }
+
+  int analog_input_left_x() const {
+    const int value = state_.sThumbLX;
+    return value < detail::kDeadZoneLeftX && value > -detail::kDeadZoneLeftX ? 0 : value;
+  }
+
+  int analog_input_left_y() const {
+    const int value = state_.sThumbLY;
+    return value < detail::kDeadZoneLeftY && value > -detail::kDeadZoneLeftY ? 0 : value;
+  }
+
+  int analog_input_right_x() const {
+    const int value = state_.sThumbRX;
+    return value < detail::kDeadZoneRightX && value > -detail::kDeadZoneRightX ? 0 : value;
+  }
+
+  int analog_input_right_y() const {
+    const int value = state_.sThumbRY;
+    return value < detail::kDeadZoneRightY && value > -detail::kDeadZoneRightY ? 0 : value;
+  }
+
+ private:
+  const XINPUT_GAMEPAD state_;
+};
+
 struct key_data {
   int num;
   key_code code;
 };
-
-inline
-bool key_pressed(const int num, const key_code key) {
-  assert(num >= 0 && num <= 3);
-  return detail::pressed(num, key);
-}
 
 inline
 bool connected(const int num) {
