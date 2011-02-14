@@ -26,6 +26,6 @@ struct addressing_tuple {
 
 template <std::size_t Stage>
 struct default_addressing {
-  typedef addressing_tuple<Stage, wrap_addressing_tag, wrap_addressing_tag> type;
+  typedef addressing_tuple<Stage, clamp_addressing_tag, clamp_addressing_tag> type;
 };
 }}
