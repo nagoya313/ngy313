@@ -157,6 +157,22 @@ surface_handle render_target(const device_handle &device) {
 }
 
 inline
+std::uint32_t pixel_color(const device_handle &device, const float x, const float y) {
+  assert(device);
+  RECT rect = {
+    static_cast<int>(x), static_cast<int>(y), static_cast<int>(x) + 1, static_cast<int>(y) + 1
+  };
+  D3DLOCKED_RECT lock_rect;
+  const surface_handle target(render_target(device));
+  if(SUCCEEDED(target->LockRect(&lock_rect, &rect, D3DLOCK_READONLY))) {
+    const std::uint32_t *color = static_cast<std::uint32_t *>(lock_rect.pBits);
+    target->UnlockRect();
+    return *color;
+  }
+  return 0;
+}
+
+inline
 surface_handle z_and_stencil(const device_handle &device) {
   assert(device);
   LPDIRECT3DSURFACE9 z_s;

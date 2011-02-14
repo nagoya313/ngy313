@@ -16,41 +16,32 @@ void clear_screen(const std::uint32_t col) {
 
 inline
 void present() {
-  detail::present(detail::device(), true, detail::before_reset(), detail::after_reset());
+  detail::present();
 }
 
 inline
 std::uint32_t pixel_color(const float x, const float y) {
-  // 未実装
-  return 0;
+  return detail::pixel_color(detail::device(), x, y);
 }
 
 inline
 void resize(const int width, const int height) {
-  // スクリーンモード保持が未実装
-  detail::reset(detail::device(), true, width, height, detail::before_reset(), detail::after_reset());
+  detail::resize(width, height);
 }
 
 inline
 int width() {
-  // ちゃんと実装する
-  return window::width();
+  return detail::width();
 }
 
 inline
 int height() {
-  // ちゃんと実装する
-  return window::height();
+  return detail::height();
 }
 
 inline
 void change_screen_mode(const screen_mode flag) {
-  detail::reset(detail::device(), 
-                flag == kWindowMode ? true : false,
-                width(),
-                height(),
-                detail::before_reset(),
-                detail::after_reset());
+  detail::change_screen_mode(flag == kWindowMode ? true : false);
 }
 
 template <typename Drawable>

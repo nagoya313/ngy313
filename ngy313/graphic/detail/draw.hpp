@@ -28,7 +28,7 @@ class draw : private boost::noncopyable {
     device_->SetFVF(Drawable::fvf_type::fvf_type::value);
     device_->DrawPrimitiveUP(Drawable::primitive_type::type::value,
                              Drawable::count_type::value, 
-                             &(vertex.front()), 
+                             vertex.data(), 
                              sizeof(vertex.front()));
   }
 
