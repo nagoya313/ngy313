@@ -63,7 +63,7 @@ class sound {
   void init() {
     assert(voice_);
     const XAUDIO2_BUFFER buffer = {
-      0, buffer_.size(), &(*buffer_.buffer()), 0, 0, 0, 0, 0, nullptr
+      XAUDIO2_END_OF_STREAM, buffer_.size(), &(*buffer_.buffer()), 0, 0, 0, 0, 0, nullptr
     };
     voice_->SubmitSourceBuffer(&buffer);
   }

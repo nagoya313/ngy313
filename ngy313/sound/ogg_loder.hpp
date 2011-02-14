@@ -11,6 +11,7 @@
 #include <cassert>
 #include <cstdlib>
 #include <cstdint>
+#include <algorithm>
 #include <fstream>
 #include <stdexcept>
 #include <string>
@@ -180,10 +181,26 @@ typedef boost::flyweights::flyweight<boost::flyweights::key_value<std::string, o
 
 class ogg_loader {
  public:
-  ogg_loader(const std::string &file_name) : buffer_(file_name), 
-                                             file_(buffer_.get().buffer(), buffer_.get().size()),
-                                             data_(kSize_),
-                                             end_(false) {
+  explicit ogg_loader(const std::string &file_name) : buffer_(file_name), 
+                                                      file_(buffer_.get().buffer(), buffer_.get().size()),
+                                                      data_(kSize_),
+                                                      offset_(0),
+                                                      loop_size_(0),
+                                                      loop_(false),
+                                                      end_(false),
+                                                      read_size_(0) {
+    init();
+  }
+
+  ogg_loader(const std::string &file_name, const std::uint32_t offset, const std::uint32_t loop_size)
+      : buffer_(file_name), 
+        file_(buffer_.get().buffer(), buffer_.get().size()),
+        data_(kSize_),
+        offset_(offset),
+        loop_size_(loop_size),
+        loop_(true),
+        end_(false),
+        read_size_(0) {
     init();
   }
 
@@ -222,23 +239,34 @@ class ogg_loader {
     std::uint32_t com_size = 0;
     while (!end_) {
       const long read_size = ov_read(file_.get(), 
-                                     reinterpret_cast<char *>(&data_.front()) + com_size,
+                                     reinterpret_cast<char *>(data_.data()) + com_size,
                                      request_size, 
                                      0,
                                      2,
                                      1,
                                      &bit_stream);
-      if (!read_size) {
-        //end_ = true;
-        //break;
-        ov_pcm_seek(file_.get(), 0);
+      if (loop_) {
+        if (read_size_ >= offset_ + loop_size_ || !read_size) {
+          read_size_ = offset_;
+          ov_pcm_seek(file_.get(), offset_);
+        }
+      } else {
+        if (!read_size) {
+          end_ = true;
+          break;
+        }
       }
       com_size += read_size;
+      read_size_ += read_size;
       if (com_size >= kSize_) {
         break;
       }
       if (data_.size() - com_size < size()) {
-        request_size = data_.size() - com_size;
+        if (loop_) {
+          request_size = (std::min)(data_.size() - com_size, offset_ + loop_size_ - read_size_);
+        } else {
+          request_size = data_.size() - com_size;
+        }
       }
     }
     
@@ -247,7 +275,11 @@ class ogg_loader {
   const ogg_buffer_type buffer_;
   ogg_file file_;
   std::vector<std::uint8_t> data_;
+  const std::uint32_t offset_;
+  const std::uint32_t loop_size_;
+  const bool loop_;
   bool end_;
+  std::uint32_t read_size_;
   static const std::size_t kSize_ = 4096;
 };
 }}

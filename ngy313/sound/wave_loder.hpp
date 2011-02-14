@@ -43,7 +43,7 @@ std::tuple<buffer_container_type, buffer_format> create_wave_buffer(const std::s
 	  throw std::runtime_error("dataƒ`ƒƒƒ“ƒN‚ª‘¶İ‚µ‚Ü‚¹‚ñ");
   }
   buffer_container_type buffer(utility::read<std::uint32_t>(fin));
-  fin.read(reinterpret_cast<char *>(&buffer.front()), buffer.size());
+  fin.read(reinterpret_cast<char *>(buffer.data()), buffer.size());
   return std::tuple<buffer_container_type, buffer_format>(std::move(buffer), format);
 }
 
