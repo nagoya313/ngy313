@@ -101,40 +101,28 @@ class controller {
     repeat_cnt_ = count;
   }
 
-  template <std::size_t M>
-  controller_element key() const {
-    static_assert(N > M, "");
-    return key_[M];
+  controller_element key(const int index) const {
+    return key_.at(index);
   }
 
-  template <std::size_t M>
-  void change_key(const controller_element &key) {
-    static_assert(N > M, "");
-    key_[M] = key;
+  void change_key(const int index, const controller_element &key) {
+    key_.at(index) = key;
   }
 
-  template <std::size_t M>
-  bool down() const {
-    static_assert(N > M, "");
-    return down_bit_[M];
+  bool down(const int index) const {
+    return down_bit_.at(index);
   }
 
-  template <std::size_t M>
-  bool triger() const {
-    static_assert(N > M, "");
-    return trig_bit_[M];
+  bool triger(const int index) const {
+    return trig_bit_.at(index);
   }
 
-  template <std::size_t M>
-  bool up() const {
-    static_assert(N > M, "");
-    return up_bit_[M];
+  bool up(const int index) const {
+    return up_bit_.at(index);
   }
 
-  template <std::size_t M>
-  bool repeat_triger() const {
-    static_assert(N > M, "");
-    return trig_bit_[M] || repeat_[M] == repeat_cnt_;
+  bool repeat_triger(const int index) const {
+    return trig_bit_.at(index) || repeat_.at(index) == repeat_cnt_;
   }
 
  private:
