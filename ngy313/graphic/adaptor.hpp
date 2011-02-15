@@ -1,19 +1,11 @@
 #pragma once
-#include <functional>
 #include <type_traits>
 #include <boost/mpl/if.hpp>
-#include <boost/mpl/inherit.hpp>
-#include <boost/type_traits/function_traits.hpp>
 #include <ngy313/graphic/drawable.hpp>
 #include <ngy313/graphic/drawable_access.hpp>
 #include <ngy313/graphic/texture.hpp>
 
 namespace ngy313 { namespace graphic {
-template <typename Signature>
-struct copy_argument {
-  typedef typename std::decay<typename boost::function_traits<Signature>::arg1_type>::type type;
-};
-
 class adaptor_access {
  private:
   template <typename Adaptor, typename Vertex>
