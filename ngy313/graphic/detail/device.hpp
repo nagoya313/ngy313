@@ -93,24 +93,6 @@ void init_device(const device_handle &device) {
 }
 
 inline
-void clear(const device_handle &device, const std::uint32_t col) {
-  assert(device);
-  device->Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, col, 1.f, 0);
-}
-
-inline
-bool begin_scene(const device_handle &device) {
-  assert(device);
-  return SUCCEEDED(device->BeginScene());
-}
-
-inline
-void end_scene(const device_handle &device) {
-  assert(device);
-  device->EndScene();
-}
-
-inline
 void reset(const device_handle &device,
            const bool windowed,
            const int width, 
@@ -154,22 +136,6 @@ surface_handle render_target(const device_handle &device) {
   LPDIRECT3DSURFACE9 target;
   device->GetRenderTarget(0, &target);
   return surface_handle(target);
-}
-
-inline
-std::uint32_t pixel_color(const device_handle &device, const float x, const float y) {
-  assert(device);
-  RECT rect = {
-    static_cast<int>(x), static_cast<int>(y), static_cast<int>(x) + 1, static_cast<int>(y) + 1
-  };
-  D3DLOCKED_RECT lock_rect;
-  const surface_handle target(render_target(device));
-  if(SUCCEEDED(target->LockRect(&lock_rect, &rect, D3DLOCK_READONLY))) {
-    const std::uint32_t *color = static_cast<std::uint32_t *>(lock_rect.pBits);
-    target->UnlockRect();
-    return *color;
-  }
-  return 0;
 }
 
 inline

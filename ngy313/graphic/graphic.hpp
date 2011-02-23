@@ -11,41 +11,41 @@ enum screen_mode {
 
 inline
 void clear_screen(const std::uint32_t col) {
-  detail::clear(detail::device(), col);
+  detail::device().clear(col);
 }
 
 inline
 void present() {
-  detail::present();
+  detail::device().present();
 }
 
 inline
 std::uint32_t pixel_color(const float x, const float y) {
-  return detail::pixel_color(detail::device(), x, y);
+  return detail::device().pixel_color(x, y);
 }
 
 inline
 void resize(const int width, const int height) {
-  detail::resize(width, height);
+  detail::device().resize(width, height);
 }
 
 inline
 int width() {
-  return detail::width();
+  return detail::device().width();
 }
 
 inline
 int height() {
-  return detail::height();
+  return detail::device().height();
 }
 
 inline
 void change_screen_mode(const screen_mode flag) {
-  detail::change_screen_mode(flag == kWindowMode ? true : false);
+  detail::device().change_screen_mode(flag == kWindowMode ? true : false);
 }
 
 template <typename Drawable>
 void draw(const Drawable &drawable) {
-  const detail::draw<Drawable> draw(detail::device(), drawable);
+  const detail::draw<Drawable> draw(detail::device().device(), drawable);
 }
 }}

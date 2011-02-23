@@ -5,10 +5,10 @@
 namespace ngy313 { namespace graphic {
 class scoped_render : private boost::noncopyable {
  public:
-  scoped_render() : succeeded_(detail::begin_scene(detail::device())) {}
+  scoped_render() : succeeded_(detail::device().begin_scene()) {}
   
   ~scoped_render() {
-    detail::end_scene(detail::device());
+    detail::device().end_scene();
   }
 
   bool succeeded() const {

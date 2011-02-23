@@ -5,7 +5,7 @@
 namespace ngy313 { namespace graphic {
 class image {
  public: 
-  explicit image(const utility::string_piece &file_name) : texture_(detail::init_texture_key(file_name)) {}
+  explicit image(const utility::string_piece &file_name) : texture_(detail::init_texture_key(file_name.string())) {}
 
   float width() const {
     return texture_.get().width();
