@@ -2,6 +2,8 @@
 #include <cassert>
 #include <cstdint>
 #include <string>
+#include <system_error>
+#include <vector>
 #include <boost/noncopyable.hpp>
 #include <boost/signals2/signal.hpp>
 #include <ngy313/utility/call_once.hpp>

@@ -2,7 +2,6 @@
 #include <cassert>
 #include <string>
 #include <system_error>
-#include <vector>
 #include <CommCtrl.h>
 #include <Windows.h>
 #include <ngy313/utility/string_piece.hpp>
@@ -90,38 +89,6 @@ void set_subclass_procedure(const handle window, const UINT_PTR id, const SUBCLA
 }
 
 inline
-void show(const handle window) {
-  assert(window);
-  ShowWindow(window, SW_RESTORE);
-}
-
-inline
-void hide(const handle window) {
-  assert(window);
-  ShowWindow(window, SW_HIDE);
-}
-
-inline
-std::string caption(const handle window) {
-  assert(window);
-  std::vector<char> buffer(GetWindowTextLength(window) + 1);
-  GetWindowText(window, buffer.data(), buffer.size());
-  return std::string(buffer.begin(), buffer.end() - 1);
-}
-
-inline
-void set_caption(const handle window, const utility::string_piece &text) {
-  assert(window);
-  SetWindowText(window, text.c_str());
-  assert(text.c_str() == caption(window));
-}
-
-inline
-void set_icon(const handle window) {
-  assert(window);
-}
-
-inline
 RECT client_rect(const handle window) {
   assert(window);
   RECT rc;
@@ -130,58 +97,10 @@ RECT client_rect(const handle window) {
 }
 
 inline
-int width(const handle window) {
-  assert(window);
-  RECT rect = client_rect(window);
-  return rect.right - rect.left;
-}
-
-inline
-int height(const handle window) {
-  assert(window);
-  RECT rect = client_rect(window);
-  return rect.bottom - rect.top;
-}
-
-inline
-void resize(const handle window, const int width_size, const int height_size) {
-  assert(window);
-  RECT rect = {0, 0, width_size, height_size};
-  if (!AdjustWindowRect(&rect, kWindowStyle, FALSE)) {
-    const DWORD error = GetLastError();
-    throw std::system_error(std::error_code(error, std::system_category()),
-                            "ウィンドウサイズの取得に失敗しました。\n詳細");
-  }
-  SetWindowPos(window, nullptr, 0, 0, rect.right - rect.left, rect.bottom - rect.top, SWP_NOMOVE | SWP_NOZORDER);
-  assert(width_size == width(window));
-  assert(height_size == height(window));
-}
-
-inline
 RECT rect(const handle window) {
   assert(window);
   RECT rc;
   GetWindowRect(window, &rc);
   return rc;
-}
-
-inline
-int x(const handle window) {
-  assert(window);
-  return rect(window).left;
-}
-
-inline
-int y(const handle window) {
-  assert(window);
-  return rect(window).top;
-}
-
-inline
-void move(const handle window, const int x_pos, const int y_pos) {
-  assert(window);
-  SetWindowPos(window, nullptr, x_pos, y_pos, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-  assert(x_pos == x(window));
-  assert(y_pos == y(window));
 }
 }}}
