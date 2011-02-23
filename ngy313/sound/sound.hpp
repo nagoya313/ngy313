@@ -50,7 +50,7 @@ class sound {
   template <typename Effect>
   void set_effect(const Effect &effect) {
     assert(voice_);
-    auto desc = effect.descriptor();
+    auto desc = effect.descriptor(buffer_.format().channels);
     const XAUDIO2_EFFECT_CHAIN chain = {
       1, &desc,
     };
@@ -118,7 +118,7 @@ class streaming_sound : private IXAudio2VoiceCallback {
   template <typename Effect>
   void set_effect(const Effect &effect) {
     assert(voice_);
-    auto desc = effect.descriptor();
+    auto desc = effect.descriptor(buffer_.format().channels);
     const XAUDIO2_EFFECT_CHAIN chain = {
       1,
       &desc,

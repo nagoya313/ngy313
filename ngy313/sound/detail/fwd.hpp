@@ -1,4 +1,5 @@
 #pragma once
+#pragma comment(lib, "xapobase.lib")
 #pragma comment(lib, "XAPOFX.lib")
 #include <memory>
 #include <XAudio2.h>
@@ -12,6 +13,7 @@ struct master_voice_delete;
 struct submix_voice_delete;
 struct source_voice_delete;
 
+typedef std::unique_ptr<IUnknown, utility::com_delete> unknown_handle;
 typedef std::unique_ptr<IXAudio2, utility::com_delete> device_handle;
 typedef std::unique_ptr<IXAudio2MasteringVoice, master_voice_delete> master_voice_handle;
 typedef std::unique_ptr<IXAudio2SubmixVoice, submix_voice_delete> submix_voice_handle;

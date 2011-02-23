@@ -1,40 +1,30 @@
 #pragma once
-#include <memory>
 #include <XAPOFX.h>
-#include <ngy313/adaptor/adaptor.hpp>
 #include <ngy313/sound/detail/device.hpp>
+#include <ngy313/sound/effect.hpp>
 #include <ngy313/utility/com_delete.hpp>
 
 namespace ngy313 { namespace sound {
 // このポインタの型もどこかにこっそりと定義しておく
-std::unique_ptr<IUnknown, utility::com_delete> create_reverb() {
+detail::unknown_handle create_reverb() {
   IUnknown *reverb;
   CreateFX(__uuidof(FXReverb), &reverb);
-  return std::unique_ptr<IUnknown, utility::com_delete>(reverb);
+  return detail::unknown_handle(reverb);
 }
 
-// こいつらを隠蔽
-typedef XAUDIO2_EFFECT_DESCRIPTOR effect_descriptor;
 typedef FXREVERB_PARAMETERS reverb_parameters;
 
-// パイプ対応やめるかも
-struct reverb : public adaptor::base<reverb> {
+struct reverb {
   reverb(const float diffusion, const float room_size) : reverb_(create_reverb()), 
                                                          diffusion_(diffusion), 
                                                          room_size_(room_size) {}
 
-  // パイプ対応やめればこいつは不要
-  template <typename Sound>
-  void operator ()(Sound &snd) const {
-    snd.set_effect(*this);
-  }
-
-  effect_descriptor descriptor() const {
+  effect_descriptor descriptor(const std::uint32_t channel) const {
     // チャンネル数の設定をどうするかを考えとく
     const XAUDIO2_EFFECT_DESCRIPTOR desc = {
       reverb_.get(),
       TRUE,
-      2
+      channel
     };
     return desc;
   }
@@ -50,6 +40,6 @@ struct reverb : public adaptor::base<reverb> {
  private:
   const float diffusion_;
   const float room_size_;
-  std::unique_ptr<IUnknown, utility::com_delete> reverb_;
+  detail::unknown_handle reverb_;
 };
 }}

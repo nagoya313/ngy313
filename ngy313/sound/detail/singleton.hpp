@@ -1,7 +1,7 @@
 #pragma once
 #include <boost/noncopyable.hpp>
-#include <ngy313/sound/detail/com_initializer.hpp>
 #include <ngy313/sound/detail/device.hpp>
+#include <ngy313/utility/com_initializer.hpp>
 
 namespace ngy313 { namespace sound { namespace detail {
 class singleton : private boost::noncopyable {
@@ -22,7 +22,7 @@ class singleton : private boost::noncopyable {
  private:
   singleton() : com_(), device_(create_device()), voice_(create_master_voice(device_)) {}
 
-  const com_initializer com_;
+  const utility::com_initializer com_;
   const device_handle device_;
   const master_voice_handle voice_;
 };

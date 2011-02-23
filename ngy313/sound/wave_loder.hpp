@@ -9,6 +9,7 @@
 #include <vector>
 #include <boost/flyweight.hpp>
 #include <boost/flyweight/key_value.hpp>
+#include <boost/noncopyable.hpp>
 #include <ngy313/sound/format.hpp>
 #include <ngy313/utility/read.hpp>
 
@@ -47,7 +48,7 @@ std::tuple<buffer_container_type, buffer_format> create_wave_buffer(const std::s
   return std::tuple<buffer_container_type, buffer_format>(std::move(buffer), format);
 }
 
-class wave_buffer_data {
+class wave_buffer_data : private boost::noncopyable {
  public:
   explicit wave_buffer_data(const std::string &file_name) : data_(create_wave_buffer(file_name)) {}
 
