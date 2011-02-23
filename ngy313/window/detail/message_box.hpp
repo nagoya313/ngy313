@@ -14,9 +14,10 @@ namespace ngy313 { namespace window { namespace detail {
 inline
 void message_box(const utility::string_piece &message, 
                  const utility::string_piece &caption,
-                 icon_code icon) {
+                 const icon_code icon) {
+  // ó¨êŒÇ…âòÇ∑Ç¨ÇÈÇÃÇ≈Ç»ÇÒÇ∆Ç©Ç∑ÇÈ
   try {
-    MessageBox(window(), message.c_str(), caption.c_str(), icon);
+    MessageBox(window().window(), message.c_str(), caption.c_str(), icon);
   } catch(const std::exception &) {
     MessageBox(nullptr, message.c_str(), caption.c_str(), icon);
   }

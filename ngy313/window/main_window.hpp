@@ -1,17 +1,22 @@
 #pragma once
 #include <cassert>
+#include <cstdint>
 #include <string>
+#include <boost/noncopyable.hpp>
+#include <ngy313/utility/call_once.hpp>
 #include <ngy313/utility/string_piece.hpp>
 #include <ngy313/window/detail/window.hpp>
 
 namespace ngy313 { namespace window {
-// ひょっとするとインスタンスベースのライブラリに戻す可能性を含ませたクラス
-class main_window {
+class main_window : private boost::noncopyable {
  public:
   main_window() : handle_(init_window()) {
     assert(handle_);
-    detail::set_procedure(handle_, &procedure);
+    detail::set_subclass_procedure(handle_, reinterpret_cast<UINT_PTR>(this), &subclass_procedure);
+    detail::resize(640, 480);
   }
+
+  virtual ~main_window() {}
 
   void show() {
     assert(handle_);
@@ -26,6 +31,7 @@ class main_window {
   void set_caption(const utility::string_piece &caption) {
     assert(handle_);
     detail::set_caption(handle_, caption);
+    assert(caption.string() == caption());
   }
 
   void set_icon() {
@@ -41,6 +47,8 @@ class main_window {
   void resize(const int width, const int height) {
     assert(handle_);
     detail::resize(handle_, width, height);
+    assert(width() == width);
+    assert(height() == height);
   }
 
   std::string caption() const {
@@ -67,25 +75,47 @@ class main_window {
     assert(handle_);
     return detail::height(handle_);
   }
+  
+  virtual key_down(const std::uint32_t code) {}
+
+  virtual key_up(const std::uint32_t code) {}
+
+  virtual key_triger(const std::uint32_t code) {}
 
  private:
-  typedef boost::mpl::string<'TEST'> window_class_name;
-
   static detail::handle init_window() {
-    // 一回だけ呼ぶように仕掛ける必要がある
-    detail::regist_window_class<window_class_name>();
-    return detail::create_window<window_class_name>();
+    const utility::call_once once([] {detail::regist_window_class("TEST");});
+    return detail::create_window("TEST");
   }
 
-  static LRESULT CALLBACK procedure(const HWND window_handle, const UINT message, const WPARAM wp, const LPARAM lp) {
+  LRESULT procedure(const HWND window_handle, const UINT message, const WPARAM wp, const LPARAM lp) {
     switch (message) {
-      case WM_CLOSE:
+      case WM_KEYDOWN:
+        key_down(wp);
+        if (!(lp & (1 << 30))) {
+          key_triger(wp);
+        }
+        break;
+      case WM_KEYUP:
+        key_up(wp);
+        break;
+      case WM_DESTROY:
         PostQuitMessage(0);
         break;
       default:
-        return DefWindowProc(window_handle, message, wp, lp);
+        return DefSubclassProc(window_handle, message, wp, lp);
     }
     return 0;
+  }
+
+  static LRESULT CALLBACK subclass_procedure(const HWND window_handle,
+                                             const UINT message,
+                                             const WPARAM wp,
+                                             const LPARAM lp,
+                                             const UINT_PTR self,
+                                             const DWORD_PTR ref) {
+    assert(reinterpret_cast<main_window *>(self));
+    return reinterpret_cast<main_window *>(self)->procedure(window_handle, message, wp, lp);
   }
 
   const detail::handle handle_;

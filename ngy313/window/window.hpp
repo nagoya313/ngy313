@@ -1,60 +1,65 @@
 #pragma once
+#include <cassert>
 #include <ngy313/window/detail/singleton.hpp>
-#include <ngy313/window/detail/window.hpp>
 
 namespace ngy313 { namespace window {
 inline
 void show() {
-  detail::show(detail::window());
+  detail::window().show();
 }
 
 inline
 void hide() {
-  detail::hide(detail::window());
-}
-
-inline
-void set_caption(const utility::string_piece &caption) {
-  detail::set_caption(detail::window(), caption);
-}
-
-inline
-void set_icon() {
-  detail::set_icon(detail::window());
-}
-
-inline
-void move(const int x, const int y) {
-  detail::move(detail::window(), x, y);
-}
-
-inline
-void resize(const int width, const int height) {
-  detail::resize(detail::window(), width, height);
+  detail::window().hide();
 }
 
 inline
 std::string caption() {
-  return detail::caption(detail::window());
+  return detail::window().caption();
+}
+
+inline
+void set_caption(const utility::string_piece &text) {
+  detail::window().set_caption(text);
+  assert(text.string() == caption());
+}
+
+inline
+void set_icon() {
+  detail::window().set_icon();
 }
 
 inline
 int x() {
-  return detail::x(detail::window());
+  return detail::window().x();
 }
 
 inline
 int y() {
-  return detail::y(detail::window());
+  return detail::window().y();
+}
+
+inline
+void move(const int x_pos, const int y_pos) {
+  detail::window().move(x_pos, y_pos);
+  assert(x_pos == x());
+  assert(y_pos == y());
 }
 
 inline
 int width() {
-  return detail::width(detail::window());
+  return detail::window().width();
 }
 
 inline
 int height() {
-  return detail::height(detail::window());
+  return detail::window().height();
+}
+
+inline
+void resize(const int width_size, const int height_size) {
+  detail::window().resize(width_size, height_size);
+  assert(width_size == width());
+  assert(height_size == height());
 }
 }}
