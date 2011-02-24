@@ -7,6 +7,8 @@
 #include <ngy313/utility/if_cc.hpp>
 
 namespace ngy313 { namespace graphic {
+#pragma warning(disable: 4512)
+
 template <bool Filled>
 class triangle_base 
     : public drawable<triangle_base<Filled>, 
@@ -62,6 +64,8 @@ class triangle_base
 
   friend class drawable_access;
 };
+
+#pragma warning(default: 4512)
 
 typedef triangle_base<true> triangle;
 typedef triangle_base<false> line_triangle;

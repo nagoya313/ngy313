@@ -20,7 +20,9 @@ class draw : private boost::noncopyable {
  private:
   void common_draw() const {
     assert(device_);
-    // 空のクラスが展開されたとき最適化がかかるか審議
+    // 空のクラスが展開されたとき最適化がかかるか審議-mplなしの現状かかる
+    // テクスチャステージとアドレッシングはmplのvectorにしてmplのfor_eachで回す
+    const scoped_texture_stage<typename Drawable::texture_stage_tuple_type> texture_stage(device_);
     const scoped_addressing<typename Drawable::addressing_tuple_type> addressing(device_);
     const scoped_blend<typename Drawable::blend_pair_type> blend(device_);
     set_texture(device_, drawable_);

@@ -1,6 +1,7 @@
 #pragma once
 #include <utility>
 #include <boost/bind.hpp>
+#include <boost/noncopyable.hpp>
 #include <boost/signals2/trackable.hpp>
 #include <ngy313/graphic/detail/texture.hpp>
 #include <ngy313/graphic/texture.hpp>
@@ -15,7 +16,7 @@
 #include <ngy313/utility/string_piece.hpp>
 
 namespace ngy313 { namespace graphic {
-class text_image : public boost::signals2::trackable {
+class text_image : public boost::signals2::trackable, private boost::noncopyable {
  public: 
   text_image(const utility::string_piece &str, const font &ft) : font_(font_access::font(ft)), 
                                                                  size_(text_size(str, ft)),
@@ -65,6 +66,8 @@ class text_image : public boost::signals2::trackable {
   friend class detail::texture_core_access;
 };
 
+#pragma warning(disable: 4512)
+
 class text : public drawable<text, 4, 2, image_2d_fvf_tag, triangle_strip_primitive_tag>, public texture {
  public:
   text(const float x, const float y, const utility::string_piece &str, const font &ft) 
@@ -86,4 +89,6 @@ class text : public drawable<text, 4, 2, image_2d_fvf_tag, triangle_strip_primit
 
   friend class drawable_access;
 };
+
+#pragma warning(default: 4512)
 }}

@@ -5,6 +5,8 @@
 #include <ngy313/graphic/primitive_tag.hpp>
 
 namespace ngy313 { namespace graphic {
+#pragma warning(disable: 4512)
+
 class sprite : public drawable<sprite, 4, 2, image_2d_fvf_tag, triangle_strip_primitive_tag>, public texture {
  public:
   template <typename Image>
@@ -51,4 +53,6 @@ class size_sprite : public drawable<size_sprite, 4, 2, image_2d_fvf_tag, triangl
 
   friend class drawable_access;
 };
+
+#pragma warning(default: 4512)
 }}

@@ -9,7 +9,7 @@
 #include <ngy313/utility/com_delete.hpp>
 #include <ngy313/utility/intrusive_com_delete.hpp>
 #include <ngy313/window/detail/fwd.hpp>
-#include <ngy313/window/detail/window.hpp>
+#include <ngy313/window/detail/main_window.hpp>
 
 namespace ngy313 { namespace graphic { namespace detail {
 inline
@@ -43,27 +43,28 @@ base_handle create_base() {
 }
 
 inline
-device_handle create_device(const window::detail::handle &window, const base_handle &direct3d, const bool windowed) {
-  assert(window);
+device_handle create_device(const window::detail::main_window &window, 
+                            const base_handle &direct3d,
+                            const bool windowed) {
+  assert(window.width());
   assert(direct3d);
-  // ‰ð‘œ“x‚ÌŽw’è‚ÌŽÀ‘•‚ð‚¿‚á‚ñ‚Æ‚â‚é
-  D3DPRESENT_PARAMETERS present_parameters = init_present_parameters(windowed, 640, 480);
+  D3DPRESENT_PARAMETERS present_parameters = init_present_parameters(windowed, window.width(), window.height());
   LPDIRECT3DDEVICE9 device;
   if (FAILED(direct3d->CreateDevice(D3DADAPTER_DEFAULT, 
                                     D3DDEVTYPE_HAL, 
-                                    window, 
+                                    window.window(), 
                                     D3DCREATE_HARDWARE_VERTEXPROCESSING,
                                     &present_parameters,
                                     &device))) {
     if (FAILED(direct3d->CreateDevice(D3DADAPTER_DEFAULT,
                                       D3DDEVTYPE_HAL, 
-                                      window, 
+                                      window.window(), 
                                       D3DCREATE_SOFTWARE_VERTEXPROCESSING,
                                       &present_parameters,
                                       &device))) {
       const HRESULT ref_hr = direct3d->CreateDevice(D3DADAPTER_DEFAULT,
                                                     D3DDEVTYPE_REF,
-                                                    window, 
+                                                    window.window(), 
                                                     D3DCREATE_SOFTWARE_VERTEXPROCESSING,
                                                     &present_parameters, 
                                                     &device);

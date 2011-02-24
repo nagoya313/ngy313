@@ -2,20 +2,21 @@
 #include <ngy313/graphic/drawable.hpp>
 #include <ngy313/graphic/fvf_tag.hpp>
 #include <ngy313/graphic/primitive_tag.hpp>
+#include <ngy313/graphic/vertex_member.hpp>
 
 namespace ngy313 { namespace graphic {
+#pragma warning(disable: 4512)
+
 class pixel : public drawable<pixel, 1, 1, shape_2d_fvf_tag, point_list_primitive_tag> {
  public:
   pixel(const float x, const float y) : vertex_(init_vertex(x, y)) {}
 
-  // –¢ŽÀ‘•
   float x() const {
-    return 0.f;
+    return vertex_member_at<position>(vertex_[0]).x;
   }
 
-  // –¢ŽÀ‘•
   float y() const {
-    return 0.f;
+    return vertex_member_at<position>(vertex_[0]).y;
   }
 
  private:
@@ -34,4 +35,6 @@ class pixel : public drawable<pixel, 1, 1, shape_2d_fvf_tag, point_list_primitiv
 
   friend class drawable_access;
 };
+
+#pragma warning(default: 4512)
 }}

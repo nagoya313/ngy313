@@ -7,6 +7,8 @@
 #include <ngy313/graphic/vertex_member.hpp>
 
 namespace ngy313 { namespace graphic {
+#pragma warning(disable: 4512)
+
 struct transform_extend {
   transform_extend(const float base_point_x, const float base_point_y, const float extend) 
       : base_point_x_(base_point_x), base_point_y_(base_point_y), extend_(extend) {}
@@ -45,10 +47,14 @@ struct extended_adaptor : public drawable_adaptor<extended_adaptor<Drawable>, Dr
   friend class adaptor_access;
 };
 
+#pragma warning(default: 4512)
+
 template <typename Drawable, typename BasePoint>
 extended_adaptor<Drawable> make_extended(const Drawable &drawable, const BasePoint &base_point, const float extend) { 
   return extended_adaptor<Drawable>(drawable, base_point, extend);
 }
+
+#pragma warning(disable: 4512)
 
 template <typename BasePoint>
 struct extended_t : public adaptor::base<extended_t<BasePoint>> {
@@ -64,10 +70,14 @@ struct extended_t : public adaptor::base<extended_t<BasePoint>> {
   const float extend_;
 };
 
+#pragma warning(default: 4512)
+
 template <typename BasePoint>
 extended_t<BasePoint> extended(const BasePoint &base_point, const float extend) {
   return extended_t<BasePoint>(base_point, extend);
 }
+
+#pragma warning(disable: 4512)
 
 template <typename Position>
 struct transform_extend_one {
@@ -101,6 +111,8 @@ struct extended_one_adaptor : public drawable_adaptor<extended_one_adaptor<Posit
   friend class adaptor_access;
 };
 
+#pragma warning(default: 4512)
+
 template <typename Position, typename Drawable, typename BasePoint>
 extended_one_adaptor<Position, Drawable> make_extended_one(const Drawable &drawable,
                                                            const BasePoint &base_point,
@@ -122,6 +134,8 @@ extended_one_adaptor<position_y, Drawable> make_extended_y(const Drawable &drawa
   return make_extended_one<position_y>(drawable, base_point, extend);
 }
 
+#pragma warning(disable: 4512)
+
 template <typename BasePoint, typename Position>
 struct extended_one_t : public adaptor::base<extended_one_t<BasePoint, Position>> {
   extended_one_t(const BasePoint &base_point, const float extend)
@@ -137,6 +151,8 @@ struct extended_one_t : public adaptor::base<extended_one_t<BasePoint, Position>
   const float extend_;
 };
 
+#pragma warning(default: 4512)
+
 template <typename BasePoint>
 extended_one_t<BasePoint, position_x> extended_x(const BasePoint &base_point, const float extend) {
   return extended_one_t<BasePoint, position_x>(base_point, extend);
@@ -146,6 +162,8 @@ template <typename BasePoint>
 extended_one_t<BasePoint, position_y> extended_y(const BasePoint &base_point, const float extend) {
   return extended_one_t<BasePoint, position_y>(base_point, extend);
 }
+
+#pragma warning(disable: 4512)
 
 struct transform_extend_xy {
   transform_extend_xy(const float base_point_x,
@@ -192,6 +210,8 @@ struct extended_xy_adaptor : public drawable_adaptor<extended_xy_adaptor<Drawabl
   friend class adaptor_access;
 };
 
+#pragma warning(default: 4512)
+
 template <typename Drawable, typename BasePoint>
 extended_xy_adaptor<Drawable> make_extended_xy(const Drawable &drawable,
                                                const BasePoint &base_point,
@@ -199,6 +219,8 @@ extended_xy_adaptor<Drawable> make_extended_xy(const Drawable &drawable,
                                                const float extend_y) {
   return extended_xy_adaptor<Drawable>(drawable, base_point, extend_x, extend_y);
 }
+
+#pragma warning(disable: 4512)
 
 template <typename BasePoint>
 struct extended_xy_t : public adaptor::base<extended_xy_t<BasePoint>> {
@@ -215,6 +237,8 @@ struct extended_xy_t : public adaptor::base<extended_xy_t<BasePoint>> {
   const float extend_x_;
   const float extend_y_;
 };
+
+#pragma warning(default: 4512)
 
 template <typename BasePoint>
 extended_xy_t<BasePoint> extended_xy(const BasePoint &base_point, const float extend_x, const float extend_y) {

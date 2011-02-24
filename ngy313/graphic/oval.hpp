@@ -24,6 +24,8 @@ namespace ngy313 { namespace graphic {
   0.f,\
   1.f}, 0xFFFFFFFF},
 
+#pragma warning(disable: 4512)
+
 template <bool Filled>
 class oval_base : public drawable<oval_base<Filled>, 
                                   utility::if_cc<Filled, std::size_t, 62, 60>::value,
@@ -35,26 +37,6 @@ class oval_base : public drawable<oval_base<Filled>,
  public:
   oval_base(const float x, const float y, const float rx, const float ry)
       : vertex_(init_vertex<Filled>(x, y, rx, ry)) {}
-
-  // –¢ŽÀ‘•
-  float x() const {
-    return 0.f;
-  }
-
-  // –¢ŽÀ‘•
-  float y() const {
-    return 0.f;
-  }
-
-  // –¢ŽÀ‘•
-  float rx() const {
-    return 0.f;
-  }
-
-  // –¢ŽÀ‘•
-  float ry() const {
-    return 0.f;
-  }
 
  private:
   vertex_array_type vertex() const {
@@ -90,6 +72,8 @@ class oval_base : public drawable<oval_base<Filled>,
 
   friend class drawable_access;
 };
+
+#pragma warning(default: 4512)
 
 #undef NGY313_OVAL_VERTEX_ELEM_GEN
 #undef NGY313_OVAL_VERTEX_SIZE

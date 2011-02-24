@@ -2,6 +2,7 @@
 #include <cassert>
 #include <cstdint>
 #include <type_traits>
+#include <boost/mpl/at.hpp>
 #include <ngy313/graphic/texture_stage_tag.hpp>
 #include <ngy313/graphic/detail/fwd.hpp>
 #include <ngy313/utility/com_delete.hpp>
@@ -30,6 +31,15 @@ template <typename ColorTuple>
 void set_texture_color(const device_handle &device,
                        const std::uint32_t stage,
                        typename std::enable_if<std::is_same<typename ColorTuple::operator_type, 
+                                                            disable_texture_operator_tag>::value>::type * = nullptr) {
+  assert(device);
+  set_color_option(device, stage, ColorTuple::operator_type::value);
+}
+
+template <typename ColorTuple>
+void set_texture_color(const device_handle &device,
+                       const std::uint32_t stage,
+                       typename std::enable_if<std::is_same<typename ColorTuple::operator_type, 
                                                             arg1_texture_operator_tag>::value>::type * = nullptr) {
   assert(device);
   set_color_arg1(device, stage, ColorTuple::arg1_type::value);
@@ -40,7 +50,9 @@ template <typename ColorTuple>
 void set_texture_color(const device_handle &device,
                        const std::uint32_t stage,
                        typename std::enable_if<!std::is_same<typename ColorTuple::operator_type, 
-                                                             arg1_texture_operator_tag>::value>::type * = nullptr) {
+                                                             arg1_texture_operator_tag>::value &&
+                                               !std::is_same<typename ColorTuple::operator_type, 
+                                                             disable_texture_operator_tag>::value>::type * = nullptr) {
   assert(device);
   set_color_arg1(device, stage, ColorTuple::arg1_type::value);
   set_color_option(device, stage, ColorTuple::operator_type::value);
@@ -69,6 +81,15 @@ template <typename AlphaTuple>
 void set_texture_alpha(const device_handle &device,
                        const std::uint32_t stage,
                        typename std::enable_if<std::is_same<typename AlphaTuple::operator_type, 
+                                                            disable_texture_operator_tag>::value>::type * = nullptr) {
+  assert(device);
+  set_alpha_option(device, stage, AlphaTuple::operator_type::value);
+}
+
+template <typename AlphaTuple>
+void set_texture_alpha(const device_handle &device,
+                       const std::uint32_t stage,
+                       typename std::enable_if<std::is_same<typename AlphaTuple::operator_type, 
                                                             arg1_texture_operator_tag>::value>::type * = nullptr) {
   assert(device);
   set_alpha_arg1(device, stage, AlphaTuple::arg1_type::value);
@@ -77,9 +98,11 @@ void set_texture_alpha(const device_handle &device,
 
 template <typename AlphaTuple>
 void set_texture_alpha(const device_handle &device,
-                        const std::uint32_t stage,
-                        typename std::enable_if<!std::is_same<typename AlphaTuple::operator_type, 
-                                                              arg1_texture_operator_tag>::value>::type * = nullptr) {
+                       const std::uint32_t stage,
+                       typename std::enable_if<!std::is_same<typename AlphaTuple::operator_type, 
+                                                             arg1_texture_operator_tag>::value &&
+                                               !std::is_same<typename AlphaTuple::operator_type, 
+                                                             disable_texture_operator_tag>::value>::type * = nullptr) {
   assert(device);
   set_alpha_arg1(device, stage, AlphaTuple::arg1_type::value);
   set_alpha_option(device, stage, AlphaTuple::operator_type::value);
@@ -102,31 +125,32 @@ void set_texture_stage(const device_handle &device,
   set_texture_color<typename TextureStageTuple::color_type>(device, TextureStageTuple::stage_type::value);
   set_texture_alpha<typename TextureStageTuple::alpha_type>(device, TextureStageTuple::stage_type::value);
 }
-/*
-template <typename AddressingTuple, typename T = void>
-class scoped_addressing;
 
-template <typename AddressingTuple>
-class scoped_addressing<AddressingTuple, typename std::enable_if<!std::is_same<void, AddressingTuple>::value>::type> {
+template <typename TextureStageTuple, typename T = void>
+class scoped_texture_stage;
+
+template <typename TextureStageTuple>
+class scoped_texture_stage<TextureStageTuple, 
+                           typename std::enable_if<!std::is_same<void, TextureStageTuple>::value>::type> {
  public:
-  explicit scoped_addressing(const device_handle &device) : device_(device) {
+  explicit scoped_texture_stage(const device_handle &device) : device_(device) {
     assert(device_);
-    set_addressing_tuple<AddressingTuple>(device_);
+    set_texture_stage<TextureStageTuple>(device_);
   }
 
-  ~scoped_addressing() {
+  ~scoped_texture_stage() {
     assert(device_);
-    set_blend_pair<default_addressing<AddressingTuple::stage_type::value>::type>(device_);
+    set_texture_stage<boost::mpl::at_c<default_stage, TextureStageTuple::stage_type::value>::type>(device_);
   }
 
  private:
   const device_handle &device_;
 };
 
-template <typename AddressingTuple>
-class scoped_addressing<AddressingTuple, typename std::enable_if<std::is_same<void, AddressingTuple>::value>::type> {
+template <typename TextureStageTuple>
+class scoped_texture_stage<TextureStageTuple, 
+                           typename std::enable_if<std::is_same<void, TextureStageTuple>::value>::type> {
  public:
-  explicit scoped_addressing(const device_handle &) {}
+  explicit scoped_texture_stage(const device_handle &) {}
 };
-*/
 }}}

@@ -3,6 +3,8 @@
 #include <ngy313/utility/string_piece.hpp>
 
 namespace ngy313 { namespace graphic {
+#pragma warning(disable: 4512)
+
 class image {
  public: 
   explicit image(const utility::string_piece &file_name) : texture_(detail::init_texture_key(file_name.string())) {}
@@ -24,4 +26,6 @@ class image {
 
   friend class detail::texture_access;
 };
+
+#pragma warning(default: 4512)
 }}

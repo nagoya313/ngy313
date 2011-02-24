@@ -2,6 +2,8 @@
 #include <ngy313/graphic/detail/texture.hpp>
 
 namespace ngy313 { namespace graphic {
+#pragma warning(disable: 4512)
+
 class texture {
  public:
   typedef texture texture_type;
@@ -54,4 +56,6 @@ class multi_texture {
 
   friend class detail::texture_core_access;
 };
+
+#pragma warning(default: 4512)
 }}

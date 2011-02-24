@@ -10,7 +10,9 @@
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/flyweight.hpp>
+#pragma warning(disable: 4512)
 #include <boost/flyweight/key_value.hpp>
+#pragma warning(default: 4512)
 #include <boost/functional/hash.hpp>
 #include <d3dx9.h>
 #include <ngy313/graphic/detail/device.hpp>
@@ -64,6 +66,7 @@ std::pair<float, float> png_size(const std::vector<std::uint8_t> &data) {
 }
 
 std::pair<float, float> jpeg_size(const std::vector<std::uint8_t> &data) {
+  UNREFERENCED_PARAMETER(data);
   return std::make_pair(0.f, 0.f);
 }
 
@@ -129,10 +132,16 @@ typedef boost::flyweights::flyweight<boost::flyweights::key_value<
                                          std::string, 
                                          image_binary<default_image_loader>>> image_binary_type;
 
+#pragma warning(disable: 4512)
+
 struct texture_key {
+  texture_key(const device_handle &dev, const std::string &nam) : device(dev), name(nam) {}
+
   const device_handle &device;
   std::string name;
 };
+
+#pragma warning(default: 4512)
 
 inline
 bool operator ==(const texture_key &lhs, const texture_key &rhs) {
@@ -173,6 +182,8 @@ std::tuple<texture_handle, float, float> create_texture_from_file(const texture_
                          static_cast<float>(image_info.Height));
 }
 
+#pragma warning(disable: 4512)
+
 class texture_data {
  public:
   explicit texture_data(const texture_key &key) : data_(create_texture_from_file(key)) {}
@@ -193,10 +204,11 @@ class texture_data {
   const std::tuple<texture_handle, float, float> data_;
 };
 
+#pragma warning(default: 4512)
+
 inline
 texture_key init_texture_key(const utility::string_piece &file_name) {
-  const texture_key key = {device().device(), file_name.string()};
-  return key;
+  return texture_key(device().device(), file_name.string());
 }
 
 //typedef boost::flyweights::flyweight<boost::flyweights::key_value<std::string, image_binary<default_image_loader>>> texture_type;

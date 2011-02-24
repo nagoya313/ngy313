@@ -5,7 +5,9 @@
 #include <system_error>
 #include <vector>
 #include <boost/noncopyable.hpp>
+#pragma warning(disable: 4512)
 #include <boost/signals2/signal.hpp>
+#pragma warning(default: 4512)
 #include <ngy313/utility/call_once.hpp>
 #include <ngy313/utility/string_piece.hpp>
 #include <ngy313/window/detail/window.hpp>
@@ -131,6 +133,7 @@ class main_window : private boost::noncopyable {
                                              const LPARAM lp,
                                              const UINT_PTR self,
                                              const DWORD_PTR ref) {
+    UNREFERENCED_PARAMETER(ref);
     assert(reinterpret_cast<main_window *>(self));
     return reinterpret_cast<main_window *>(self)->procedure(window_handle, message, wp, lp);
   }

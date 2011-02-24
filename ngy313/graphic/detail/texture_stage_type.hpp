@@ -30,7 +30,7 @@ const texture_option kTextureOptionBumpEnvMap = D3DTOP_BUMPENVMAP;
 const texture_option kTextureOptionBumpEnvMapLuminance = D3DTOP_BUMPENVMAPLUMINANCE;
 const texture_option kTextureOptionDotProduct3 = D3DTOP_DOTPRODUCT3;
 const texture_option kTextureOptionMultiPlyadd = D3DTOP_MULTIPLYADD;
-const texture_option kTextureOptionLeap = D3DTOP_LERP;
+const texture_option kTextureOptionLerp = D3DTOP_LERP;
 
 // ëÂêlÇµÇ≠DWORDÇ≈Ç‡Ç¢Ç¢Ç©Ç‡ÇµÇÍÇ»Ç¢
 typedef std::uint32_t texture_arg;

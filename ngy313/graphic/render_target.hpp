@@ -19,20 +19,20 @@ class render_target : public boost::signals2::trackable, private boost::noncopya
   render_target(const float width, const float height) 
       : width_(width),
         height_(height),
-        target_(detail::create_texture(detail::device(), width_, height_)),
+        target_(detail::create_texture(detail::device().device(), width_, height_)),
         target_surface_(detail::surface_level(target_)),
-        z_and_stencil_(detail::create_z_and_stencil(detail::device(), width_, height_)),
+        z_and_stencil_(detail::create_z_and_stencil(detail::device().device(), width_, height_)),
         viewport_(detail::init_viewport(width_, height_)),
         after_reset_() {
-    detail::before_reset().connect(boost::bind(&render_target::release, this, _1));
-    detail::after_reset().connect(boost::bind(&render_target::reset, this, _1));
+    detail::device().before_reset.connect(boost::bind(&render_target::release, this, _1));
+    detail::device().after_reset.connect(boost::bind(&render_target::reset, this, _1));
   }
 
   void begin() const {
-    detail::set_render_target(detail::device(), target_surface_);
-    detail::set_z_and_stencil(detail::device(), z_and_stencil_);
-    detail::set_viewport(detail::device(), viewport_);
-    detail::init_device(detail::device());
+    detail::set_render_target(detail::device().device(), target_surface_);
+    detail::set_z_and_stencil(detail::device().device(), z_and_stencil_);
+    detail::set_viewport(detail::device().device(), viewport_);
+    detail::init_device(detail::device().device());
   }
 
   float width() const {
@@ -44,6 +44,7 @@ class render_target : public boost::signals2::trackable, private boost::noncopya
   }
 
   void release(const detail::device_handle &device) {
+    UNREFERENCED_PARAMETER(device);
     target_.reset();
     target_surface_.reset();
     z_and_stencil_.reset();
@@ -81,9 +82,9 @@ class render_target : public boost::signals2::trackable, private boost::noncopya
 
 class scoped_render_target : private boost::noncopyable {
  public:
-  explicit scoped_render_target(const render_target &target) : viewport_(detail::device()),
-                                                               back_buffer_(detail::device()),
-                                                               back_z_and_stencil_(detail::device()) {
+  explicit scoped_render_target(const render_target &target) : viewport_(detail::device().device()),
+                                                               back_buffer_(detail::device().device()),
+                                                               back_z_and_stencil_(detail::device().device()) {
     target.begin();
   }
 

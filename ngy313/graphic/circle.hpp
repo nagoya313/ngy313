@@ -24,6 +24,8 @@ namespace ngy313 { namespace graphic {
   0.f,\
   1.f}, 0xFFFFFFFF},
 
+#pragma warning(disable: 4512)
+
 template <bool Filled>
 class circle_base : public drawable<circle_base<Filled>, 
                                     utility::if_cc<Filled, std::size_t, 62, 60>::value,
@@ -35,21 +37,6 @@ class circle_base : public drawable<circle_base<Filled>,
  public:
   circle_base(const float x, const float y, const float r)
       : vertex_(init_vertex<Filled>(x, y, r)) {}
-
-  // –¢ŽÀ‘•
-  float x() const {
-    return 0.f;
-  }
-
-  // –¢ŽÀ‘•
-  float y() const {
-    return 0.f;
-  }
-
-  // –¢ŽÀ‘•
-  float r() const {
-    return 0.f;
-  }
 
  private:
   vertex_array_type vertex() const {
@@ -84,6 +71,8 @@ class circle_base : public drawable<circle_base<Filled>,
 
   friend class drawable_access;
 };
+
+#pragma warning(default: 4512)
 
 #undef NGY313_CIRCLE_VERTEX_ELEM_GEN
 #undef NGY313_CIRCLE_VERTEX_SIZE

@@ -2,6 +2,9 @@
 #include <cassert>
 #include <stdexcept>
 #include <string>
+#include <boost/bind.hpp>
+#include <boost/signals2/trackable.hpp>
+#include <boost/noncopyable.hpp>
 #include <boost/flyweight.hpp>
 #include <boost/flyweight/key_value.hpp>
 #include <boost/functional/hash.hpp>
@@ -10,11 +13,17 @@
 #include <ngy313/utility/string_piece.hpp>
 
 namespace ngy313 { namespace graphic { namespace detail {
+#pragma warning(disable: 4512)
+
 struct font_key {
+  font_key(const device_handle &dev, const int siz, const std::string &nam) : device(dev), size(siz), name(nam) {}
+
   const device_handle &device;
   int size;
   std::string name;
 };
+
+#pragma warning(default: 4512)
 
 inline
 bool operator ==(const font_key &lhs, const font_key &rhs) {
@@ -51,9 +60,12 @@ font_handle create_font(const font_key &key) {
   return font_handle(ft, false);
 }
 
-class font_data {
+class font_data : public boost::signals2::trackable, private boost::noncopyable {
  public:
-  explicit font_data(const font_key &key) : size_(key.size), name_(key.name), font_(create_font(key)) {}
+  explicit font_data(const font_key &key) : size_(key.size), name_(key.name), font_(create_font(key)) {
+    detail::device().before_reset.connect(boost::bind(&font_data::release, this));
+    detail::device().after_reset.connect(boost::bind(&font_data::reset, this));
+  }
 
   int size() const {
     return size_;
@@ -68,6 +80,14 @@ class font_data {
   }
 
  private:
+  void release() {
+    font_->OnLostDevice();
+  }
+
+  void reset() {
+    font_->OnResetDevice();
+  }
+
   const int size_;
   const std::string name_;
   const font_handle font_;
@@ -75,8 +95,7 @@ class font_data {
 
 inline
 font_key init_font_key(const int size, const utility::string_piece &font_name) {
-  const font_key key = {device(), size, font_name.string()};
-  return key;
+  return font_key(device().device(), size, font_name.string());
 }
 
 typedef boost::flyweights::flyweight<boost::flyweights::key_value<font_key, font_data>> font_type;

@@ -1,7 +1,11 @@
 #pragma once
 #include <cstdint>
 #include <array>
+#include <bitset>
+#include <boost/range/irange.hpp>
+#include <boost/range/algorithm/for_each.hpp>
 #include <ngy313/input/detail/input.hpp>
+#include <ngy313/window/detail/singleton.hpp>
 
 namespace ngy313 { namespace input { namespace keybord {
 enum key_code {
@@ -65,9 +69,16 @@ bool key_pressed(const key_code key) {
 }
 
 inline
-std::array<std::uint8_t, 256> all_key_state() {
-  std::array<std::uint8_t, 256> key_state;
-  GetKeyboardState(&key_state.front());
+std::bitset<256> all_key_state() {
+  std::bitset<256> key_state;
+  boost::for_each(boost::irange(0, 256), [&](const int x) {
+    key_state[x] = ngy313::input::detail::pressed(x);
+  });
   return key_state;
+}
+
+inline
+boost::signals2::signal<void (std::uint32_t)> &key_down_signal() {
+  return window::detail::window().key_down;
 }
 }}}

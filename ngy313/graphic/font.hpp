@@ -1,33 +1,24 @@
 #pragma once
-#include <boost/bind.hpp>
-#include <boost/signals2/trackable.hpp>
 #include <ngy313/graphic/detail/font.hpp>
 
 namespace ngy313 { namespace graphic {
-class font : public boost::signals2::trackable {
+#pragma warning(disable: 4512)
+
+class font {
  public:
-  font(const int size, const utility::string_piece &name) : font_(detail::init_font_key(size, name)) {
-    detail::before_reset().connect(boost::bind(&font::release, this));
-    detail::after_reset().connect(boost::bind(&font::reset, this));
-  }
+  font(const int size, const utility::string_piece &name) : font_(detail::init_font_key(size, name)) {}
 
  private:
   const detail::font_handle &handle() const {
     return font_.get().font();
   }
 
-  void release() {
-    font_.get().font()->OnLostDevice();
-  }
-
-  void reset() {
-    font_.get().font()->OnResetDevice();
-  }
-
   const detail::font_type font_;
 
   friend class font_access;
 };
+
+#pragma warning(default: 4512)
 
 class font_access {
 private:
