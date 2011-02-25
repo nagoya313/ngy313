@@ -16,6 +16,7 @@
 #include <boost/preprocessor/repeat_from_to.hpp>
 
 namespace ngy313 { namespace graphic {
+// {}‚Ì–â‘è‚ª‰ğŒˆ‚µ‚½‚çboost::fusion‚ğg‚Á‚½À‘•‚ÉØ‚è‘Ö‚¦‚é—\’è
 template <typename List, std::size_t Size>
 struct vertex;
 

@@ -3,6 +3,8 @@
 #include <ngy313/graphic/shape_position.hpp>
 
 namespace ngy313 { namespace graphic {
+#pragma warning(disable: 4512)
+
 // ‚¢‚¸‚êŽOŽŸŒ³‚à‘Î‰ž‚·‚é
 struct base_point_set {
   base_point_set(const float x, const float y) : x_(x), y_(y) {}
@@ -58,6 +60,8 @@ struct base_point_set_at {
  private:
   const std::size_t at_;
 };
+
+#pragma warning(default: 4512)
 
 const struct base_point_set_center_t {
   template <typename Drawable>

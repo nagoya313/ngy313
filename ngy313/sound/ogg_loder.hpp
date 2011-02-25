@@ -1,4 +1,5 @@
 #pragma once
+// ライブラリ名は環境ごとに違いそうだからユーザーにリンクしてもらう方向の方がよさそう
 #ifndef NDEBUG
 #pragma comment(lib, "libogg_static_d.lib")
 #pragma comment(lib, "libvorbis_static_d.lib")

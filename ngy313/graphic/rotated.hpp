@@ -12,7 +12,7 @@ struct transform_rotate {
   transform_rotate(const float base_point_x, const float base_point_y, const float angle) 
       : base_point_x_(base_point_x), base_point_y_(base_point_y), cos_(std::cos(angle)), sin_(std::sin(angle)) {}
 
-   template <typename Vertex>
+  template <typename Vertex>
   Vertex operator ()(Vertex vertex) const {
     const float x = vertex_member_at<position>(vertex).x - base_point_x_;
     const float y = vertex_member_at<position>(vertex).y - base_point_y_;
