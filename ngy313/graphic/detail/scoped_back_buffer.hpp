@@ -1,6 +1,6 @@
 #pragma once
 #include <boost/noncopyable.hpp>
-#include <ngy313/graphic/detail/device.hpp>
+#include <ngy313/graphic/detail/render_targert.hpp>
 
 namespace ngy313 { namespace graphic { namespace detail {
 class scoped_back_buffer : private boost::noncopyable {

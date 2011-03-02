@@ -2,6 +2,8 @@
 #include <ngy313/graphic/detail/texture.hpp>
 
 namespace ngy313 { namespace graphic {
+struct texture_tag {};
+
 #pragma warning(disable: 4512)
 
 class texture {
@@ -26,7 +28,7 @@ class texture {
     return texture1_;
   }
 
-  const detail::texture_handle texture1_;
+  const detail::texture_handle &texture1_;
   const float width_;
   const float height_;
 
@@ -51,8 +53,8 @@ class multi_texture {
   }
 
  private:
-  const detail::texture_handle texture1_;
-  const detail::texture_handle texture2_;
+  const detail::texture_handle &texture1_;
+  const detail::texture_handle &texture2_;
 
   friend class detail::texture_core_access;
 };

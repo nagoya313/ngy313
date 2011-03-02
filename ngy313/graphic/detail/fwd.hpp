@@ -6,7 +6,6 @@
 #pragma comment(lib, "d3dx9.lib")
 #endif
 #include <memory>
-#include <boost/intrusive_ptr.hpp>
 #include <boost/signals2/signal.hpp>
 #include <d3d9.h>
 #include <d3dx9.h>
@@ -18,9 +17,9 @@ struct com_delete;
 namespace ngy313 { namespace graphic { namespace detail {
 typedef std::unique_ptr<IDirect3D9, utility::com_delete> base_handle;
 typedef std::unique_ptr<IDirect3DDevice9, utility::com_delete> device_handle;
-typedef boost::intrusive_ptr<IDirect3DTexture9> texture_handle;
+typedef std::unique_ptr<IDirect3DTexture9, utility::com_delete> texture_handle;
 typedef std::unique_ptr<IDirect3DSurface9, utility::com_delete> surface_handle;
-typedef boost::intrusive_ptr<ID3DXFont> font_handle;
+typedef std::unique_ptr<ID3DXFont, utility::com_delete> font_handle;
 
 typedef D3DVIEWPORT9 viewport;
 

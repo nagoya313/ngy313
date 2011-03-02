@@ -52,4 +52,23 @@ struct tex_t {
   typedef tex type;
   std::array<uv_t, Size> tex_array;
 };
+
+struct rhw_position_t_ {
+  typedef position type;
+
+  rhw_position_t_(const float p1, const float p2) : x(p1), y(p2), z(0.f), rhw(1.f) {}
+  
+  float x;
+  float y;
+  float z;
+  float rhw;
+};
+
+struct diffuse_t_ {
+  typedef diffuse type;
+
+  explicit diffuse_t_(const std::uint32_t c) : color(c) {}
+
+  std::uint32_t color;
+};
 }}

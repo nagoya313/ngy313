@@ -2,6 +2,7 @@
 #include <cassert>
 #include <boost/noncopyable.hpp>
 #include <ngy313/graphic/detail/device.hpp>
+#include <ngy313/graphic/detail/render_targert.hpp>
 #include <ngy313/window/detail/main_window.hpp>
 
 namespace ngy313 { namespace graphic { namespace detail {
@@ -21,19 +22,33 @@ class graphic_device : private boost::noncopyable {
   }
 
   void present() {
-    detail::present(device(), windowed(), before_reset, after_reset);
+    assert(device_);
+    switch (device_->Present(nullptr, nullptr, nullptr, nullptr)) {
+      case D3DERR_DEVICELOST:
+	      if (device_->TestCooperativeLevel() == D3DERR_DEVICENOTRESET) {
+          reset();
+        }
+	      break;
+      case D3DERR_DRIVERINTERNALERROR:
+	      throw std::runtime_error("内部ドライバエラーが発生しました");
+	      break;
+      default:
+	      break;
+    }
   }
 
   void resize(const int width_size, const int height_size) {
     width_ = width_size;
     height_ = height_size;
-    reset(device(), windowed(), width_, height_, before_reset, after_reset);
+    reset();
     assert(width_size == width());
     assert(height_size == height());
   }
 
-  void change_screen_mode(const bool windowed) {
-    reset(device(), windowed, width(), height(), before_reset, after_reset);
+  void change_screen_mode(const bool flag) {
+    windowed_ = flag;
+    reset();
+    assert(windowed() == flag);
   }
 
   int width() const {
@@ -83,6 +98,17 @@ class graphic_device : private boost::noncopyable {
   boost::signals2::signal<void (const device_handle &)> after_reset;
 
  private:
+  void reset() {
+    assert(device_);
+    D3DPRESENT_PARAMETERS present_parameter = init_present_parameters(windowed(), width(), height());
+    before_reset(device_);
+    if (FAILED(device_->Reset(&present_parameter))) {
+      throw std::runtime_error("デバイスリセットに失敗しました");
+	  }
+    after_reset(device_);
+    init_device(device_);
+  }
+
   bool windowed_;
   int width_;
   int height_;

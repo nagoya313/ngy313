@@ -57,7 +57,7 @@ class text_image : public boost::signals2::trackable, private boost::noncopyable
     return detail::texture_access::texture1(text_);
   }
 
-  const detail::font_handle font_;
+  const detail::font_handle &font_;
   const std::pair<float, float> size_;
   const std::string str_;
   render_target text_;

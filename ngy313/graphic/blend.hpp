@@ -1,5 +1,7 @@
 #pragma once
+#include <boost/mpl/pair.hpp>
 #include <ngy313/adaptor/adaptor.hpp>
+#include <ngy313/graphic/detail/key.hpp>
 #include <ngy313/graphic/adaptor.hpp>
 #include <ngy313/graphic/blend_tag.hpp>
 #include <ngy313/graphic/drawable.hpp>
@@ -7,7 +9,7 @@
 namespace ngy313 { namespace graphic {
 template <typename Drawable, typename BlendPair>
 struct blend_adaptor {
-  typedef add_drawable_adaptor<Drawable, add_blend_pair<Drawable, BlendPair>> type;
+  typedef add_drawable_adaptor<Drawable, boost::mpl::pair<detail::blend_pair_key, BlendPair>> type;
 };
 
 template <typename Drawable, typename Blend>

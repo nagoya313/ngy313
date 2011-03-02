@@ -32,10 +32,10 @@ class box_base : public drawable<box_base<Filled>,
                                        const float height,
                                        typename std::enable_if<Fill>::type * = nullptr) {
     const vertex_array_type vertex = {{
-      {{x, y, 0.f, 1.f}, 0xFFFFFFFF},
-      {{x + width, y, 0.f, 1.f}, 0xFFFFFFFF},
-      {{x, y + height, 0.f, 1.f}, 0xFFFFFFFF},
-      {{x + width, y + height, 0.f, 1.f}, 0xFFFFFFFF}
+      vertex_type(rhw_position_t_(x, y), diffuse_t_(0xFFFFFFFF)),
+      vertex_type(rhw_position_t_(x + width, y), diffuse_t_(0xFFFFFFFF)),
+      vertex_type(rhw_position_t_(x, y + height), diffuse_t_(0xFFFFFFFF)),
+      vertex_type(rhw_position_t_(x + width, y + height), diffuse_t_(0xFFFFFFFF))
     }};
     return vertex;
   }

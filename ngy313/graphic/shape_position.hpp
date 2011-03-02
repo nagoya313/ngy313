@@ -1,5 +1,7 @@
 #pragma once
+#include <boost/mpl/at.hpp>
 #include <boost/range/numeric.hpp>
+#include <ngy313/graphic/detail/key.hpp>
 #include <ngy313/graphic/drawable_access.hpp>
 #include <ngy313/graphic/fvf_traits.hpp>
 #include <ngy313/graphic/vertex_member.hpp>
@@ -92,25 +94,25 @@ struct shape_position<tex_v> {
 template <typename Drawable>
 float shape_center_x(const Drawable &drawable) {
   return boost::accumulate(drawable_access::copy_vertex(drawable), 0.f, add_position_x) / 
-         static_cast<float>(Drawable::size_type::value);
+         static_cast<float>(boost::mpl::at<typename Drawable::list_type, detail::size_key>::type::type::value);
 }
 
 template <typename Drawable>
 float shape_center_y(const Drawable &drawable) {
   return boost::accumulate(drawable_access::copy_vertex(drawable), 0.f, add_position_y) / 
-         static_cast<float>(Drawable::size_type::value);
+         static_cast<float>(boost::mpl::at<typename Drawable::list_type, detail::size_key>::type::type::value);
 }
 
 template <std::size_t Index, typename Drawable>
 float shape_center_u(const Drawable &drawable) {
   return boost::accumulate(drawable_access::copy_vertex(drawable), 0.f, add_position_u_t<Index>()) / 
-         static_cast<float>(Drawable::size_type::value);
+         static_cast<float>(boost::mpl::at<typename Drawable::list_type, detail::size_key>::type::type::value);
 }
 
 template <std::size_t Index, typename Drawable>
 float shape_center_v(const Drawable &drawable) {
   return boost::accumulate(drawable_access::copy_vertex(drawable), 0.f, add_position_v_t<Index>()) / 
-         static_cast<float>(Drawable::size_type::value);
+         static_cast<float>(boost::mpl::at<typename Drawable::list_type, detail::size_key>::type::type::value);
 }
 
 template <typename Position>

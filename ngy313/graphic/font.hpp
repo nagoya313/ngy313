@@ -22,7 +22,7 @@ class font {
 
 class font_access {
 private:
-  static detail::font_handle font(const font &ft) {
+  static const detail::font_handle &font(const font &ft) {
     return ft.handle();
   }
 

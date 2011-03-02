@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <type_traits>
 #include <boost/mpl/at.hpp>
+#include <ngy313/graphic/detail/key.hpp>
 #include <ngy313/graphic/texture_stage_tag.hpp>
 #include <ngy313/graphic/detail/fwd.hpp>
 #include <ngy313/utility/com_delete.hpp>
@@ -126,31 +127,32 @@ void set_texture_stage(const device_handle &device,
   set_texture_alpha<typename TextureStageTuple::alpha_type>(device, TextureStageTuple::stage_type::value);
 }
 
-template <typename TextureStageTuple, typename T = void>
-class scoped_texture_stage;
+template <typename List, typename T = void>
+class scoped_texture_stage {
+ public:
+  explicit scoped_texture_stage(const device_handle &) {}
+};
 
-template <typename TextureStageTuple>
-class scoped_texture_stage<TextureStageTuple, 
-                           typename std::enable_if<!std::is_same<void, TextureStageTuple>::value>::type> {
+template <typename List>
+class scoped_texture_stage<List, 
+                           typename std::enable_if<
+                               !std::is_same<typename boost::mpl::at<List, detail::texture_stage_tuple_key>::type,
+                                             boost::mpl::void_>::value>::type> {
  public:
   explicit scoped_texture_stage(const device_handle &device) : device_(device) {
     assert(device_);
-    set_texture_stage<TextureStageTuple>(device_);
+    set_texture_stage<typename boost::mpl::at<List, detail::texture_stage_tuple_key>::type>(device_);
   }
 
   ~scoped_texture_stage() {
     assert(device_);
-    set_texture_stage<boost::mpl::at_c<default_stage, TextureStageTuple::stage_type::value>::type>(device_);
+    set_texture_stage<
+        boost::mpl::at_c<
+            default_stage, 
+            typename boost::mpl::at<List, detail::texture_stage_tuple_key>::type::stage_type::value>::type>(device_);
   }
 
  private:
   const device_handle &device_;
-};
-
-template <typename TextureStageTuple>
-class scoped_texture_stage<TextureStageTuple, 
-                           typename std::enable_if<std::is_same<void, TextureStageTuple>::value>::type> {
- public:
-  explicit scoped_texture_stage(const device_handle &) {}
 };
 }}}

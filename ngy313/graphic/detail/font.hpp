@@ -57,14 +57,15 @@ font_handle create_font(const font_key &key) {
                             &ft))) {
     throw std::runtime_error("ƒtƒHƒ“ƒg‚Ìì¬‚ÉŽ¸”s‚µ‚Ü‚µ‚½");
   }
-  return font_handle(ft, false);
+  return font_handle(ft);
 }
 
 class font_data : public boost::signals2::trackable, private boost::noncopyable {
  public:
   explicit font_data(const font_key &key) : size_(key.size), name_(key.name), font_(create_font(key)) {
-    detail::device().before_reset.connect(boost::bind(&font_data::release, this));
-    detail::device().after_reset.connect(boost::bind(&font_data::reset, this));
+    assert(device().device());
+    device().before_reset.connect(boost::bind(&font_data::release, this));
+    device().after_reset.connect(boost::bind(&font_data::reset, this));
   }
 
   int size() const {
@@ -81,10 +82,12 @@ class font_data : public boost::signals2::trackable, private boost::noncopyable 
 
  private:
   void release() {
+    assert(font_);
     font_->OnLostDevice();
   }
 
   void reset() {
+    assert(font_);
     font_->OnResetDevice();
   }
 

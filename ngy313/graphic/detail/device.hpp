@@ -7,7 +7,6 @@
 #include <ngy313/graphic/detail/scoped_blend.hpp>
 #include <ngy313/graphic/detail/scoped_texture_stage.hpp>
 #include <ngy313/utility/com_delete.hpp>
-#include <ngy313/utility/intrusive_com_delete.hpp>
 #include <ngy313/window/detail/fwd.hpp>
 #include <ngy313/window/detail/main_window.hpp>
 
@@ -69,8 +68,8 @@ device_handle create_device(const window::detail::main_window &window,
                                                     &present_parameters, 
                                                     &device);
       if (FAILED(ref_hr)) {
-         // 例外をちゃんと実装する
-	       //throw hresult_error("Direct3Dデバイスの作成に失敗しました\n詳細：", ref_hr);
+        // 例外をちゃんと実装する
+        throw std::runtime_error("Direct3Dデバイスの作成に失敗しました\n詳細：");
 	    }  
     }
   }
@@ -91,52 +90,6 @@ void init_device(const device_handle &device) {
   device->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR); 
   device->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR); 
   device->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR); 
-}
-
-inline
-void reset(const device_handle &device,
-           const bool windowed,
-           const int width, 
-           const int height,
-           const before_reset_signal &before_reset,
-           const after_reset_signal &after_reset) {
-  assert(device);
-  D3DPRESENT_PARAMETERS present_parameter = init_present_parameters(windowed, width, height);
-  before_reset(device);
-  if (FAILED(device->Reset(&present_parameter))) {
-     throw std::runtime_error("デバイスリセットに失敗しました");
-	}
-  after_reset(device);
-  init_device(device);
-}
-
-inline
-void present(const device_handle &device,
-             const bool windowed, 
-             const before_reset_signal &before_reset,
-             const after_reset_signal &after_reset) {
-  assert(device);
-  switch (device->Present(nullptr, nullptr, nullptr, nullptr)) {
-    case D3DERR_DEVICELOST:
-	    if (device->TestCooperativeLevel() == D3DERR_DEVICENOTRESET) {
-        // 解像度の指定をちゃんと実装する
-        reset(device, windowed, 640, 480, before_reset, after_reset);
-      }
-	    break;
-    case D3DERR_DRIVERINTERNALERROR:
-	    throw std::runtime_error("内部ドライバエラーが発生しました");
-	    break;
-    default:
-	    break;
-  }
-}
-
-inline
-surface_handle render_target(const device_handle &device) {
-  assert(device);
-  LPDIRECT3DSURFACE9 target;
-  device->GetRenderTarget(0, &target);
-  return surface_handle(target);
 }
 
 inline
@@ -161,7 +114,7 @@ texture_handle create_texture(const device_handle &device, const float width, co
                                    nullptr))) {
     throw std::runtime_error("テクスチャの作成に失敗しました");
   }
-  return texture_handle(tex, false);
+  return texture_handle(tex);
 }
 
 inline
@@ -189,13 +142,6 @@ surface_handle surface_level(const texture_handle &tex) {
     throw std::runtime_error("サーフェイスレベルの取得に失敗しました");
   }
   return surface_handle(surface);
-}
-
-inline
-void set_render_target(const device_handle &device, const surface_handle &surface) {
-  assert(device);
-  assert(surface);
-  device->SetRenderTarget(0, surface.get());
 }
 
 inline

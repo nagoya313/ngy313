@@ -1,5 +1,7 @@
 #pragma once
+#include <boost/mpl/pair.hpp>
 #include <ngy313/adaptor/adaptor.hpp>
+#include <ngy313/graphic/detail/key.hpp>
 #include <ngy313/graphic/adaptor.hpp>
 #include <ngy313/graphic/texture_stage_tag.hpp>
 #include <ngy313/graphic/drawable.hpp>
@@ -7,7 +9,7 @@
 namespace ngy313 { namespace graphic {
 template <typename Drawable, typename TextureStageTuple>
 struct texture_stage_adaptor {
-  typedef add_drawable_adaptor<Drawable, add_texture_stage_tuple<Drawable, TextureStageTuple>> type;
+  typedef add_drawable_adaptor<Drawable, boost::mpl::pair<detail::texture_stage_tuple_key, TextureStageTuple>> type;
 };
 
 template <typename Drawable, typename Blend>

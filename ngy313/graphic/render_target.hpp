@@ -5,6 +5,7 @@
 #include <boost/signals2/signal.hpp>
 #include <boost/signals2/trackable.hpp>
 #include <ngy313/graphic/detail/device.hpp>
+#include <ngy313/graphic/detail/render_targert.hpp>
 #include <ngy313/graphic/detail/scoped_back_buffer.hpp>
 #include <ngy313/graphic/detail/scoped_back_z_and_stencil.hpp>
 #include <ngy313/graphic/detail/scoped_viewport.hpp>
@@ -28,19 +29,25 @@ class render_target : public boost::signals2::trackable, private boost::noncopya
     detail::device().after_reset.connect(boost::bind(&render_target::reset, this, _1));
   }
 
-  void begin() const {
-    detail::set_render_target(detail::device().device(), target_surface_);
-    detail::set_z_and_stencil(detail::device().device(), z_and_stencil_);
-    detail::set_viewport(detail::device().device(), viewport_);
-    detail::init_device(detail::device().device());
-  }
-
   float width() const {
     return width_;
   }
 
   float height() const {
     return height_;
+  }
+
+  // 外部からの()呼び出しを封印したsignalに変えるかもしれない
+  void connect_after_reset(const reseted_signal::slot_type &slot) {
+    after_reset_.connect(slot);
+  }
+
+ private:
+  void begin() const {
+    detail::set_render_target(detail::device().device(), target_surface_);
+    detail::set_z_and_stencil(detail::device().device(), z_and_stencil_);
+    detail::set_viewport(detail::device().device(), viewport_);
+    detail::init_device(detail::device().device());
   }
 
   void release(const detail::device_handle &device) {
@@ -58,12 +65,6 @@ class render_target : public boost::signals2::trackable, private boost::noncopya
     after_reset_();
   }
 
-  // 外部からの()呼び出しを封印したsignalに変えるかもしれない
-  void connect_after_reset(const reseted_signal::slot_type &slot) {
-    after_reset_.connect(slot);
-  }
-
- private:
   const detail::texture_handle &texture1() const {
     return target_;
   }
@@ -76,6 +77,7 @@ class render_target : public boost::signals2::trackable, private boost::noncopya
   const detail::viewport viewport_;
   reseted_signal after_reset_;
 
+  friend class scoped_render_target;
   friend class detail::texture_access;
   friend class detail::texture_core_access;
 };
