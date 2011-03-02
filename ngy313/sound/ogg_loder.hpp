@@ -47,8 +47,7 @@ struct ogg_vorbis {
 
 class ogg_file {
  public:
-  explicit ogg_file(const buffer_container_type::const_iterator front, const std::size_t size)
-      : ovf_(), front_(front), pos_(0), size_(size) {
+  explicit ogg_file(const buffer_container_type &buffer) : ovf_(), buffer_(buffer), pos_(0) {
     const ov_callbacks callbacks = {
       &read, &seek, &close, &tell
     };
@@ -66,11 +65,11 @@ class ogg_file {
     if (!buffer) {
       return 0;
     }
-    std::size_t rcnt = (size_ - pos_) / size;
+    std::size_t rcnt = (buffer_.size() - pos_) / size;
     if (rcnt > count) {
       rcnt = count;
     }
-    std::memcpy(buffer, &(*front_) + pos_, size * rcnt);
+    std::memcpy(buffer, buffer_.data() + pos_, size * rcnt);
     pos_ += size * rcnt;
     return rcnt;
   }
@@ -86,7 +85,7 @@ class ogg_file {
         pos_ += static_cast<long>(offset);
         break;
       case SEEK_END:
-        pos_ = size_ + static_cast<long>(offset);
+        pos_ = buffer_.size() + static_cast<long>(offset);
         break;
       case SEEK_SET:
         pos_ = static_cast<long>(offset);
@@ -94,8 +93,8 @@ class ogg_file {
       default:
         return -1;
     }
-    if (pos_ > size_) {
-      pos_ = size_;
+    if (pos_ > static_cast<long>(buffer_.size())) {
+      pos_ = buffer_.size();
       return -1;
     } else if (pos_ < 0) {
       pos_ = 0;
@@ -123,16 +122,15 @@ class ogg_file {
   }
 
   ogg_vorbis ovf_;
-  buffer_container_type::const_iterator front_;
+  const buffer_container_type &buffer_;
   long pos_;
-  long size_;
 };
 
 inline
 std::tuple<buffer_container_type, buffer_format> create_ogg_buffer(const std::string &file_name) {
   // ov_clearがファイルハンドルを閉じるのでstd::FILEのスマポ化はできない
-  std::FILE *fp = std::fopen(file_name.c_str(), "rb");
-  if (!fp) {
+  std::FILE *fp;
+  if (fopen_s(&fp, file_name.c_str(), "rb")) {
     throw std::runtime_error("ファイルを開くのに失敗しました");
   }
   buffer_container_type buffer(static_cast<std::size_t>(boost::filesystem::file_size(file_name)));
@@ -162,15 +160,11 @@ class ogg_buffer_data {
  public:
   explicit ogg_buffer_data(const std::string &file_name) : data_(create_ogg_buffer(file_name)) {}
 
-  buffer_container_type::const_iterator buffer() const {
-    return std::get<0>(data_).cbegin();
+  const buffer_container_type &buffer() const {
+    return std::get<0>(data_);
   }
 
-  std::size_t size() const {
-    return std::get<0>(data_).size();
-  }
-
-  buffer_format format() const {
+  const buffer_format &format() const {
     return std::get<1>(data_);
   }
 
@@ -183,7 +177,7 @@ typedef boost::flyweights::flyweight<boost::flyweights::key_value<std::string, o
 class ogg_loader {
  public:
   explicit ogg_loader(const std::string &file_name) : buffer_(file_name), 
-                                                      file_(buffer_.get().buffer(), buffer_.get().size()),
+                                                      file_(buffer_.get().buffer()),
                                                       data_(kSize_),
                                                       offset_(0),
                                                       loop_size_(0),
@@ -195,7 +189,7 @@ class ogg_loader {
 
   ogg_loader(const std::string &file_name, const std::uint32_t offset, const std::uint32_t loop_size)
       : buffer_(file_name), 
-        file_(buffer_.get().buffer(), buffer_.get().size()),
+        file_(buffer_.get().buffer()),
         data_(kSize_),
         offset_(offset),
         loop_size_(loop_size),

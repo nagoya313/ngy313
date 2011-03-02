@@ -1,5 +1,6 @@
 #pragma once
 #include <boost/noncopyable.hpp>
+#include <ngy313/sound/detail/sound_device.hpp>
 #include <ngy313/sound/detail/device.hpp>
 #include <ngy313/utility/com_initializer.hpp>
 
@@ -11,29 +12,18 @@ class singleton : private boost::noncopyable {
     return sound;
   }
 
-  const device_handle &device() const {
+  const sound_device &device() const {
     return device_;
   }
 
-  const master_voice_handle &master_voice() const {
-    return voice_;
-  }
-
  private:
-  singleton() : com_(), device_(create_device()), voice_(create_master_voice(device_)) {}
+  singleton() : device_() {}
 
-  const utility::com_initializer com_;
-  const device_handle device_;
-  const master_voice_handle voice_;
+  const sound_device device_;
 };
 
 inline
-const device_handle &device() {
+const sound_device &device() {
   return singleton::instance().device();
-}
-
-inline
-const master_voice_handle &master_voice() {
-  return singleton::instance().master_voice();
 }
 }}}

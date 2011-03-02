@@ -52,15 +52,11 @@ class wave_buffer_data : private boost::noncopyable {
  public:
   explicit wave_buffer_data(const std::string &file_name) : data_(create_wave_buffer(file_name)) {}
 
-  buffer_container_type::const_iterator buffer() const {
-    return std::get<0>(data_).cbegin();
+  const buffer_container_type &buffer() const {
+    return std::get<0>(data_);
   }
 
-  std::size_t size() const {
-    return std::get<0>(data_).size();
-  }
-
-  buffer_format format() const {
+  const buffer_format &format() const {
     return std::get<1>(data_);
   }
 
@@ -75,11 +71,11 @@ class wave_loader {
   explicit wave_loader(const std::string &file_name) : buffer_(file_name) {}
 
   buffer_container_type::const_iterator buffer() const {
-    return buffer_.get().buffer();
+    return buffer_.get().buffer().cbegin();
   }
 
   std::size_t size() const {
-    return buffer_.get().size();
+    return buffer_.get().buffer().size();
   }
 
   buffer_format format() const {

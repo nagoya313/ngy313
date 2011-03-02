@@ -8,7 +8,7 @@ namespace ngy313 { namespace sound {
 class submix {
  public:
   submix(const std::uint32_t channels, const std::uint32_t sample_rate)
-    : submix_voice_(detail::create_submix_voice(detail::device(), channels, sample_rate)) {}
+    : submix_voice_(detail::create_submix_voice(detail::device().device(), channels, sample_rate)) {}
 
   void set_volume(const float volume) {
     assert(submix_voice_);

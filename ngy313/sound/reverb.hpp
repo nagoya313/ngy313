@@ -5,7 +5,6 @@
 #include <ngy313/utility/com_delete.hpp>
 
 namespace ngy313 { namespace sound {
-// このポインタの型もどこかにこっそりと定義しておく
 detail::unknown_handle create_reverb() {
   IUnknown *reverb;
   CreateFX(__uuidof(FXReverb), &reverb);
@@ -21,7 +20,7 @@ struct reverb {
 
   effect_descriptor descriptor(const std::uint32_t channel) const {
     // チャンネル数の設定をどうするかを考えとく
-    const XAUDIO2_EFFECT_DESCRIPTOR desc = {
+    const effect_descriptor desc = {
       reverb_.get(),
       TRUE,
       channel

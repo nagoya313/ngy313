@@ -5,16 +5,15 @@
 
 namespace ngy313 { namespace sound {
 template <typename Loader>
-class sound : private boost::noncopyable {
+class streaming_sound : private IXAudio2VoiceCallback, private boost::noncopyable { {
  public:
-  explicit sound(const Loader &loader)
-    : buffer_(loader), voice_(detail::create_source_voice(detail::device().device(), buffer_.format())) {
+  explicit streaming_sound(const Loader &loader) : buffer_(loader), voice_() {
+    voice_ = detail::create_source_voice(detail::device().device(), buffer_.format(), this);
     init();
   }
 
-  sound(const Loader &loader, const submix &mix)
-      : buffer_(loader),
-        voice_(detail::create_source_voice(detail::device().device(), buffer_.format(), mix.submix_voice_)) {
+  streaming_sound(const Loader &loader, const submix &mix) : buffer_(file_name), voice_() {
+    voice_ = detail::create_source_voice(detail::device().device(), buffer_.format(), mix.submix_voice_, this);
     init();
   }
 
@@ -32,6 +31,7 @@ class sound : private boost::noncopyable {
     assert(voice_);
     voice_->Stop();
     voice_->FlushSourceBuffers();
+    buffer_->reset();
     init();
   }
 
@@ -52,7 +52,8 @@ class sound : private boost::noncopyable {
     assert(voice_);
     auto desc = effect.descriptor(buffer_.format().channels);
     const XAUDIO2_EFFECT_CHAIN chain = {
-      1, &desc,
+      1,
+      &desc,
     };
     voice_->SetEffectChain(&chain);
     auto param = effect.parameters();
@@ -63,12 +64,33 @@ class sound : private boost::noncopyable {
   void init() {
     assert(voice_);
     const XAUDIO2_BUFFER buffer = {
-      XAUDIO2_END_OF_STREAM, buffer_.size(), &(*buffer_.buffer()), 0, 0, 0, 0, 0, nullptr
+      0, buffer_.size(), &(*buffer_.buffer()), 0, 0, 0, 0, 0, nullptr
     };
     voice_->SubmitSourceBuffer(&buffer);
   }
 
-  const Loader buffer_;
-  const detail::source_voice_handle voice_;
+  void WINAPI OnStreamEnd() {}
+
+  void WINAPI OnVoiceProcessingPassEnd() {}
+
+  void WINAPI OnVoiceProcessingPassStart(UINT32) {}
+
+  void WINAPI OnBufferEnd(void *) {
+    buffer_.end();
+  }
+
+  void WINAPI OnBufferStart(void *) {
+    buffer_.start();
+    init();
+  }
+
+  void WINAPI OnLoopEnd(void *) {}
+
+  void WINAPI OnVoiceError(void *, HRESULT) {
+    throw std::runtime_error("ストリーミング再生中にエラーが発生しました");
+  }
+
+  Loader buffer_;
+  detail::source_voice_handle voice_;
 };
 }}
