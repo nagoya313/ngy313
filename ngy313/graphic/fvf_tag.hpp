@@ -66,39 +66,6 @@ struct find_base_of_fvf_tag {
   };
 };
 
-/*
-struct safe_tag_insert {
-  typedef boost::mpl::vector<> fvf_tag_list;
-  template <typename Lhs, typename Rhs>
-  struct apply {
-    static_assert(std::is_base_of<fvf_tag, Rhs>::value, "Rhs is not fvf tag.");
-    // position_fvf_tag‚ª•¡”‚É‚È‚é‚æ‚¤‚È‚ç‚±‚¯‚³‚¹‚é
-    //static_assert(!(std::is_base_of<position_fvf_tag, Rhs>::value && 
-    //                boost::mpl::find_if<Lhs, find_base_of_tag<position_fvf_tag>>::value)), 
-    //              "");
-    // tex_fvf_tag‚ª•¡”‚É‚È‚é‚æ‚¤‚È‚ç‚±‚¯‚³‚¹‚é
-    //static_assert(!(std::is_base_of<tex_fvf_tag, Rhs>::value && 
-    //                boost::mpl::find_if<Lhs, find_base_of_fvf_tag<tex_fvf_tag>>::value)), 
-    //              "");
-    typedef typename boost::mpl::push_back<Lhs, Rhs>::type type;
-  };
-};
-
-// ‚±‚±‚Ì’l‚à‚±‚ë‚±‚ë•Ï‚é
-#define NGY313_TAG_MAX 8
-
-template <BOOST_PP_ENUM_PARAMS_WITH_A_DEFAULT(NGY313_TAG_MAX, typename T, boost::mpl::na)> 
-struct make_fvf_tag {
-  typedef typename boost::mpl::fold<boost::mpl::vector<BOOST_PP_ENUM_SHIFTED_PARAMS(NGY313_TAG_MAX, T)>,
-                                    boost::mpl::vector<T0>, 
-                                    safe_tag_insert>::type type;
-};
-
-#undef NGY313_MAKE_TAG_GEN
-
-#undef NGY313_TAG_MAX
-*/
-
 struct safe_tag_insert {
   template <typename Lhs, typename Rhs>
   struct apply {

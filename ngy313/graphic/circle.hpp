@@ -11,18 +11,14 @@ namespace ngy313 { namespace graphic {
 #define NGY313_CIRCLE_VERTEX_SIZE 62
 
 #define NGY313_CIRCLE_VERTEX_ELEM_GEN(z, n, data)\
-{{x + std::cos(vertex_radian<circle, n>::value) * r,\
-  y + std::sin(vertex_radian<circle, n>::value) * r,\
-  0.f,\
-  1.f}, 0xFFFFFFFF},
+vertex_type(rhw_position_t_(x + std::cos(vertex_radian<circle, n>::value) * r,\
+  y + std::sin(vertex_radian<circle, n>::value) * r), diffuse_t_(0xFFFFFFFF)),
 
 #define NGY313_LINE_CIRCLE_VERTEX_SIZE 60
 
 #define NGY313_LINE_CIRCLE_VERTEX_ELEM_GEN(z, n, data)\
-{{x + std::cos(line_vertex_radian<line_circle, n>::value) * r,\
-  y + std::sin(line_vertex_radian<line_circle, n>::value) * r,\
-  0.f,\
-  1.f}, 0xFFFFFFFF},
+vertex_type(rhw_position_t_(x + std::cos(line_vertex_radian<line_circle, n>::value) * r,\
+  y + std::sin(line_vertex_radian<line_circle, n>::value) * r), diffuse_t_(0xFFFFFFFF)),
 
 #pragma warning(disable: 4512)
 
@@ -49,7 +45,7 @@ class circle_base : public drawable<circle_base<Filled>,
                                        const float r, 
                                        typename std::enable_if<Fill>::type * = nullptr) {
     const vertex_array_type vertex = {{
-      {{x, y, 0.f, 1.f}, 0xFFFFFFFF},
+      vertex_type(rhw_position_t_(x, y), diffuse_t_(0xFFFFFFFF)),
       BOOST_PP_REPEAT_FROM_TO(1, NGY313_CIRCLE_VERTEX_SIZE, NGY313_CIRCLE_VERTEX_ELEM_GEN, _)
     }};
     return vertex;

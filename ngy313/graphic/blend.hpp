@@ -27,6 +27,13 @@ struct blend : public adaptor::base<blend<SrcBlendTag, DestBlendTag>> {
   }
 };
 
+struct scoped_blend {
+};
+
+template <typename Blend>
+void set_blend(const Blend &blend) {
+}
+
 typedef blend<src_alpha_blend_tag, one_blend_tag> add_blend_t;
 typedef blend<zero_blend_tag, inv_src_color_blend_tag> sub_blend_t;
 typedef blend<zero_blend_tag, src_color_blend_tag> mul_blend_t;
