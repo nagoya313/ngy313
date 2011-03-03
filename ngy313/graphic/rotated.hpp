@@ -1,11 +1,11 @@
 #pragma once
 #include <cmath>
 #include <boost/range/algorithm/transform.hpp>
-#include <ngy313/adaptor/adaptor.hpp>
 #include <ngy313/graphic/adaptor.hpp>
 #include <ngy313/graphic/fvf_traits.hpp>
 #include <ngy313/graphic/shape_position.hpp>
 #include <ngy313/graphic/vertex_member.hpp>
+#include <ngy313/utility/pipe_operator.hpp>
 
 namespace ngy313 { namespace graphic {
 struct transform_rotate {
@@ -51,7 +51,7 @@ rotated_adaptor<Drawable> make_rotated(const Drawable &drawable, const BasePoint
 }
 
 template <typename BasePoint>
-struct rotated_t : public adaptor::base<rotated_t<BasePoint>> {
+struct rotated_t : public utility::pipe_operator::base<rotated_t<BasePoint>> {
   explicit rotated_t(const BasePoint &base_point, const float angle) : base_point_(base_point), angle_(angle) {}
 
   template <typename Drawable>

@@ -12,19 +12,19 @@ class sprite : public drawable<sprite, 4, 2, image_2d_fvf_tag, triangle_strip_pr
   template <typename Image>
   sprite(const float x, const float y, const Image &image) : texture_(image), x_(x), y_(y) {}
 
-  const texture &tex() const {
-    return texture_;
-  }
-
  private:
   vertex_array_type vertex() const {
     const vertex_array_type vertex = {{
-      {{x_, y_, 0.f, 1.f}, 0xFFFFFFFF, 0.f, 0.f},
-      {{x_ + texture_.width(), y_, 0.f, 1.f}, 0xFFFFFFFF, 1.f, 0.f},
-      {{x_, y_ + texture_.height(), 0.f, 1.f}, 0xFFFFFFFF, 0.f, 1.f},
-      {{x_ + texture_.width(), y_ + texture_.height(), 0.f, 1.f}, 0xFFFFFFFF, 1.f, 1.f}
+      vertex_type(rhw_position_t(x_, y_), diffuse_t(0xFFFFFFFF), tex_t<1>(0.f, 0.f)),
+      vertex_type(rhw_position_t(x_ + texture_.width(), y_), diffuse_t(0xFFFFFFFF), tex_t<1>(1.f, 0.f)),
+      vertex_type(rhw_position_t(x_, y_ + texture_.height()), diffuse_t(0xFFFFFFFF), tex_t<1>(0.f, 1.f)),
+      vertex_type(rhw_position_t(x_ + texture_.width(), y_ + texture_.height()), diffuse_t(0xFFFFFFFF), tex_t<1>(1.f, 1.f))
     }};
     return vertex;
+  }
+
+  const texture &texture1() const {
+    return texture_;
   }
 
   const texture texture_;
@@ -32,6 +32,7 @@ class sprite : public drawable<sprite, 4, 2, image_2d_fvf_tag, triangle_strip_pr
   const float y_;
 
   friend class drawable_access;
+  friend class texture_access;
 };
 
 class size_sprite : public drawable<size_sprite, 4, 2, image_2d_fvf_tag, triangle_strip_primitive_tag>, public texture {
@@ -43,10 +44,10 @@ class size_sprite : public drawable<size_sprite, 4, 2, image_2d_fvf_tag, triangl
  private:
   vertex_array_type vertex() const {
     const vertex_array_type vertex = {{
-      {{x_, y_, 0.f, 1.f}, 0xFFFFFFFF, 0.f, 0.f},
-      {{x_ + width_, y_, 0.f, 1.f}, 0xFFFFFFFF, 1.f, 0.f},
-      {{x_, y_ + height_, 0.f, 1.f}, 0xFFFFFFFF, 0.f, 1.f},
-      {{x_ + width_, y_ + height_, 0.f, 1.f}, 0xFFFFFFFF, 1.f, 1.f}
+      vertex_type(rhw_position_t(x_, y_), diffuse_t(0xFFFFFFFF), tex_t<1>(0.f, 0.f)),
+      vertex_type(rhw_position_t(x_ + width_, y_), diffuse_t(0xFFFFFFFF), tex_t<1>(1.f, 0.f)),
+      vertex_type(rhw_position_t(x_, y_ + height_), diffuse_t(0xFFFFFFFF), tex_t<1>(0.f, 1.f)),
+      vertex_type(rhw_position_t(x_ + width_, y_ + height_), diffuse_t(0xFFFFFFFF), tex_t<1>(1.f, 1.f))
     }};
     return vertex;
   }

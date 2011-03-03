@@ -24,7 +24,6 @@ class adaptor_access {
   friend struct drawable_adaptor;
 };
 
-// fusionÇÃê∂ê¨ÇÕë}ì¸Ç…ëŒâûÇ∑ÇÈïKóvÇ™Ç†ÇÈ
 template <typename Drawable>
 struct drawable_switch_body {
   typedef boost::mpl::vector<
@@ -59,17 +58,13 @@ template <typename Drawable>
 typename drawable_fusion<Drawable>::type 
     drawable_fusion_init(const Drawable &drawable,
                          typename std::enable_if<drawable_switch<Drawable>::type::value == 2>::type * = nullptr) {
-  return typename drawable_fusion<Drawable>::type(drawable, drawable.tex());
+  return typename drawable_fusion<Drawable>::type(drawable, texture_access::texture1(drawable));
 }
 
 template <typename Adaptor, typename Drawable>
 struct drawable_adaptor : public ngy313::graphic::copy_drawable<Drawable> {
   explicit drawable_adaptor(const Drawable &drawable) : list_(drawable_fusion_init(drawable)) {}
 
-  const texture &tex() const {
-    return boost::fusion::at_key<detail::texture_data_key>(list_);
-  }
-
  private:
   typename Drawable::vertex_array_type vertex() const {
     auto vertex = drawable_access::copy_vertex(boost::fusion::at_key<detail::drawable_key>(list_));
@@ -77,28 +72,32 @@ struct drawable_adaptor : public ngy313::graphic::copy_drawable<Drawable> {
     return vertex;
   }
 
+  const texture &texture1() const {
+    return boost::fusion::at_key<detail::texture_data_key>(list_);
+  }
+
   const typename drawable_fusion<Drawable>::type list_;
   
   friend class drawable_access;
+  friend class texture_access;
 };
 
 template <typename Drawable, typename AddPair>
 struct add_drawable_adaptor : public ngy313::graphic::add_drawable<Drawable, AddPair> {
   explicit add_drawable_adaptor(const Drawable &drawable) : list_(drawable_fusion_init(drawable)) {}
 
-  const texture &tex() const {
-    return boost::fusion::at_key<detail::texture_data_key>(list_);
-  }
-
  private:
   typename Drawable::vertex_array_type vertex() const {
-    auto vertex = drawable_access::copy_vertex(boost::fusion::at_key<detail::drawable_key>(list_));
-    adaptor_access::transform(static_cast<const Adaptor &>(*this), vertex);
-    return vertex;
+    return drawable_access::copy_vertex(boost::fusion::at_key<detail::drawable_key>(list_));
+  }
+
+  const texture &texture1() const {
+    return boost::fusion::at_key<detail::texture_data_key>(list_);
   }
 
   const typename drawable_fusion<Drawable>::type list_;
 
   friend class drawable_access;
+  friend class texture_access;
 };
 }}

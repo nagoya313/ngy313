@@ -30,16 +30,6 @@ struct find_texture_type {
   typedef typename boost::mpl::find_if<List, find_fvf_member_type<tex>>::type type;
 };
 
-template <typename List, typename It>
-struct texture_type {
-  typedef typename It::type type;
-};
-
-template <typename List>
-struct texture_type<List, typename boost::mpl::end<List>::type> {
-  typedef boost::mpl::void_ type;
-};
-
 struct element_insert {
   template <typename Lhs, typename Rhs>
   struct apply {
@@ -56,8 +46,7 @@ struct fvf_traits {
   typedef typename boost::mpl::fold<typename FVFTag::type,
                                     boost::fusion::vector<>,
                                     element_insert>::type vertex_type;
-  typedef typename texture_type<typename FVFTag::type,
-                                typename find_texture_type<typename FVFTag::type>::type>::type tex_type;
+  typedef typename find_texture_type<vertex_type>::type::type tex_type;
 };
 
 template <typename Member, typename Vertex>
@@ -66,7 +55,8 @@ typename boost::mpl::find_if<Vertex, find_fvf_member_type<Member>>::type::type &
 }
 
 template <typename Member, typename Vertex>
-typename boost::mpl::find_if<Vertex, find_fvf_member_type<Member>>::type::type &vertex_member_at(const Vertex &vertex) {
+const typename boost::mpl::find_if<Vertex, find_fvf_member_type<Member>>::type::type
+    &vertex_member_at(const Vertex &vertex) {
   return *boost::fusion::find_if<find_fvf_member_type<Member>>(vertex);
 }
 

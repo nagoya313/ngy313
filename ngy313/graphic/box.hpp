@@ -34,10 +34,10 @@ class box_base : public drawable<box_base<Filled>,
   template <bool Fill>
   vertex_array_type vertex_(typename std::enable_if<Fill>::type * = nullptr) const {
     const vertex_array_type vertex = {{
-      vertex_type(rhw_position_t_(x_, y_), diffuse_t_(0xFFFFFFFF)),
-      vertex_type(rhw_position_t_(x_ + width_, y_), diffuse_t_(0xFFFFFFFF)),
-      vertex_type(rhw_position_t_(x_, y_ + height_), diffuse_t_(0xFFFFFFFF)),
-      vertex_type(rhw_position_t_(x_ + width_, y_ + height_), diffuse_t_(0xFFFFFFFF))
+      vertex_type(rhw_position_t(x_, y_), diffuse_t(0xFFFFFFFF)),
+      vertex_type(rhw_position_t(x_ + width_, y_), diffuse_t(0xFFFFFFFF)),
+      vertex_type(rhw_position_t(x_, y_ + height_), diffuse_t(0xFFFFFFFF)),
+      vertex_type(rhw_position_t(x_ + width_, y_ + height_), diffuse_t(0xFFFFFFFF))
     }};
     return vertex;
   }
@@ -45,11 +45,11 @@ class box_base : public drawable<box_base<Filled>,
   template <bool Fill>
   vertex_array_type vertex_(typename std::enable_if<!Fill>::type * = nullptr) const {
     const vertex_array_type vertex = {{
-      vertex_type(rhw_position_t_(x_, y_), diffuse_t_(0xFFFFFFFF)),
-      vertex_type(rhw_position_t_(x_ + width_, y_), diffuse_t_(0xFFFFFFFF)),
-      vertex_type(rhw_position_t_(x_ + width_, y_ + height_), diffuse_t_(0xFFFFFFFF)),
-      vertex_type(rhw_position_t_(x_, y_ + height_), diffuse_t_(0xFFFFFFFF)),
-      vertex_type(rhw_position_t_(x_, y_), diffuse_t_(0xFFFFFFFF))
+      vertex_type(rhw_position_t(x_, y_), diffuse_t(0xFFFFFFFF)),
+      vertex_type(rhw_position_t(x_ + width_, y_), diffuse_t(0xFFFFFFFF)),
+      vertex_type(rhw_position_t(x_ + width_, y_ + height_), diffuse_t(0xFFFFFFFF)),
+      vertex_type(rhw_position_t(x_, y_ + height_), diffuse_t(0xFFFFFFFF)),
+      vertex_type(rhw_position_t(x_, y_), diffuse_t(0xFFFFFFFF))
     }};
     return vertex;
   }

@@ -15,6 +15,7 @@
 #include <ngy313/graphic/detail/device.hpp>
 #include <ngy313/graphic/detail/singleton.hpp>
 #include <ngy313/graphic/fvf_traits.hpp>
+#include <ngy313/graphic/texture_access.hpp>
 #include <ngy313/graphic/vertex_member.hpp>
 #include <ngy313/utility/string_piece.hpp>
 
@@ -156,7 +157,7 @@ template <typename Drawable>
 typename std::enable_if<std::is_same<tex_t<1>, typename drawable_switch_element<Drawable>::type>::value>::type
     set_texture(const device_handle &device, const Drawable &drawable) {
   assert(device);
-  device->SetTexture(0, texture_core_access::texture1(drawable.tex()).get());
+  device->SetTexture(0, texture_core_access::texture1(ngy313::graphic::texture_access::texture1(drawable)).get());
 }
 
 template <typename Drawable>

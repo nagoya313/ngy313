@@ -36,9 +36,9 @@ class triangle_base
                                        const float y3,
                                        typename std::enable_if<Fill>::type * = nullptr) {
     const vertex_array_type vertex = {{
-      vertex_type(rhw_position_t_(x1, y1), diffuse_t_(0xFFFFFFFF)),
-      vertex_type(rhw_position_t_(x2, y2), diffuse_t_(0xFFFFFFFF)),
-      vertex_type(rhw_position_t_(x3, y3), diffuse_t_(0xFFFFFFFF))
+      vertex_type(rhw_position_t(x1, y1), diffuse_t(0xFFFFFFFF)),
+      vertex_type(rhw_position_t(x2, y2), diffuse_t(0xFFFFFFFF)),
+      vertex_type(rhw_position_t(x3, y3), diffuse_t(0xFFFFFFFF))
     }};
     return vertex;
   }
@@ -52,10 +52,10 @@ class triangle_base
                                        const float y3,
                                        typename std::enable_if<!Fill>::type * = nullptr) {
     const vertex_array_type vertex = {{
-      vertex_type(rhw_position_t_(x1, y1), diffuse_t_(0xFFFFFFFF)),
-      vertex_type(rhw_position_t_(x2, y2), diffuse_t_(0xFFFFFFFF)),
-      vertex_type(rhw_position_t_(x3, y3), diffuse_t_(0xFFFFFFFF)),
-      vertex_type(rhw_position_t_(x1, y1), diffuse_t_(0xFFFFFFFF))
+      vertex_type(rhw_position_t(x1, y1), diffuse_t(0xFFFFFFFF)),
+      vertex_type(rhw_position_t(x2, y2), diffuse_t(0xFFFFFFFF)),
+      vertex_type(rhw_position_t(x3, y3), diffuse_t(0xFFFFFFFF)),
+      vertex_type(rhw_position_t(x1, y1), diffuse_t(0xFFFFFFFF))
     }};
     return vertex;
   }

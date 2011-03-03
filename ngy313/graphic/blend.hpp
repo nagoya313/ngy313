@@ -1,10 +1,13 @@
 #pragma once
+#include <cassert>
 #include <boost/mpl/pair.hpp>
-#include <ngy313/adaptor/adaptor.hpp>
 #include <ngy313/graphic/detail/key.hpp>
+#include <ngy313/graphic/detail/singleton.hpp>
+#include <ngy313/graphic/detail/scoped_blend.hpp>
 #include <ngy313/graphic/adaptor.hpp>
 #include <ngy313/graphic/blend_tag.hpp>
 #include <ngy313/graphic/drawable.hpp>
+#include <ngy313/utility/pipe_operator.hpp>
 
 namespace ngy313 { namespace graphic {
 template <typename Drawable, typename BlendPair>
@@ -18,7 +21,7 @@ blend_adaptor<Drawable, typename Blend::pair_type> make_blend(const Drawable &dr
 }
 
 template <typename SrcBlendTag, typename DestBlendTag>
-struct blend : public adaptor::base<blend<SrcBlendTag, DestBlendTag>> {
+struct blend : public utility::pipe_operator::base<blend<SrcBlendTag, DestBlendTag>> {
   typedef blend_pair<SrcBlendTag, DestBlendTag> pair_type;
 
   template <typename Drawable>
@@ -26,13 +29,6 @@ struct blend : public adaptor::base<blend<SrcBlendTag, DestBlendTag>> {
     return blend_adaptor<Drawable, pair_type>::type(drawable);
   }
 };
-
-struct scoped_blend {
-};
-
-template <typename Blend>
-void set_blend(const Blend &blend) {
-}
 
 typedef blend<src_alpha_blend_tag, one_blend_tag> add_blend_t;
 typedef blend<zero_blend_tag, inv_src_color_blend_tag> sub_blend_t;

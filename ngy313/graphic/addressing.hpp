@@ -1,11 +1,11 @@
 #pragma once
 #include <cstddef>
 #include <boost/mpl/pair.hpp>
-#include <ngy313/adaptor/adaptor.hpp>
 #include <ngy313/graphic/detail/key.hpp>
 #include <ngy313/graphic/adaptor.hpp>
 #include <ngy313/graphic/addressing_tag.hpp>
 #include <ngy313/graphic/drawable.hpp>
+#include <ngy313/utility/pipe_operator.hpp>
 
 namespace ngy313 { namespace graphic {
 template <typename Drawable, typename AddressingTuple>
@@ -19,7 +19,7 @@ addressing_adaptor<Drawable, typename Address::tuple_type> make_addressing(const
 }
 
 template <std::size_t Stage, typename UAddressingTag, typename VAddressingTag>
-struct addressing : public adaptor::base<addressing<Stage, UAddressingTag, VAddressingTag>> {
+struct addressing : public utility::pipe_operator::base<addressing<Stage, UAddressingTag, VAddressingTag>> {
   typedef addressing_tuple<Stage, UAddressingTag, VAddressingTag> tuple_type;
 
   template <typename Drawable>

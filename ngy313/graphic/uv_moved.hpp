@@ -6,6 +6,7 @@
 #include <ngy313/graphic/adaptor.hpp>
 #include <ngy313/graphic/fvf_traits.hpp>
 #include <ngy313/graphic/vertex_member.hpp>
+#include <ngy313/utility/pipe_operator.hpp>
 
 namespace ngy313 { namespace graphic {
 template <std::size_t Index>
@@ -46,7 +47,7 @@ uv_moved_adaptor<Drawable, Index> make_uv_moved(const Drawable &drawable, const 
 }
 
 template <std::size_t Index>
-struct uv_moved : public adaptor::base<uv_moved<Index>> {
+struct uv_moved : public utility::pipe_operator::base<uv_moved<Index>> {
   uv_moved(const float move_u, const float move_v) : move_u_(move_u), move_v_(move_v) {}
 
   template <typename Drawable>
@@ -89,7 +90,7 @@ uv_moved_at_adaptor<Drawable, Index> make_uv_moved_at(const Drawable &drawable,
 }
 
 template <std::size_t Index>
-struct uv_moved_at : public adaptor::base<uv_moved_at<Index>> {
+struct uv_moved_at : public utility::pipe_operator::base<uv_moved_at<Index>> {
   uv_moved_at(const std::size_t at, const float move_u, const float move_v) : at_(at),
                                                                               move_u_(move_u),
                                                                               move_v_(move_v) {}

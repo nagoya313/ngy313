@@ -28,8 +28,8 @@ class line : public drawable<line, 2, 2, shape_2d_fvf_tag, line_list_primitive_t
  private:
   vertex_array_type vertex() const {
     const vertex_array_type vertex = {{
-      vertex_type(rhw_position_t_(x1_, y1_), diffuse_t_(0xFFFFFFFF)),
-      vertex_type(rhw_position_t_(x2_, y2_), diffuse_t_(0xFFFFFFFF))
+      vertex_type(rhw_position_t(x1_, y1_), diffuse_t(0xFFFFFFFF)),
+      vertex_type(rhw_position_t(x2_, y2_), diffuse_t(0xFFFFFFFF))
     }};
     return vertex;
   }

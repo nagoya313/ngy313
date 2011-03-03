@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <stdexcept>
 #include <ngy313/graphic/detail/fwd.hpp>
+#include <ngy313/graphic/detail/addressing.hpp>
+#include <ngy313/graphic/detail/blend.hpp>
 #include <ngy313/graphic/detail/scoped_addressing.hpp>
 #include <ngy313/graphic/detail/scoped_blend.hpp>
 #include <ngy313/graphic/detail/scoped_texture_stage.hpp>

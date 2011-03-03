@@ -32,9 +32,9 @@ class draw : private boost::noncopyable {
     const auto vertex = drawable_access::copy_vertex(drawable_);
     device_->SetFVF(fvf_traits<typename boost::mpl::at<typename Drawable::list_type, fvf_key>::type>::fvf_type::value);
     device_->DrawPrimitiveUP(boost::mpl::at<typename Drawable::list_type, primitive_key>::type::type::value,
-                             boost::mpl::at<typename Drawable::list_type, count_key>::type::type::value, 
-                             vertex.data(), 
-                             sizeof(vertex.front()));
+                                      boost::mpl::at<typename Drawable::list_type, count_key>::type::type::value, 
+                                      vertex.data(), 
+                                      sizeof(vertex.front()));
   }
 
   const device_handle &device_;

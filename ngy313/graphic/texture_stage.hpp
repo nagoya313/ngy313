@@ -1,10 +1,10 @@
 #pragma once
 #include <boost/mpl/pair.hpp>
-#include <ngy313/adaptor/adaptor.hpp>
 #include <ngy313/graphic/detail/key.hpp>
 #include <ngy313/graphic/adaptor.hpp>
 #include <ngy313/graphic/texture_stage_tag.hpp>
 #include <ngy313/graphic/drawable.hpp>
+#include <ngy313/utility/pipe_operator.hpp>
 
 namespace ngy313 { namespace graphic {
 template <typename Drawable, typename TextureStageTuple>
@@ -18,7 +18,7 @@ texture_stage_adaptor<Drawable, typename Blend::pair_type> make_blend(const Draw
 }
 
 template <std::size_t Index, typename ColorTag, typename AlphaTag = void>
-struct texture_stage : public adaptor::base<texture_stage<Index, ColorTag, AlphaTag>> {
+struct texture_stage : public utility::pipe_operator::base<texture_stage<Index, ColorTag, AlphaTag>> {
   typedef add_texture_stage_tuple<Index, ColorTag, AlphaTag> tuple_type;
 
   template <typename Drawable>

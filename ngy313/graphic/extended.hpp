@@ -1,10 +1,10 @@
 #pragma once
 #include <boost/range/algorithm/transform.hpp>
-#include <ngy313/adaptor/adaptor.hpp>
 #include <ngy313/graphic/adaptor.hpp>
 #include <ngy313/graphic/fvf_traits.hpp>
 #include <ngy313/graphic/shape_position.hpp>
 #include <ngy313/graphic/vertex_member.hpp>
+#include <ngy313/utility/pipe_operator.hpp>
 
 namespace ngy313 { namespace graphic {
 #pragma warning(disable: 4512)
@@ -57,7 +57,7 @@ extended_adaptor<Drawable> make_extended(const Drawable &drawable, const BasePoi
 #pragma warning(disable: 4512)
 
 template <typename BasePoint>
-struct extended_t : public adaptor::base<extended_t<BasePoint>> {
+struct extended_t : public utility::pipe_operator::base<extended_t<BasePoint>> {
   extended_t(const BasePoint &base_point, const float extend) : base_point_(base_point), extend_(extend) {}
 
   template <typename Drawable>
@@ -137,7 +137,7 @@ extended_one_adaptor<position_y, Drawable> make_extended_y(const Drawable &drawa
 #pragma warning(disable: 4512)
 
 template <typename BasePoint, typename Position>
-struct extended_one_t : public adaptor::base<extended_one_t<BasePoint, Position>> {
+struct extended_one_t : public utility::pipe_operator::base<extended_one_t<BasePoint, Position>> {
   extended_one_t(const BasePoint &base_point, const float extend)
       : base_point_(base_point), extend_(extend) {}
 
@@ -223,7 +223,7 @@ extended_xy_adaptor<Drawable> make_extended_xy(const Drawable &drawable,
 #pragma warning(disable: 4512)
 
 template <typename BasePoint>
-struct extended_xy_t : public adaptor::base<extended_xy_t<BasePoint>> {
+struct extended_xy_t : public utility::pipe_operator::base<extended_xy_t<BasePoint>> {
   extended_xy_t(const BasePoint &base_point, const float extend_x, const float extend_y)
       : base_point_(base_point), extend_x_(extend_x), extend_y_(extend_y) {}
 

@@ -68,26 +68,33 @@ class text_image : public boost::signals2::trackable, private boost::noncopyable
 
 #pragma warning(disable: 4512)
 
-class text : public drawable<text, 4, 2, image_2d_fvf_tag, triangle_strip_primitive_tag>, public texture {
+class text : public drawable<text, 4, 2, image_2d_fvf_tag, triangle_strip_primitive_tag> {
  public:
   text(const float x, const float y, const utility::string_piece &str, const font &ft) 
-      : texture(text_image(str, ft)), x_(x), y_(y) {}
+      : image_(text_image(str, ft)), texture_(image_), x_(x), y_(y) {}
 
  private:
   vertex_array_type vertex() const {
     const vertex_array_type vertex = {{
-      {{x_, y_, 0.f, 1.f}, 0xFFFFFFFF, 0.f, 0.f},
-      {{x_ + width(), y_, 0.f, 1.f}, 0xFFFFFFFF, 1.f, 0.f},
-      {{x_, y_ + height(), 0.f, 1.f}, 0xFFFFFFFF, 0.f, 1.f},
-      {{x_ + width(), y_ + height(), 0.f, 1.f}, 0xFFFFFFFF, 1.f, 1.f}
+      vertex_type(rhw_position_t(x_, y_), diffuse_t(0xFFFFFFFF), tex_t<1>(0.f, 0.f)),
+      vertex_type(rhw_position_t(x_ + image_.width(), y_), diffuse_t(0xFFFFFFFF), tex_t<1>(1.f, 0.f)),
+      vertex_type(rhw_position_t(x_, y_ + image_.height()), diffuse_t(0xFFFFFFFF), tex_t<1>(0.f, 1.f)),
+      vertex_type(rhw_position_t(x_ + image_.width(), y_ + image_.height()), diffuse_t(0xFFFFFFFF), tex_t<1>(1.f, 1.f))
     }};
     return vertex;
   }
 
+  const texture &texture1() const {
+    return texture_;
+  }
+
+  const text_image image_;
+  const texture texture_;
   const float x_;
   const float y_;
 
   friend class drawable_access;
+  friend class texture_access;
 };
 
 #pragma warning(default: 4512)

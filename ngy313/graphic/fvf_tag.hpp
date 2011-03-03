@@ -24,8 +24,8 @@ struct tex_fvf_tag : public fvf_tag {};
 
 // Ç±ÇÍÇ‡pairåpè≥Ç≈ÇÊÇ≥Ç∞Ç©Ç‡
 struct dimension2_fvf_tag : public position_fvf_tag, public boost::mpl::integral_c<detail::fvf_type, detail::kXYZRHW> {
-  typedef boost::mpl::pair<boost::mpl::integral_c<detail::fvf_type, detail::kXYZRHW>, rhw_position_t_> type;
-  typedef rhw_position_t_ member_type;
+  typedef boost::mpl::pair<boost::mpl::integral_c<detail::fvf_type, detail::kXYZRHW>, rhw_position_t> type;
+  typedef rhw_position_t member_type;
 };
 
 struct dimension3_fvf_tag : public position_fvf_tag, public boost::mpl::integral_c<detail::fvf_type, detail::kXYZ> {
@@ -39,8 +39,8 @@ struct normal_fvf_tag : public fvf_tag, public boost::mpl::integral_c<detail::fv
 };
 
 struct diffuse_fvf_tag : public fvf_tag, public boost::mpl::integral_c<detail::fvf_type, detail::kDiffuse> {
-  typedef boost::mpl::pair<boost::mpl::integral_c<detail::fvf_type, detail::kDiffuse>, diffuse_t_> type;
-  typedef diffuse_t_ member_type;
+  typedef boost::mpl::pair<boost::mpl::integral_c<detail::fvf_type, detail::kDiffuse>, diffuse_t> type;
+  typedef diffuse_t member_type;
 };
 
 struct specular_fvf_tag : public fvf_tag, public boost::mpl::integral_c<detail::fvf_type, detail::kSpecular> {

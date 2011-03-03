@@ -15,7 +15,9 @@ class graphic_device : private boost::noncopyable {
         width_(window.width()),
         height_(window.height()),
         base_(create_base()),
-        device_(create_device(window::detail::window(), base_, windowed_)){}
+        device_(create_device(window::detail::window(), base_, windowed_)) {
+    init_device(device_);
+  }
 
   bool windowed() const {
     return windowed_;

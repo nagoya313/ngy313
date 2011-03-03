@@ -11,14 +11,14 @@ namespace ngy313 { namespace graphic {
 #define NGY313_OVAL_VERTEX_SIZE 62
 
 #define NGY313_OVAL_VERTEX_ELEM_GEN(z, n, data)\
-vertex_type(rhw_position_t_(x + std::cos(vertex_radian<oval, n>::value) * rx,\
-  y + std::sin(vertex_radian<oval, n>::value) * ry), diffuse_t_(0xFFFFFFFF)),
+vertex_type(rhw_position_t(x + std::cos(vertex_radian<oval, n>::value) * rx,\
+  y + std::sin(vertex_radian<oval, n>::value) * ry), diffuse_t(0xFFFFFFFF)),
 
 #define NGY313_LINE_OVAL_VERTEX_SIZE 60
 
 #define NGY313_LINE_OVAL_VERTEX_ELEM_GEN(z, n, data)\
-vertex_type(rhw_position_t_(x + std::cos(line_vertex_radian<line_oval, n>::value) * rx,\
-  y + std::sin(line_vertex_radian<line_oval, n>::value) * ry), diffuse_t_(0xFFFFFFFF)),
+vertex_type(rhw_position_t(x + std::cos(line_vertex_radian<line_oval, n>::value) * rx,\
+  y + std::sin(line_vertex_radian<line_oval, n>::value) * ry), diffuse_t(0xFFFFFFFF)),
 
 #pragma warning(disable: 4512)
 
@@ -46,7 +46,7 @@ class oval_base : public drawable<oval_base<Filled>,
                                        const float ry,
                                        typename std::enable_if<Fill>::type * = nullptr) {
     const vertex_array_type vertex = {{
-      vertex_type(rhw_position_t_(x, y), diffuse_t_(0xFFFFFFFF)),
+      vertex_type(rhw_position_t(x, y), diffuse_t(0xFFFFFFFF)),
       BOOST_PP_REPEAT_FROM_TO(1, NGY313_OVAL_VERTEX_SIZE, NGY313_OVAL_VERTEX_ELEM_GEN, _)
     }};
     return vertex;

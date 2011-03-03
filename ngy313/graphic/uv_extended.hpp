@@ -1,11 +1,11 @@
 #pragma once
 #include <boost/mpl/size_t.hpp>
 #include <boost/range/algorithm/transform.hpp>
-#include <ngy313/adaptor/adaptor.hpp>
 #include <ngy313/graphic/adaptor.hpp>
 #include <ngy313/graphic/fvf_traits.hpp>
 #include <ngy313/graphic/shape_position.hpp>
 #include <ngy313/graphic/vertex_member.hpp>
+#include <ngy313/utility/pipe_operator.hpp>
 
 namespace ngy313 { namespace graphic {
 template <std::size_t Index>
@@ -54,7 +54,7 @@ uv_extended_adaptor<Drawable, Index> make_uv_extended(const Drawable &drawable,
 }
 
 template <std::size_t Index, typename BasePoint>
-struct uv_extended_t : public adaptor::base<uv_extended_t<Index, BasePoint>> {
+struct uv_extended_t : public utility::pipe_operator::base<uv_extended_t<Index, BasePoint>> {
   uv_extended_t(const BasePoint &base_point, const float extend) : base_point_(base_point), extend_(extend) {}
 
   template <typename Drawable>
@@ -126,7 +126,7 @@ uv_extended_one_adaptor<Index, tex_v, Drawable> make_uv_extended_v(const Drawabl
 }
 
 template <std::size_t Index, typename BasePoint, typename Tex>
-struct uv_extended_one_t : public adaptor::base<uv_extended_one_t<Index, BasePoint, Tex>> {
+struct uv_extended_one_t : public utility::pipe_operator::base<uv_extended_one_t<Index, BasePoint, Tex>> {
   uv_extended_one_t(const BasePoint &base_point, const float extend)
       : base_point_(base_point), extend_(extend) {}
 
@@ -204,7 +204,7 @@ uv_extended_uv_adaptor<Drawable, Index> make_uv_extended_uv(const Drawable &draw
 }
 
 template <std::size_t Index, typename BasePoint>
-struct uv_extended_uv_t : public adaptor::base<uv_extended_uv_t<Index, BasePoint>> {
+struct uv_extended_uv_t : public utility::pipe_operator::base<uv_extended_uv_t<Index, BasePoint>> {
   uv_extended_uv_t(const BasePoint &base_point, const float extend_u, const float extend_v)
       : base_point_(base_point), extend_u_(extend_u), extend_v_(extend_v) {}
 
@@ -226,5 +226,3 @@ uv_extended_uv_t<Index, BasePoint> uv_extended_uv(const BasePoint &base_point,
   return uv_extended_uv_t<Index, BasePoint>(base_point, extend_u, extend_v);
 }
 }}
-
-// 反転アダプタを定義しておく

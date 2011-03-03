@@ -1,8 +1,5 @@
 #pragma once
 #include <cstddef>
-#include <boost/mpl/pair.hpp>
-#include <ngy313/adaptor/adaptor.hpp>
-#include <ngy313/graphic/adaptor.hpp>
 #include <ngy313/graphic/shape_position.hpp>
 
 namespace ngy313 { namespace graphic {
@@ -110,45 +107,4 @@ const struct base_point_set_center_t {
   }
 
 } base_point_set_center = {};
-
-struct base_point_t {
-  template <typename Drawable, typename BasePoint>
-  explicit base_point_t(const Drawable &drawable, const BasePoint &base) : x_(base.x(drawable)), y_(base.y(drawable)) {}
-
- private:
-  const float x_;
-  const float y_;
-};
-
-template <typename Drawable>
-struct base_point_adaptor : public add_drawable_adaptor<Drawable, boost::mpl::pair<detail::base_point_key, base_point_t>> {
-  template <typename BasePoint>
-  explicit base_point_adaptor(const Drawable &drawable, const BasePoint &base_point) : base_point_(drawable,
-                                                                                                   base_point) {}
-
-  const base_point_t &base() const {
-    return base_point_;
-  }
-
- private:
-  const base_point_t base_point_;
-};
-
-template <typename Drawable, typename BasePoint>
-base_point_adaptor<Drawable> make_base_point(const Drawable &drawable, const BasePoint &base_point) {
-  return base_point_adaptor<Drawable>(drawable, base_point);
-}
-
-template <typename BasePoint>
-struct base_point : public adaptor::base<base_point<BasePoint>> {
-  explicit base_point(const BasePoint &base_point) : base_point_(base_point) {}
- 
-  template <typename Drawable>
-  base_point_adaptor<Drawable> operator ()(const Drawable &drawable) const {
-    return make_base_point(drawable, base_point_);
-  }
-
- private:
-  const BasePoint base_point_;
-};
 }}

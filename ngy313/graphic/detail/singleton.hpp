@@ -18,7 +18,6 @@ class singleton : private boost::noncopyable {
 
  private:
   singleton() : device_(window::detail::window()) {
-    init_device(device_.device());
   }
   
   graphic_device device_;

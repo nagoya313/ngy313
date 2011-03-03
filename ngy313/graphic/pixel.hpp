@@ -20,7 +20,7 @@ class pixel : public drawable<pixel, 1, 1, shape_2d_fvf_tag, point_list_primitiv
  private:
   vertex_array_type vertex() const {
     const vertex_array_type vertex = {{
-      vertex_type(rhw_position_t_(x_, y_), diffuse_t_(0xFFFFFFFF))
+      vertex_type(rhw_position_t(x_, y_), diffuse_t(0xFFFFFFFF))
     }};
     return vertex;
   }

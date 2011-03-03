@@ -1,5 +1,6 @@
 #pragma once
 #include <ngy313/graphic/detail/texture.hpp>
+#include <ngy313/graphic/texture_access.hpp>
 
 namespace ngy313 { namespace graphic {
 struct texture_tag {};

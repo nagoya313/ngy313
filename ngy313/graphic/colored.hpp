@@ -1,10 +1,10 @@
 #pragma once
 #include <cstdint>
 #include <boost/range/algorithm/transform.hpp>
-#include <ngy313/adaptor/adaptor.hpp>
 #include <ngy313/graphic/adaptor.hpp>
 #include <ngy313/graphic/fvf_traits.hpp>
 #include <ngy313/graphic/vertex_member.hpp>
+#include <ngy313/utility/pipe_operator.hpp>
 
 namespace ngy313 { namespace graphic {
 #pragma warning(disable: 4512)
@@ -47,7 +47,7 @@ colored_adaptor<Drawable> make_colored(const Drawable &drawable, const std::uint
 
 #pragma warning(disable: 4512)
 
-struct colored : public adaptor::base<colored> {
+struct colored : public utility::pipe_operator::base<colored> {
   explicit colored(const std::uint32_t col) : color_(col) {}
 
   template <typename Drawable>
@@ -85,7 +85,7 @@ colored_at_adaptor<Drawable> make_colored_at(const Drawable &drawable, const std
 
 #pragma warning(disable: 4512)
 
-struct colored_at : public ngy313::adaptor::base<colored_at> {  
+struct colored_at : public utility::pipe_operator::base<colored_at> {  
   colored_at(const std::size_t at, const std::uint32_t col) : at_(at), color_(col) {}
 
   template <typename Drawable>

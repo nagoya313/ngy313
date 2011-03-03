@@ -1,9 +1,9 @@
 #pragma once
 #include <boost/range/algorithm/transform.hpp>
-#include <ngy313/adaptor/adaptor.hpp>
 #include <ngy313/graphic/adaptor.hpp>
 #include <ngy313/graphic/fvf_traits.hpp>
 #include <ngy313/graphic/vertex_member.hpp>
+#include <ngy313/utility/pipe_operator.hpp>
 
 namespace ngy313 { namespace graphic {
 struct transform_move {
@@ -42,7 +42,7 @@ moved_adaptor<Drawable> make_moved(const Drawable &drawable, const float move_x,
   return moved_adaptor<Drawable>(drawable, move_x, move_y);
 }
 
-struct moved : public adaptor::base<moved> {
+struct moved : public utility::pipe_operator::base<moved> {
   moved(const float move_x, const float move_y) : move_x_(move_x), move_y_(move_y) {}
 
   template <typename Drawable>
@@ -84,7 +84,7 @@ moved_at_adaptor<Drawable> make_moved_at(const Drawable &drawable,
   return moved_at_adaptor<Drawable>(drawable, at, move_x, move_y);
 }
 
-struct moved_at : public ngy313::adaptor::base<moved_at> {
+struct moved_at : public utility::pipe_operator::base<moved_at> {
   moved_at(const std::size_t at, const float move_x, const float move_y) : at_(at), move_x_(move_x), move_y_(move_y) {}
 
   template <typename Drawable>
