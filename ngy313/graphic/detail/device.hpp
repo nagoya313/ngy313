@@ -27,7 +27,7 @@ D3DPRESENT_PARAMETERS init_present_parameters(const bool windowed, const int wid
     windowed ? TRUE : FALSE,
     TRUE,
     D3DFMT_D24S8,
-    0,
+    D3DPRESENTFLAG_LOCKABLE_BACKBUFFER,
     D3DPRESENT_RATE_DEFAULT,
     D3DPRESENT_INTERVAL_DEFAULT
   };
@@ -92,6 +92,16 @@ void init_device(const device_handle &device) {
   device->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR); 
   device->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR); 
   device->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR); 
+}
+
+inline
+surface_handle back_buffer(const device_handle &device) {
+  assert(device);
+  LPDIRECT3DSURFACE9 back;
+  if (FAILED(device->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &back))) {
+    throw std::runtime_error("バックバッファの取得に失敗しました");
+  }
+  return surface_handle(back);
 }
 
 inline

@@ -57,7 +57,7 @@ struct tex_u {};
 struct tex_v {};
 
 template <typename Positon>
-struct shape_position {};
+struct shape_position;
 
 template <>
 struct shape_position<position_x> {

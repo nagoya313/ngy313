@@ -59,10 +59,4 @@ const typename boost::mpl::find_if<Vertex, find_fvf_member_type<Member>>::type::
     &vertex_member_at(const Vertex &vertex) {
   return *boost::fusion::find_if<find_fvf_member_type<Member>>(vertex);
 }
-
-template <typename Drawable>
-struct drawable_switch_element {
-  typedef typename fvf_traits<
-              typename boost::mpl::at<typename Drawable::list_type, detail::fvf_key>::type>::tex_type type;
-};
 }}

@@ -27,12 +27,6 @@ class drawable_access {
   friend struct shape_position ;
 
   template <typename Drawable>
-  friend float shape_position_at_x(const Drawable &drawable, const std::size_t at);
-
-  template <typename Drawable>
-  friend float shape_position_at_y(const Drawable &drawable, const std::size_t at);
-
-  template <typename Drawable>
   friend float shape_center_x(const Drawable &drawable);
 
   template <typename Drawable>

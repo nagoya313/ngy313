@@ -82,7 +82,7 @@ class graphic_device : private boost::noncopyable {
       static_cast<int>(x), static_cast<int>(y), static_cast<int>(x) + 1, static_cast<int>(y) + 1
     };
     D3DLOCKED_RECT lock_rect;
-    const surface_handle target(render_target(device_));
+    const surface_handle target(back_buffer(device_));
     if(SUCCEEDED(target->LockRect(&lock_rect, &rect, D3DLOCK_READONLY))) {
       const std::uint32_t *color = static_cast<std::uint32_t *>(lock_rect.pBits);
       target->UnlockRect();

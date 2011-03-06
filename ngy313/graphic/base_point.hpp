@@ -5,28 +5,6 @@
 namespace ngy313 { namespace graphic {
 #pragma warning(disable: 4512)
 
-struct default_base_point {
-  template <typename Drawable>
-  float x(const Drawable &drawable) const {
-    return shape_position<position_x>::at(drawable, 0);
-  }
-
-  template <typename Drawable>
-  float y(const Drawable &drawable) const {
-    return shape_position<position_y>::at(drawable, 0);
-  }
-
-  template <std::size_t Index, typename Drawable>
-  float u(const Drawable &drawable) const {
-    return shape_position<tex_u>::at<Index>(drawable, 0);
-  }
-
-  template <std::size_t Index, typename Drawable>
-  float v(const Drawable &drawable) const {
-    return shape_position<tex_v>::at<Index>(drawable, 0);
-  }
-};
-
 // ‚¢‚¸‚êŽOŽŸŒ³‚à‘Î‰ž‚·‚é
 struct base_point_set {
   base_point_set(const float x, const float y) : x_(x), y_(y) {}
