@@ -5,32 +5,30 @@
 #include <ngy313/graphic/fvf_tag.hpp>
 #include <ngy313/graphic/primitive_tag.hpp>
 #include <ngy313/graphic/radian.hpp>
-#include <ngy313/utility/if_cc.hpp>
 
 namespace ngy313 { namespace graphic {
 #define NGY313_OVAL_VERTEX_SIZE 62
 
 #define NGY313_OVAL_VERTEX_ELEM_GEN(z, n, data)\
-vertex_type(rhw_position_t(x + std::cos(vertex_radian<oval, n>::value) * rx,\
-  y + std::sin(vertex_radian<oval, n>::value) * ry), diffuse_t(0xFFFFFFFF)),
+vertex_type(rhw_position_t(x + std::cos(vertex_radian<data, n>::value) * rx,\
+  y + std::sin(vertex_radian<data, n>::value) * ry), diffuse_t(0xFFFFFFFF)),
 
 #define NGY313_LINE_OVAL_VERTEX_SIZE 60
 
 #define NGY313_LINE_OVAL_VERTEX_ELEM_GEN(z, n, data)\
-vertex_type(rhw_position_t(x + std::cos(line_vertex_radian<line_oval, n>::value) * rx,\
-  y + std::sin(line_vertex_radian<line_oval, n>::value) * ry), diffuse_t(0xFFFFFFFF)),
-
-#pragma warning(disable: 4512)
+vertex_type(rhw_position_t(x + std::cos(line_vertex_radian<data, n>::value) * rx,\
+  y + std::sin(line_vertex_radian<data, n>::value) * ry), diffuse_t(0xFFFFFFFF)),
 
 template <bool Filled>
-class oval_base : public drawable<oval_base<Filled>, 
-                                  utility::if_cc<Filled, std::size_t, 62, 60>::value,
-                                  utility::if_cc<Filled, std::uint32_t, 60, 59>::value,
-                                  shape_2d_fvf_tag, 
-                                  typename boost::mpl::if_c<Filled,
-                                                            triangle_fan_primitive_tag,
-                                                            line_strip_primitive_tag>::type> {
+class oval_base 
+    : public boost::mpl::if_c<Filled,
+                              drawable<oval_base<Filled>, 62, 60, shape_2d_fvf_tag, triangle_fan_primitive_tag>,
+                              drawable<oval_base<Filled>, 60, 59, shape_2d_fvf_tag, line_strip_primitive_tag>>::type {
+ typedef typename oval_base::drawable base;
+                           
  public:
+  typedef typename base::vertex_type vertex_type;
+  typedef typename base::vertex_array_type vertex_array_type;
   oval_base(const float x, const float y, const float rx, const float ry)
       : vertex_(init_vertex<Filled>(x, y, rx, ry)) {}
 
@@ -44,10 +42,10 @@ class oval_base : public drawable<oval_base<Filled>,
                                        const float y,
                                        const float rx,
                                        const float ry,
-                                       typename std::enable_if<Fill>::type * = nullptr) {
+                                       typename std::enable_if<Fill>::type * = 0) {
     const vertex_array_type vertex = {{
       vertex_type(rhw_position_t(x, y), diffuse_t(0xFFFFFFFF)),
-      BOOST_PP_REPEAT_FROM_TO(1, NGY313_OVAL_VERTEX_SIZE, NGY313_OVAL_VERTEX_ELEM_GEN, _)
+      BOOST_PP_REPEAT_FROM_TO(1, NGY313_OVAL_VERTEX_SIZE, NGY313_OVAL_VERTEX_ELEM_GEN, oval_base)
     }};
     return vertex;
   }
@@ -57,9 +55,9 @@ class oval_base : public drawable<oval_base<Filled>,
                                        const float y, 
                                        const float rx,
                                        const float ry,
-                                       typename std::enable_if<!Fill>::type * = nullptr) {
+                                       typename std::enable_if<!Fill>::type * = 0) {
     const vertex_array_type vertex = {{
-      BOOST_PP_REPEAT(NGY313_LINE_OVAL_VERTEX_SIZE, NGY313_LINE_OVAL_VERTEX_ELEM_GEN, _)
+      BOOST_PP_REPEAT(NGY313_LINE_OVAL_VERTEX_SIZE, NGY313_LINE_OVAL_VERTEX_ELEM_GEN, oval_base)
     }};
     return vertex;
   }
@@ -68,8 +66,6 @@ class oval_base : public drawable<oval_base<Filled>,
 
   friend class drawable_access;
 };
-
-#pragma warning(default: 4512)
 
 #undef NGY313_OVAL_VERTEX_ELEM_GEN
 #undef NGY313_OVAL_VERTEX_SIZE

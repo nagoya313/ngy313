@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NGY313_GRAPHIC_FVF_TAG_HPP_
+#define NGY313_GRAPHIC_FVF_TAG_HPP_
 #include <type_traits>
 #include <boost/mpl/find.hpp>
 #include <boost/mpl/find_if.hpp>
@@ -11,7 +12,14 @@
 #include <boost/fusion/include/push_back.hpp>
 #include <boost/preprocessor/enum_shifted_params.hpp>
 #include <boost/preprocessor/enum_params_with_a_default.hpp>
-#include <ngy313/graphic/detail/fvf_type.hpp>
+#include <ngy313/platform.hpp>
+#ifdef NGY313_WINDOWS
+#include <ngy313/graphic/detail/windows/fvf_type.hpp>
+#else
+#ifdef NGY313_LINUX
+#include <ngy313/graphic/detail/linux/fvf_type.hpp>
+#endif
+#endif
 #include <ngy313/graphic/vertex_member.hpp>
 
 namespace ngy313 { namespace graphic {
@@ -96,7 +104,17 @@ struct make_fvf_tag {
 
 #undef NGY313_TAG_MAX
 
+//#ifdef NGY313_WINDOWS
 typedef make_fvf_tag<dimension2_fvf_tag, diffuse_fvf_tag> shape_2d_fvf_tag;
 typedef make_fvf_tag<dimension2_fvf_tag, diffuse_fvf_tag, tex1_fvf_tag> image_2d_fvf_tag;
 typedef make_fvf_tag<dimension2_fvf_tag, diffuse_fvf_tag, tex2_fvf_tag> multi_image_2d_fvf_tag;
+//#else
+//#ifdef NGY313_LINUX
+//typedef make_fvf_tag<diffuse_fvf_tag, dimension2_fvf_tag> shape_2d_fvf_tag;
+//typedef make_fvf_tag<tex1_fvf_tag, diffuse_fvf_tag, dimension2_fvf_tag> image_2d_fvf_tag;
+//typedef make_fvf_tag<tex2_fvf_tag, diffuse_fvf_tag, dimension2_fvf_tag> multi_image_2d_fvf_tag;
+//#endif
+//#endif
 }}
+
+#endif

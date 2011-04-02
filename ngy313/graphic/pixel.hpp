@@ -1,4 +1,6 @@
-#pragma once
+#ifndef NGY313_GRAPHIC_PIXEL_HPP_
+#define NGY313_GRAPHIC_PIXEL_HPP_
+#include <ngy313/platform.hpp>
 #include <ngy313/graphic/drawable.hpp>
 #include <ngy313/graphic/fvf_tag.hpp>
 #include <ngy313/graphic/primitive_tag.hpp>
@@ -20,7 +22,13 @@ class pixel : public drawable<pixel, 1, 1, shape_2d_fvf_tag, point_list_primitiv
  private:
   vertex_array_type vertex() const {
     const vertex_array_type vertex = {{
+//#ifdef NGY313_WINDOWS
       vertex_type(rhw_position_t(x_, y_), diffuse_t(0xFFFFFFFF))
+//#else
+//#ifdef NGY313_LINUX
+  //    vertex_type(diffuse_t(0xFFFFFFFF), rhw_position_t(x_, y_))
+//#endif
+//#endif
     }};
     return vertex;
   }
@@ -31,3 +39,6 @@ class pixel : public drawable<pixel, 1, 1, shape_2d_fvf_tag, point_list_primitiv
   friend class drawable_access;
 };
 }}
+
+#endif
+

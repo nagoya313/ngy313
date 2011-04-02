@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NGY313_UTILITY_COLOR_CODE_HPP_
+#define NGY313_UTILITY_COLOR_CODE_HPP_
 #include <cstdint>
 
 namespace ngy313 { namespace utility {
@@ -147,3 +148,6 @@ const color_code_t kWhite = 0xFFFFFFFF;
 const color_code_t kGray = 0xFF808080;
 const color_code_t kLightCoral = 0xFFF08080;
 }}
+
+#endif
+

@@ -5,6 +5,7 @@
 #include <ngy313/utility/com_delete.hpp>
 
 namespace ngy313 { namespace sound {
+// エフェクト機構のテストなんでインターデイスがまだ不十分
 detail::unknown_handle create_reverb() {
   IUnknown *reverb;
   CreateFX(__uuidof(FXReverb), &reverb);

@@ -1,10 +1,9 @@
-#pragma once
+#ifndef NGY313_GRAPHIC_BASE_POINT_HPP_
+#define NGY313_GRAPHIC_BASE_POINT_HPP_
 #include <cstddef>
 #include <ngy313/graphic/shape_position.hpp>
 
 namespace ngy313 { namespace graphic {
-#pragma warning(disable: 4512)
-
 // ‚¢‚¸‚êŽOŽŸŒ³‚à‘Î‰ž‚·‚é
 struct base_point_set {
   base_point_set(const float x, const float y) : x_(x), y_(y) {}
@@ -20,12 +19,12 @@ struct base_point_set {
   }
 
   template <std::size_t Index, typename Drawable>
-  float u(const Drawable &drawable) const {
+  float u(const Drawable &) const {
     return x_;
   }
 
   template <std::size_t Index, typename Drawable>
-  float v(const Drawable &drawable) const {
+  float v(const Drawable &) const {
     return y_;
   }
 
@@ -61,8 +60,6 @@ struct base_point_set_at {
   const std::size_t at_;
 };
 
-#pragma warning(default: 4512)
-
 const struct base_point_set_center_t {
   template <typename Drawable>
   float x(const Drawable &drawable) const {
@@ -86,3 +83,5 @@ const struct base_point_set_center_t {
 
 } base_point_set_center = {};
 }}
+
+#endif

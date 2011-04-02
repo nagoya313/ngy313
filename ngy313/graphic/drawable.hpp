@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NGY313_GRAPHIC_DRAWABLE_HPP_
+#define NGY313_GRAPHIC_DRAWABLE_HPP_
 #include <cstdint>
 #include <array>
 #include <type_traits>
@@ -37,3 +38,6 @@ struct add_drawable {
   typedef typename Drawable::vertex_array_type vertex_array_type;
 };
 }}
+
+#endif
+

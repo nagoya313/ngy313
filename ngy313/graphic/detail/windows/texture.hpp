@@ -1,0 +1,60 @@
+#ifndef NGY313_GRAPHIC_DETAIL_WINDOWS_TEXTURE_HPP_
+#define NGY313_GRAPHIC_DETAIL_WINDOWS_TEXTURE_HPP_
+#include <cassert>
+#include <type_traits>
+#include <ngy313/graphic/detail/windows/device.hpp>
+#include <ngy313/graphic/detail/graphic.hpp>
+#include <ngy313/graphic/fvf_traits.hpp>
+#include <ngy313/graphic/texture_access.hpp>
+#include <ngy313/graphic/vertex_member.hpp>
+#include <ngy313/utility/string_piece.hpp>
+
+namespace ngy313 { namespace graphic {
+class texture;
+struct texture_tag;
+class multi_texture;
+class text_image;
+}}
+
+namespace ngy313 { namespace graphic { namespace detail {
+class texture_access {
+ private: 
+ public:
+  template <typename Image>
+  static const texture_handle &texture1(const Image &image) {
+    return image.texture1();
+  }
+
+  friend class ngy313::graphic::texture;
+  friend class ngy313::graphic::multi_texture;
+  friend class ngy313::graphic::text_image;
+};
+
+class texture_core_access {
+ private:
+  template <typename Texture>
+  static const texture_handle &texture1(const Texture &tex) {
+    return tex.texture1();
+  }
+
+  template <typename Drawable>
+  friend typename std::enable_if<std::is_base_of<texture_tag, Drawable>::value>::type
+    set_texture(const device_handle &device, const Drawable &drawable);
+};
+
+template <typename Drawable>
+typename std::enable_if<std::is_same<tex_t<1>, typename drawable_switch_element<Drawable>::type>::value>::type
+    set_texture(const device_handle &device, const Drawable &drawable) {
+  assert(device);
+  device->SetTexture(0, texture_core_access::texture1(ngy313::graphic::texture_access::texture1(drawable)).get());
+}
+
+template <typename Drawable>
+typename std::enable_if<std::is_same<boost::mpl::void_, typename drawable_switch_element<Drawable>::type>::value>::type
+    set_texture(const device_handle &device, const Drawable &) {
+  assert(device);
+  device->SetTexture(0, nullptr);
+}
+}}}
+
+#endif

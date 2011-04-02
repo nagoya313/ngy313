@@ -33,9 +33,8 @@ master_voice_handle create_master_voice(const device_handle &xaudio) {
 }
 
 inline
-submix_voice_handle create_submix_voice(const device_handle &xaudio,
-                                        const std::uint32_t channels,
-                                        const std::uint32_t sample_rate) {
+submix_voice_handle 
+    create_submix_voice(const device_handle &xaudio, const std::uint32_t channels, const std::uint32_t sample_rate) {
   assert(xaudio);
   IXAudio2SubmixVoice *submix_voice;
   if (FAILED(xaudio->CreateSubmixVoice(&submix_voice, channels, sample_rate, XAUDIO2_VOICE_USEFILTER))) {
@@ -62,7 +61,6 @@ inline
 source_voice_handle create_source_voice(const device_handle &xaudio, const buffer_format &format) {
   assert(xaudio);
   IXAudio2SourceVoice *voice;
-  // ここの冗長性をどうするか
   const WAVEFORMATEX format_ex = transform_format(format);
   if (FAILED(xaudio->CreateSourceVoice(&voice, &format_ex))) {
     throw std::runtime_error("ソースボイスの作成に失敗しました");
@@ -71,9 +69,8 @@ source_voice_handle create_source_voice(const device_handle &xaudio, const buffe
 }
 
 inline
-source_voice_handle create_source_voice(const device_handle &xaudio, 
-                                        const buffer_format &format,
-                                        const streaming_callback callback) {
+source_voice_handle 
+    create_source_voice(const device_handle &xaudio, const buffer_format &format, const streaming_callback callback) {
   assert(xaudio);
   IXAudio2SourceVoice *voice;
   const WAVEFORMATEX format_ex = transform_format(format);
@@ -84,19 +81,13 @@ source_voice_handle create_source_voice(const device_handle &xaudio,
 }
 
 inline
-source_voice_handle create_source_voice(const device_handle &xaudio, 
-                                        const buffer_format &format,
-                                        const submix_voice_handle &submix) {
+source_voice_handle 
+    create_source_voice(const device_handle &xaudio, const buffer_format &format, const submix_voice_handle &submix) {
   assert(xaudio);
   IXAudio2SourceVoice *voice;
-  // ここの冗長性をどうするか
   const WAVEFORMATEX format_ex = transform_format(format);
-  XAUDIO2_SEND_DESCRIPTOR send = {
-    XAUDIO2_SEND_USEFILTER, submix.get()
-  };
-  const XAUDIO2_VOICE_SENDS list = {
-    1, &send
-  };
+  XAUDIO2_SEND_DESCRIPTOR send = {XAUDIO2_SEND_USEFILTER, submix.get()};
+  const XAUDIO2_VOICE_SENDS list = {1, &send};
   if (FAILED(xaudio->CreateSourceVoice(&voice, &format_ex, 0, XAUDIO2_DEFAULT_FREQ_RATIO, nullptr, &list))) {
     throw std::runtime_error("ソースボイスの作成に失敗しました");
   }
@@ -110,14 +101,9 @@ source_voice_handle create_source_voice(const device_handle &xaudio,
                                         const streaming_callback callback) {
   assert(xaudio);
   IXAudio2SourceVoice *voice;
-  // ここの冗長性をどうするか
   const WAVEFORMATEX format_ex = transform_format(format);
-  XAUDIO2_SEND_DESCRIPTOR send = {
-    XAUDIO2_SEND_USEFILTER, submix.get()
-  };
-  const XAUDIO2_VOICE_SENDS list = {
-    1, &send
-  };
+  XAUDIO2_SEND_DESCRIPTOR send = {XAUDIO2_SEND_USEFILTER, submix.get()};
+  const XAUDIO2_VOICE_SENDS list = {1, &send};
   if (FAILED(xaudio->CreateSourceVoice(&voice, &format_ex, 0, XAUDIO2_DEFAULT_FREQ_RATIO, callback, &list))) {
     throw std::runtime_error("ソースボイスの作成に失敗しました");
   }

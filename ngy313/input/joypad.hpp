@@ -5,8 +5,8 @@
 #include <ngy313/input/detail/joypad.hpp>
 
 namespace ngy313 { namespace input { namespace joypad {
+// R21‚ÆL2‚ð‚Ç‚¤‚·‚é‚©
 enum key_code {
-  // R21‚ÆL2‚ð‚Ç‚¤‚·‚é‚©
   kDown = XINPUT_GAMEPAD_DPAD_DOWN,
   kUp = XINPUT_GAMEPAD_DPAD_UP,
   kLeft = XINPUT_GAMEPAD_DPAD_LEFT,

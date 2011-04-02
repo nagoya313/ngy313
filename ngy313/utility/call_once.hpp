@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NGY313_UTILITY_CALL_ONCE_HPP_
+#define NGY313_UTILITY_CALL_ONCE_HPP_
 
 namespace ngy313 { namespace utility {
 // ‘½•ª‚±‚ê‚Å‘åä•v‚¾‚Æv‚¤
@@ -17,3 +18,6 @@ struct call_once {
   };
 };
 }}
+
+#endif
+

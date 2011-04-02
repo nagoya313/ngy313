@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NGY313_UTILITY_PIPE_OPERATOR_HPP_
+#define NGY313_UTILITY_PIPE_OPERATOR_HPP_
 #include <utility>
 #include <ngy313/utility/declval.hpp>
 
@@ -11,3 +12,6 @@ decltype(declval<Adaptor>()(declval<Base>())) operator |(Base &&base, Adaptor &&
 template <typename Adaptor>
 struct base {};
 }}}
+
+#endif
+

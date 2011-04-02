@@ -2,19 +2,20 @@
 #include <ngy313/graphic/drawable.hpp>
 #include <ngy313/graphic/fvf_tag.hpp>
 #include <ngy313/graphic/primitive_tag.hpp>
-#include <ngy313/utility/if_cc.hpp>
 
 namespace ngy313 { namespace graphic {
 // ˆø”‚ªƒxƒNƒgƒ‹‚É‚È‚é‚Ì‚Í{}‚Å‰Šú‰»‚Å‚«‚é‚æ‚¤‚É‚È‚Á‚Ä‚©‚ç
 template <bool Filled>
-class box_base : public drawable<box_base<Filled>, 
-                                 utility::if_cc<Filled, std::size_t, 4, 5>::value,
-                                 utility::if_cc<Filled, std::uint32_t, 2, 4>::value,
-                                 shape_2d_fvf_tag, 
-                                 typename boost::mpl::if_c<Filled,
-                                                           triangle_strip_primitive_tag,
-                                                           line_strip_primitive_tag>::type> {
+class box_base 
+    : public boost::mpl::if_c<Filled,
+                              drawable<box_base<Filled>, 4, 5, shape_2d_fvf_tag, triangle_strip_primitive_tag>,
+                              drawable<box_base<Filled>, 2, 4, shape_2d_fvf_tag, line_strip_primitive_tag>>::type {
+  typedef typename box_base::drawable base;
+                                                           
  public:
+  typedef typename base::vertex_type vertex_type;
+  typedef typename base::vertex_array_type vertex_array_type;
+  
   box_base(const float x, const float y, const float width, const float height)
       : x_(x), y_(y), width_(width), height_(height) {}
 
@@ -27,12 +28,12 @@ class box_base : public drawable<box_base<Filled>,
   }
 
  private:
-  vertex_array_type vertex() const {
+  typename base::vertex_array_type vertex() const {
     return vertex_<Filled>();
   }
 
   template <bool Fill>
-  vertex_array_type vertex_(typename std::enable_if<Fill>::type * = nullptr) const {
+  vertex_array_type vertex_(typename std::enable_if<Fill>::type * = 0) const {
     const vertex_array_type vertex = {{
       vertex_type(rhw_position_t(x_, y_), diffuse_t(0xFFFFFFFF)),
       vertex_type(rhw_position_t(x_ + width_, y_), diffuse_t(0xFFFFFFFF)),
@@ -43,7 +44,7 @@ class box_base : public drawable<box_base<Filled>,
   }
 
   template <bool Fill>
-  vertex_array_type vertex_(typename std::enable_if<!Fill>::type * = nullptr) const {
+  vertex_array_type vertex_(typename std::enable_if<!Fill>::type * = 0) const {
     const vertex_array_type vertex = {{
       vertex_type(rhw_position_t(x_, y_), diffuse_t(0xFFFFFFFF)),
       vertex_type(rhw_position_t(x_ + width_, y_), diffuse_t(0xFFFFFFFF)),

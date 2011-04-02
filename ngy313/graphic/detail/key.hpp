@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NGY313_GRAPHIC_DETAIL_KEY_HPP_
+#define NGY313_GRAPHIC_DETAIL_KEY_HPP_
 #include <boost/fusion/include/map.hpp>
 #include <boost/fusion/include/mpl.hpp>
 #include <boost/fusion/include/size.hpp>
@@ -8,6 +9,7 @@
 #include <boost/mpl/switch.hpp>
 #include <boost/mpl/vector.hpp>
 #include <ngy313/graphic/fvf_traits.hpp>
+#include <ngy313/graphic/texture_access.hpp>
 
 namespace ngy313 { namespace graphic {
 class texture;
@@ -68,6 +70,9 @@ template <typename Drawable>
 typename drawable_fusion<Drawable>::type 
     drawable_fusion_init(const Drawable &drawable,
                          typename std::enable_if<drawable_switch<Drawable>::type::value == 2, dummy>::type = dummy()) {
-  return typename drawable_fusion<Drawable>::type(drawable, texture_access::texture1(drawable));
+  return typename drawable_fusion<Drawable>::type(drawable, graphic::texture_access::texture1(drawable));
 }
 }}}
+
+#endif
+

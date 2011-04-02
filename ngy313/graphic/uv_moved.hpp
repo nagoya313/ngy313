@@ -1,8 +1,8 @@
-#pragma once
+#ifndef NGY313_GRAPHIC_UV_MOVED_HPP_
+#define NGY313_GRAPHIC_UV_MOVED_HPP_
 #include <cstddef>
 #include <boost/mpl/size_t.hpp>
 #include <boost/range/algorithm/transform.hpp>
-#include <ngy313/adaptor/adaptor.hpp>
 #include <ngy313/graphic/adaptor.hpp>
 #include <ngy313/graphic/fvf_traits.hpp>
 #include <ngy313/graphic/vertex_member.hpp>
@@ -63,15 +63,15 @@ struct uv_moved : public utility::pipe_operator::base<uv_moved<Index>> {
 template <typename Drawable, std::size_t Index>
 struct uv_moved_at_adaptor : public drawable_adaptor<uv_moved_at_adaptor<Drawable, Index>, Drawable> {
   uv_moved_at_adaptor(const Drawable &drawable, const std::size_t at, const float move_u, const float move_v)
-      : drawable_adaptor<moved_at_adaptor<Drawable>, Drawable>(drawable), 
+      : uv_moved_at_adaptor::drawable_adaptor(drawable), 
         at_(at),
         move_u_(move_u),
         move_v_(move_v) {}
 
  private:
   void transform(typename Drawable::vertex_array_type &vertex) const {
-    vertex_member_at<tex>(vertex[at]).tex_array[Index].u += move_u_;
-    vertex_member_at<tex>(vertex[at]).tex_array[Index].v += move_v_;
+    vertex_member_at<tex>(vertex[at_]).tex_array[Index].u += move_u_;
+    vertex_member_at<tex>(vertex[at_]).tex_array[Index].v += move_v_;
   }
 
   const std::size_t at_;
@@ -106,3 +106,5 @@ struct uv_moved_at : public utility::pipe_operator::base<uv_moved_at<Index>> {
   const float move_v_;
 };
 }}
+
+#endif

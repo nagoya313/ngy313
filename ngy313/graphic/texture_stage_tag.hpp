@@ -1,9 +1,10 @@
-#pragma once
+#ifndef NGY313_GRAPHIC_TEXTURE_STAGE_TAG_HPP_
+#define NGY313_GRAPHIC_TEXTURE_STAGE_TAG_HPP_
 #include <cstddef>
 #include <type_traits>
 #include <boost/mpl/contains.hpp>
 #include <boost/mpl/vector.hpp>
-#include <ngy313/graphic/detail/texture_stage_type.hpp>
+#include <ngy313/graphic/detail/windows/texture_stage_type.hpp>
 
 namespace ngy313 { namespace graphic {
 typedef std::integral_constant<detail::texture_option, detail::kTextureOptionDisable> disable_texture_operator_tag;
@@ -87,3 +88,5 @@ typedef texture_stage_tuple<1,
 
 typedef boost::mpl::vector<default_stage0, default_stage1> default_stage;
 }}
+
+#endif

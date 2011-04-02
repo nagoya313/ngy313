@@ -3,6 +3,7 @@
 #include <ngy313/sound/effect.hpp>
 
 namespace ngy313 { namespace sound {
+// エフェクト機構のテストなんで実装、インターデイス共にまだ不十分
 struct fade_parameters {
   float gain;
   int count;
@@ -49,6 +50,6 @@ struct fade {
   const float gain_;
   const int count_;
   const int max_count_;
-  decltype(create_effect<fade_effect, fade_parameters>()) fade_;
+  const decltype(create_effect<fade_effect, fade_parameters>()) fade_;
 };
 }}

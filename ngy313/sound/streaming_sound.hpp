@@ -2,6 +2,7 @@
 #include <boost/noncopyable.hpp>
 #include <ngy313/sound/detail/singleton.hpp>
 #include <ngy313/sound/submix.hpp>
+#include <ngy313/sound/detail/streamin_callback.hpp>
 
 namespace ngy313 { namespace sound {
 template <typename Loader>
@@ -13,7 +14,7 @@ class streaming_sound : private IXAudio2VoiceCallback, private boost::noncopyabl
   }
 
   streaming_sound(const Loader &loader, const submix &mix) : buffer_(file_name), voice_() {
-    voice_ = detail::create_source_voice(detail::device().device(), buffer_.format(), mix.submix_voice_, this);
+    voice_ = detail::create_source_voice(detail::device().device(), buffer_.format(), mix.submix_voice(), this);
     init();
   }
 
@@ -51,10 +52,7 @@ class streaming_sound : private IXAudio2VoiceCallback, private boost::noncopyabl
   void set_effect(const Effect &effect) {
     assert(voice_);
     auto desc = effect.descriptor(buffer_.format().channels);
-    const XAUDIO2_EFFECT_CHAIN chain = {
-      1,
-      &desc,
-    };
+    const XAUDIO2_EFFECT_CHAIN chain = {1, &desc};
     voice_->SetEffectChain(&chain);
     auto param = effect.parameters();
     voice_->SetEffectParameters(0, &param, sizeof(param));
@@ -63,10 +61,17 @@ class streaming_sound : private IXAudio2VoiceCallback, private boost::noncopyabl
  private:
   void init() {
     assert(voice_);
-    const XAUDIO2_BUFFER buffer = {
-      0, buffer_.size(), &(*buffer_.buffer()), 0, 0, 0, 0, 0, nullptr
-    };
+    const XAUDIO2_BUFFER buffer = {0, buffer_.size(), &(*buffer_.buffer()), 0, 0, 0, 0, 0, nullptr};
     voice_->SubmitSourceBuffer(&buffer);
+  }
+
+  void buufer_start() {
+    buffer_.start();
+    init();
+  }
+
+  void buffer_end() {
+    buffer_.end();
   }
 
   void WINAPI OnStreamEnd() {}
@@ -91,6 +96,7 @@ class streaming_sound : private IXAudio2VoiceCallback, private boost::noncopyabl
   }
 
   Loader buffer_;
+  detail::streaming_callback callback_;
   detail::source_voice_handle voice_;
 };
 }}

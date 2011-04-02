@@ -1,10 +1,10 @@
-#pragma once
-#include <boost/signals2/signal.hpp>
-#include <ngy313/graphic/detail/device.hpp>
-#include <ngy313/graphic/detail/graphic_device.hpp>
-#include <ngy313/window/detail/singleton.hpp>
+#ifndef NGY313_GRAPHIC_DETAIL_SINGLETON_HPP_
+#define NGY313_GRAPHIC_DETAIL_SINGLETON_HPP_
+#include <boost/noncopyable.hpp>
+#include <ngy313/window/detail/window.hpp>
 
 namespace ngy313 { namespace graphic { namespace detail {
+template <typename Device>
 class singleton : private boost::noncopyable {
  public:
   static singleton &instance() {
@@ -20,11 +20,8 @@ class singleton : private boost::noncopyable {
   singleton() : device_(window::detail::window()) {
   }
   
-  graphic_device device_;
+  Device device_;
 };
-
-inline
-graphic_device &device() {
-  return singleton::instance().device();
-}
 }}}
+
+#endif

@@ -1,16 +1,15 @@
-#pragma once
+#ifndef NGY313_WINDWO_DETAIL_WINDOWS_MAIN_WINDOW_HPP_
+#define NGY313_WINDWO_DETAIL_WINDOWS_MAIN_WINDOW_HPP_
 #include <cassert>
 #include <cstdint>
 #include <string>
 #include <system_error>
 #include <vector>
 #include <boost/noncopyable.hpp>
-#pragma warning(disable: 4512)
 #include <boost/signals2/signal.hpp>
-#pragma warning(default: 4512)
 #include <ngy313/utility/call_once.hpp>
 #include <ngy313/utility/string_piece.hpp>
-#include <ngy313/window/detail/window.hpp>
+#include <ngy313/window/detail/windows/window.hpp>
 
 namespace ngy313 { namespace window { namespace detail {
 class main_window : private boost::noncopyable {
@@ -18,22 +17,21 @@ class main_window : private boost::noncopyable {
   main_window() : handle_(init_window()) {
     assert(handle_);
     set_subclass_procedure(handle_, reinterpret_cast<UINT_PTR>(this), &subclass_procedure);
-    resize(640, 480);
   }
 
-  void show() {
+  void show() const {
     assert(handle_);
     ShowWindow(handle_, SW_RESTORE);
   }
 
-  void hide() {
+  void hide() const {
     assert(handle_);
     ShowWindow(handle_, SW_HIDE);
   }
 
-  void set_caption(const utility::string_piece &text) {
+  void set_caption(const utility::string_piece &text) const {
     assert(handle_);
-    SetWindowText(handle_, text.c_str());
+    SetWindowTextA(handle_, text.c_str());
     assert(text.string() == caption());
   }
 
@@ -42,14 +40,14 @@ class main_window : private boost::noncopyable {
     //set_icon(handle_);
   }
 
-  void move(const int x_pos, const int y_pos) {
+  void move(const int x_pos, const int y_pos) const {
     assert(handle_);
     SetWindowPos(handle_, nullptr, x_pos, y_pos, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
     assert(x() == x_pos);
     assert(y() == y_pos);
   }
 
-  void resize(const int width_size, const int height_size) {
+  void resize(const int width_size, const int height_size) const {
     assert(handle_);
     RECT rect = {0, 0, width_size, height_size};
     if (!AdjustWindowRect(&rect, kWindowStyle, FALSE)) {
@@ -65,7 +63,7 @@ class main_window : private boost::noncopyable {
   std::string caption() const {
     assert(handle_);
     std::vector<char> buffer(GetWindowTextLength(handle_) + 1);
-    GetWindowText(handle_, buffer.data(), buffer.size());
+    GetWindowTextA(handle_, buffer.data(), buffer.size());
     return std::string(buffer.begin(), buffer.end() - 1);
   }
 
@@ -141,3 +139,5 @@ class main_window : private boost::noncopyable {
   const handle handle_;
 };
 }}}
+
+#endif

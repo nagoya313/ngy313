@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NGY313_GRAPHIC_MOVED_HPP_
+#define NGY313_GRAPHIC_MOVED_HPP_
 #include <boost/range/algorithm/transform.hpp>
 #include <ngy313/graphic/adaptor.hpp>
 #include <ngy313/graphic/fvf_traits.hpp>
@@ -98,3 +99,6 @@ struct moved_at : public utility::pipe_operator::base<moved_at> {
   const float move_y_;
 };
 }}
+
+#endif
+

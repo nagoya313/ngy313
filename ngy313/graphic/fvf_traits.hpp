@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NGY313_GRAPHIC_FVF_TRAITS_HPP_
+#define NGY313_GRAPHIC_FVF_TRAITS_HPP_
 #include <cstdint>
 #include <type_traits>
 #include <boost/mpl/at.hpp>
@@ -60,3 +61,5 @@ const typename boost::mpl::find_if<Vertex, find_fvf_member_type<Member>>::type::
   return *boost::fusion::find_if<find_fvf_member_type<Member>>(vertex);
 }
 }}
+
+#endif

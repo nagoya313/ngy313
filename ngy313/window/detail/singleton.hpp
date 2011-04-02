@@ -1,18 +1,18 @@
-#pragma once
-#include <boost/mpl/string.hpp>
+#ifndef NGY313_WINDOW_DETAIL_SINGLETON_HPP_
+#define NGY313_WINDOW_DETAIL_SINGLETON_HPP_
+#include <cassert>
 #include <boost/noncopyable.hpp>
-#include <ngy313/window/detail/main_window.hpp>
-#include <ngy313/window/detail/window.hpp>
 
 namespace ngy313 { namespace window { namespace detail {
+template <typename Window>
 class singleton : private boost::noncopyable {
  public:
   static singleton &instance() {
-    static singleton window;
-    return window;
+    static singleton inst;
+    return inst;
   }
-
-  main_window &window() {
+  
+  Window &window() {
     return window_;
   }
 
@@ -21,11 +21,9 @@ class singleton : private boost::noncopyable {
     window_.resize(640, 480);
   }
 
-  main_window window_;
+  Window window_;
 };
-
-inline
-main_window &window() {
-  return singleton::instance().window();
-}
 }}}
+
+#endif
+

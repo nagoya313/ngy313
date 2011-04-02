@@ -1,11 +1,15 @@
-#pragma once
-#include <ngy313/graphic/detail/texture.hpp>
+#ifndef NGY313_GRAPHIC_TEXTURE_HPP_
+#define NGY313_GRAPHIC_TEXTURE_HPP_
+#include <ngy313/platform.hpp>
+#if defined(NGY313_WINDOWS_VERSION)
+#include <ngy313/graphic/detail/windows/texture.hpp>
+#elif defined(NGY313_LINUX_VERSION)
+#include <ngy313/graphic/detail/linux/texture.hpp>
+#endif
 #include <ngy313/graphic/texture_access.hpp>
 
 namespace ngy313 { namespace graphic {
 struct texture_tag {};
-
-#pragma warning(disable: 4512)
 
 class texture {
  public:
@@ -16,11 +20,11 @@ class texture {
                                        width_(img.width()),
                                        height_(img.height()) {}
 
-  float width() const {
+  int width() const {
     return width_;
   }
 
-  float height() const {
+  int height() const {
     return height_;
   }
 
@@ -30,13 +34,14 @@ class texture {
   }
 
   const detail::texture_handle &texture1_;
-  const float width_;
-  const float height_;
+  const int width_;
+  const int height_;
 
   friend class detail::texture_access;
   friend class detail::texture_core_access;
 };
 
+/*
 class multi_texture {
  public:
   typedef multi_texture multi_texture_type;
@@ -58,7 +63,7 @@ class multi_texture {
   const detail::texture_handle &texture2_;
 
   friend class detail::texture_core_access;
-};
-
-#pragma warning(default: 4512)
+};*/
 }}
+
+#endif

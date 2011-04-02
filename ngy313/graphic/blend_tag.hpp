@@ -1,8 +1,14 @@
-#pragma once
+#ifndef NGY313_GRAPGIC_BLEND_TAG_HPP_
+#define NGY313_GRAPHIC_BLEND_TAG_HPP_
 #include <type_traits>
 #include <boost/mpl/contains.hpp>
 #include <boost/mpl/vector.hpp>
-#include <ngy313/graphic/detail/blend_type.hpp>
+#include <ngy313/platform.hpp>
+#if defined(NGY313_WINDOWS_VERSION)
+#include <ngy313/graphic/detail/windows/blend_type.hpp>
+#elif defined(NGY313_LINUX_VERSION)
+#include <ngy313/graphic/detail/linux/blend_type.hpp>
+#endif
 
 namespace ngy313 { namespace graphic {
 typedef std::integral_constant<detail::blend_type, detail::kBlendOne> one_blend_tag;
@@ -40,3 +46,5 @@ struct blend_pair {
 
 typedef blend_pair<src_alpha_blend_tag, inv_src_alpha_blend_tag> default_blend;
 }}
+
+#endif

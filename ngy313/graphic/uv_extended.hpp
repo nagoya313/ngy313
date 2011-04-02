@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NGY313_GRAPHIC_UV_EXTENDED_HPP_
+#define NGY313_GRAPHIC_UV_EXTENDED_HPP_
 #include <boost/mpl/size_t.hpp>
 #include <boost/range/algorithm/transform.hpp>
 #include <ngy313/graphic/adaptor.hpp>
@@ -33,7 +34,7 @@ struct uv_extended_adaptor : public drawable_adaptor<uv_extended_adaptor<Drawabl
   template <typename BasePoint>
   uv_extended_adaptor(const Drawable &drawable, const BasePoint &base_point, const float extend)
       : drawable_adaptor<uv_extended_adaptor<Drawable, Index>, Drawable>(drawable), 
-        extend_(base_point.u<Index>(drawable), base_point.v<Index>(drawable), extend) {}
+        extend_(base_point. template u<Index>(drawable), base_point. template v<Index>(drawable), extend) {}
 
  private:
   void transform(typename Drawable::vertex_array_type &vertex) const {
@@ -181,12 +182,11 @@ struct uv_extended_uv_adaptor : public drawable_adaptor<uv_extended_uv_adaptor<D
                          const BasePoint &base_point,
                          const float extend_u,
                          const float extend_v)
-      : drawable_adaptor<uv_extended_uv_adaptor<Drawable, Index>, Drawable>(drawable), 
-        extend_(base_point.u<Index>(drawable), base_point.v<Index>(drawable), extend_u, extend_v) {}
+      : uv_extended_uv_adaptor::drawable_adaptor(drawable), 
+        extend_(base_point.template u<Index>(drawable), base_point.template v<Index>(drawable), extend_u, extend_v) {}
 
  private:
   void transform(typename Drawable::vertex_array_type &vertex) const {
-    const std::size_t index = Index;
     boost::transform(vertex, vertex.begin(), extend_);
   }
 
@@ -226,3 +226,6 @@ uv_extended_uv_t<Index, BasePoint> uv_extended_uv(const BasePoint &base_point,
   return uv_extended_uv_t<Index, BasePoint>(base_point, extend_u, extend_v);
 }
 }}
+
+#endif
+

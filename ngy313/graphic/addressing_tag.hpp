@@ -1,9 +1,9 @@
-#pragma once
+#ifndef NGY313_GRAPHIC_ADDRWSSING_TAG_HPP_
 #include <cstddef>
 #include <type_traits>
 #include <boost/mpl/contains.hpp>
 #include <boost/mpl/vector.hpp>
-#include <ngy313/graphic/detail/addressing_type.hpp>
+#include <ngy313/graphic/detail/windows/addressing_type.hpp>
 
 namespace ngy313 { namespace graphic {
 typedef std::integral_constant<detail::addressing_type, detail::kAddressWrap> wrap_addressing_tag;
@@ -29,3 +29,5 @@ struct default_addressing {
   typedef addressing_tuple<Stage, clamp_addressing_tag, clamp_addressing_tag> type;
 };
 }}
+
+#endif

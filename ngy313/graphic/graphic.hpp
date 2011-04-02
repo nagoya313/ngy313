@@ -1,6 +1,6 @@
-#pragma once
-#include <ngy313/graphic/detail/draw.hpp>
-#include <ngy313/graphic/detail/singleton.hpp>
+#ifndef NGY313_GRAPHIC_GRAPHIC_HPP_
+#define NGY313_GRAPHIC_GRAPHIC_HPP_
+#include <ngy313/graphic/detail/graphic.hpp>
 #include <ngy313/window/window.hpp>
 
 namespace ngy313 { namespace graphic {
@@ -20,7 +20,7 @@ void present() {
 }
 
 inline
-std::uint32_t pixel_color(const float x, const float y) {
+std::uint32_t pixel_color(const int x, const int y) {
   return detail::device().pixel_color(x, y);
 }
 
@@ -49,3 +49,6 @@ void draw(const Drawable &drawable) {
   const detail::draw<Drawable> draw(detail::device().device(), drawable);
 }
 }}
+
+#endif
+

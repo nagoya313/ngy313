@@ -23,7 +23,7 @@ class graphic_device : private boost::noncopyable {
     return windowed_;
   }
 
-  void present() {
+  void present() const {
     assert(device_);
     switch (device_->Present(nullptr, nullptr, nullptr, nullptr)) {
       case D3DERR_DEVICELOST:
@@ -61,17 +61,17 @@ class graphic_device : private boost::noncopyable {
     return height_;
   }
 
-  void clear(const std::uint32_t col) {
+  void clear(const std::uint32_t col) const {
     assert(device_);
     device_->Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, col, 1.f, 0);
   }
 
-  bool begin_scene() {
+  bool begin_scene() const {
     assert(device_);
     return SUCCEEDED(device_->BeginScene());
   }
 
-  void end_scene() {
+  void end_scene() const {
     assert(device_);
     device_->EndScene();
   }
@@ -100,7 +100,7 @@ class graphic_device : private boost::noncopyable {
   boost::signals2::signal<void (const device_handle &)> after_reset;
 
  private:
-  void reset() {
+  void reset() const {
     assert(device_);
     D3DPRESENT_PARAMETERS present_parameter = init_present_parameters(windowed(), width(), height());
     before_reset(device_);

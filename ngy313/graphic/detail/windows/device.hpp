@@ -1,16 +1,17 @@
-#pragma once
+#ifndef NGY313_GRAPHIC_DETAIL_WINDOWS_DEVICE_HPP_
+#define NGY313_GRAPHIC_DETAIL_WINDOWS_DEVICE_HPP_
 #include <cassert>
 #include <cstdint>
 #include <stdexcept>
-#include <ngy313/graphic/detail/fwd.hpp>
-#include <ngy313/graphic/detail/addressing.hpp>
-#include <ngy313/graphic/detail/blend.hpp>
-#include <ngy313/graphic/detail/scoped_addressing.hpp>
-#include <ngy313/graphic/detail/scoped_blend.hpp>
-#include <ngy313/graphic/detail/scoped_texture_stage.hpp>
-#include <ngy313/utility/com_delete.hpp>
-#include <ngy313/window/detail/fwd.hpp>
-#include <ngy313/window/detail/main_window.hpp>
+#include <ngy313/graphic/detail/windows/fwd.hpp>
+#include <ngy313/graphic/detail/windows/addressing.hpp>
+#include <ngy313/graphic/detail/windows/blend.hpp>
+#include <ngy313/graphic/detail/windows/scoped_addressing.hpp>
+#include <ngy313/graphic/detail/windows/scoped_blend.hpp>
+#include <ngy313/graphic/detail/windows/scoped_texture_stage.hpp>
+#include <ngy313/utility/detail/windows/com_delete.hpp>
+#include <ngy313/window/detail/windows/fwd.hpp>
+#include <ngy313/window/detail/windows/main_window.hpp>
 
 namespace ngy313 { namespace graphic { namespace detail {
 inline
@@ -163,3 +164,5 @@ void set_z_and_stencil(const device_handle &device, const surface_handle &surfac
   device->SetDepthStencilSurface(surface.get());
 }
 }}}
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NGY313_GRAPHIC_SHAPE_POSITION_HPP_
+#define NGY313_GRAPHIC_SHAPE_POSITION_HPP_
 #include <boost/mpl/at.hpp>
 #include <boost/range/numeric.hpp>
 #include <ngy313/graphic/detail/key.hpp>
@@ -192,3 +193,5 @@ struct extend_position_selecter<tex_v> {
   }
 };
 }}
+
+#endif

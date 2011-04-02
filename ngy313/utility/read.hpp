@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NGY313_UTILITY_READ_HPP_
+#define NGY313_UTILITY_READ_HPP_
 #include <type_traits>
 
 namespace ngy313 { namespace utility {
@@ -11,3 +12,6 @@ typename std::remove_const<T>::type read(Stream &stream) {
   return t;
 }
 }}
+
+#endif
+

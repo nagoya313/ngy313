@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NGY313_WINDOW_WINDOW_HPP_
+#define NGY313_WINDOW_WINDOW_HPP_
 #include <cassert>
 #include <ngy313/window/detail/singleton.hpp>
 
@@ -63,3 +64,6 @@ void resize(const int width_size, const int height_size) {
   assert(height_size == height());
 }
 }}
+
+#endif
+

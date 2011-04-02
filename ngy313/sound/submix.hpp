@@ -23,6 +23,10 @@ class submix {
   }
 
  private:
+  const detail::submix_voice_handle &submix_voice() const {
+    return submix_voice_;
+  }
+
   const detail::submix_voice_handle submix_voice_;
 
   template <typename BufferType>

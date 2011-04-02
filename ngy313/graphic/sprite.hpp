@@ -1,12 +1,11 @@
-#pragma once
+#ifndef NGY313_GRAPHIC_SPRITE_HPP_
+#define NGY313_GRAPHIC_SPRITE_HPP_
 #include <ngy313/graphic/texture.hpp>
 #include <ngy313/graphic/drawable.hpp>
 #include <ngy313/graphic/fvf_tag.hpp>
 #include <ngy313/graphic/primitive_tag.hpp>
 
 namespace ngy313 { namespace graphic {
-#pragma warning(disable: 4512)
-
 class sprite : public drawable<sprite, 4, 2, image_2d_fvf_tag, triangle_strip_primitive_tag> {
  public:
   template <typename Image>
@@ -35,11 +34,11 @@ class sprite : public drawable<sprite, 4, 2, image_2d_fvf_tag, triangle_strip_pr
   friend class texture_access;
 };
 
-class size_sprite : public drawable<size_sprite, 4, 2, image_2d_fvf_tag, triangle_strip_primitive_tag>, public texture {
+class size_sprite : public drawable<size_sprite, 4, 2, image_2d_fvf_tag, triangle_strip_primitive_tag> {
  public:
   template <typename Image>
   size_sprite(const float x, const float y, const float width, const float height, const Image &image)
-      : texture(image), x_(x), y_(y), width_(width), height_(height) {}
+      : texture_(image), x_(x), y_(y), width_(width), height_(height) {}
 
  private:
   vertex_array_type vertex() const {
@@ -51,14 +50,20 @@ class size_sprite : public drawable<size_sprite, 4, 2, image_2d_fvf_tag, triangl
     }};
     return vertex;
   }
-
+  
+  const texture &texture1() const {
+    return texture_;
+  }
+  
+  const texture texture_;
   const float x_;
   const float y_;
   const float width_;
   const float height_;
 
   friend class drawable_access;
+  friend class texture_access;
 };
-
-#pragma warning(default: 4512)
 }}
+
+#endif

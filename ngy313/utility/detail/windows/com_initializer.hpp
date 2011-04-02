@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NGY313_UTILITY_COM_INITIALIZER_HPP_
+#define NGY313_UTILITY_COM_INITIALIZER_HPP_
 #include <stdexcept>
 #include <boost/noncopyable.hpp>
 #define _WIN32_DCOM
@@ -17,3 +18,6 @@ struct com_initializer : private boost::noncopyable {
   }
 };
 }}
+
+#endif
+

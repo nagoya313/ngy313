@@ -1,7 +1,15 @@
-#pragma once
+#ifndef NGY313_GRAPHIC_PRIMITIBE_TAG_HPP_
+#define NGY313_GRAPHIC_PRIMITIBE_TAG_HPP_
 #include <type_traits>
 #include <boost/mpl/vector.hpp>
-#include <ngy313/graphic/detail/primitive_type.hpp>
+#include <ngy313/platform.hpp>
+#ifdef NGY313_WINDOWS
+#include <ngy313/graphic/detail/windows/primitive_type.hpp>
+#else
+#ifdef NGY313_LINUX
+#include <ngy313/graphic/detail/linux/primitive_type.hpp>
+#endif
+#endif
 
 namespace ngy313 { namespace graphic {
 struct primitive_tag {};
@@ -38,3 +46,6 @@ typedef boost::mpl::vector<point_list_primitive_tag,
                            triangle_strip_primitive_tag,
                            triangle_fan_primitive_tag> primitive_tag_list;
 }}
+
+#endif
+

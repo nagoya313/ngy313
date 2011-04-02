@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NGY313_GRAPHIC_DRAWABLE_ACCESS_HPP_
+#define NGY313_GRAPHIC_DRAWABLE_ACCESS_HPP_
 
 // これが必要な意味がよく分からないが名前空間があると必要？
 namespace ngy313 { namespace graphic { namespace detail {
@@ -39,3 +40,6 @@ class drawable_access {
   friend float shape_center_v(const Drawable &drawable);
 };
 }}
+
+#endif
+

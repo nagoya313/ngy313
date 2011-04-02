@@ -1,10 +1,11 @@
-#pragma once
+#ifndef NGY313_GRAPHIC_ADAPTOR_HPP_
+#define NGY313_GRAPHIC_ADAPTOR_HPP_
 #include <type_traits>
 #include <boost/fusion/include/at_key.hpp>
 #include <ngy313/graphic/detail/key.hpp>
 #include <ngy313/graphic/drawable.hpp>
 #include <ngy313/graphic/drawable_access.hpp>
-#include <ngy313/graphic/texture.hpp>
+//#include <ngy313/graphic/texture.hpp>
 
 namespace ngy313 { namespace graphic {
 class adaptor_access {
@@ -20,7 +21,7 @@ class adaptor_access {
 
 
 template <typename Adaptor, typename Drawable>
-struct drawable_adaptor : public ngy313::graphic::copy_drawable<Drawable> {
+struct drawable_adaptor : public copy_drawable<Drawable> {
   explicit drawable_adaptor(const Drawable &drawable) : list_(detail::drawable_fusion_init(drawable)) {}
 
  private:
@@ -41,7 +42,7 @@ struct drawable_adaptor : public ngy313::graphic::copy_drawable<Drawable> {
 };
 
 template <typename Drawable, typename AddPair>
-struct add_drawable_adaptor : public ngy313::graphic::add_drawable<Drawable, AddPair> {
+struct add_drawable_adaptor : public add_drawable<Drawable, AddPair> {
   explicit add_drawable_adaptor(const Drawable &drawable) : list_(detail::drawable_fusion_init(drawable)) {}
 
  private:
@@ -59,3 +60,6 @@ struct add_drawable_adaptor : public ngy313::graphic::add_drawable<Drawable, Add
   friend class texture_access;
 };
 }}
+
+#endif
+

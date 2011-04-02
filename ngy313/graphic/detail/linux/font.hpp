@@ -13,17 +13,16 @@
 #include <ngy313/utility/string_piece.hpp>
 
 namespace ngy313 { namespace graphic { namespace detail {
-#pragma warning(disable: 4512)
-
 struct font_key {
   font_key(const device_handle &dev, const int siz, const std::string &nam) : device(dev), size(siz), name(nam) {}
 
   const device_handle &device;
   int size;
   std::string name;
-};
 
-#pragma warning(default: 4512)
+ private:
+   font_key &operator =(const font_key &);
+};
 
 inline
 bool operator ==(const font_key &lhs, const font_key &rhs) {

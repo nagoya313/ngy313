@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NGY313_UTILITY_COM_DELETE_
+#define NGY313_UTILITY_COM_DELETE_
 #include <cassert>
 #include <Unknwn.h>
 
@@ -10,3 +11,6 @@ struct com_delete {
   }
 };
 }}
+
+#endif
+
