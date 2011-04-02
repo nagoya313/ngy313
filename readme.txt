@@ -1,14 +1,26 @@
 ﻿ngy313 C++ Libraries
 
 ライブラリ概要
-現状ではWin32APIとDirectXをラップしたC++ライブラリです。
-C++のお勉強も兼ねているので結構やりたい放題なところがあります。
+現状では2Dゲームを作れるかもしれないC++ライブラリです。
+C++(0x)のお勉強も兼ねているので結構やりたい放題なところがあります。
 最終的にはゲームが作れるといいなという野望が含まれています。
 
 コンパイラ対応
+-Windows(7でしか試してません)
 今のところVC++2010のみです。
-（g++4.5.1も対応するかも。）
-あとBoost必須です。出来るだけ新しいのがいいと思います。
+-Linux(Ubuntu10.10でしか試してません)
+今のところg++4.5.1以降のみです。あと-std=c++0x必須です。
+
+依存ライブラリ
+Boost必須です。出来るだけ新しいのがいいと思います。
+-Windows
+DirectXSDK(February 2010でしか試してませんが多分最新版で大丈夫だと思います)
+oggsdk
+-Linux
+gtkglextmm
+oggsdk
+Boost.Gilがlibpngやらlibjpegに依存してたりするのでこれらも必要かと思います。
+Ununtuだと、pngconf.hの336行目と337行目をコメントアウトしてあげないとコンパイルにこけるみたいです。
 
 ライセンス
 Boost Software Licenseにしておきます。
@@ -37,7 +49,7 @@ FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
 ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
-liboggとlibvorbisに関してはそれぞれのライセンスに則った扱いをしてください。
+依存ライブラリに関してはそれぞれのライセンスに則った扱いをしてください。
 
 libogg
 
