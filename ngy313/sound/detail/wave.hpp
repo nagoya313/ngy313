@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NGY313_SOUND_DETAIL_WAVE_HPP_
+#define NGY313_SOUND_DETAIL_WAVE_HPP_
 #include <cassert>
 #include <cstdint>
 #include <fstream>
@@ -20,14 +21,14 @@ std::tuple<buffer_container_type, buffer_format> create_buffer(const std::string
   if (!fin) {
     throw std::runtime_error("ファイルを開くのに失敗しました");
   }
-  if (utility::read<std::uint32_t>(fin) != *reinterpret_cast<std::uint32_t *>("RIFF")) {
+  if (utility::read<std::uint32_t>(fin) != *reinterpret_cast<const std::uint32_t *>("RIFF")) {
     throw std::runtime_error("RIFFチャンクが存在しません");
   }
   fin.ignore(4);
-  if (utility::read<std::uint32_t>(fin) != *reinterpret_cast<std::uint32_t *>("WAVE")) {
+  if (utility::read<std::uint32_t>(fin) != *reinterpret_cast<const std::uint32_t *>("WAVE")) {
 	  throw std::runtime_error("WAVEチャンクが存在しません");
   }
-  if (utility::read<std::uint32_t>(fin) != *reinterpret_cast<std::uint32_t *>("fmt ")) {
+  if (utility::read<std::uint32_t>(fin) != *reinterpret_cast<const std::uint32_t *>("fmt ")) {
 	  throw std::runtime_error("fmt チャンクが存在しません");
   } 
   const std::uint32_t format_size = utility::read<decltype(format_size)>(fin);
@@ -40,7 +41,7 @@ std::tuple<buffer_container_type, buffer_format> create_buffer(const std::string
     utility::read<decltype(format.bits_per_sample)>(fin)
   };
   fin.ignore(format_size - 16);
-  if (utility::read<std::uint32_t>(fin) != *reinterpret_cast<std::uint32_t *>("data")) {
+  if (utility::read<std::uint32_t>(fin) != *reinterpret_cast<const std::uint32_t *>("data")) {
 	  throw std::runtime_error("dataチャンクが存在しません");
   }
   buffer_container_type buffer(utility::read<std::uint32_t>(fin));
@@ -64,5 +65,7 @@ class buffer_data : private boost::noncopyable {
   const std::tuple<buffer_container_type, buffer_format> data_;
 };
 
-typedef boost::flyweights::flyweight<boost::flyweights::key_value<std::string, buffer_data>> buffer_type;
+typedef buffer_data buffer_type;
 }}}}
+
+#endif

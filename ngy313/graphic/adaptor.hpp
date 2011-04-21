@@ -5,7 +5,7 @@
 #include <ngy313/graphic/detail/key.hpp>
 #include <ngy313/graphic/drawable.hpp>
 #include <ngy313/graphic/drawable_access.hpp>
-//#include <ngy313/graphic/texture.hpp>
+#include <ngy313/graphic/texture.hpp>
 
 namespace ngy313 { namespace graphic {
 class adaptor_access {
@@ -22,7 +22,7 @@ class adaptor_access {
 
 template <typename Adaptor, typename Drawable>
 struct drawable_adaptor : public copy_drawable<Drawable> {
-  explicit drawable_adaptor(const Drawable &drawable) : list_(detail::drawable_fusion_init(drawable)) {}
+  explicit drawable_adaptor(const Drawable &drawable) : list_(detail::drawable_fusion_initializer::init(drawable)) {}
 
  private:
   typename Drawable::vertex_array_type vertex() const {
@@ -43,7 +43,7 @@ struct drawable_adaptor : public copy_drawable<Drawable> {
 
 template <typename Drawable, typename AddPair>
 struct add_drawable_adaptor : public add_drawable<Drawable, AddPair> {
-  explicit add_drawable_adaptor(const Drawable &drawable) : list_(detail::drawable_fusion_init(drawable)) {}
+  explicit add_drawable_adaptor(const Drawable &drawable) : list_(detail::drawable_fusion_initializer::init(drawable)) {}
 
  private:
   typename Drawable::vertex_array_type vertex() const {
@@ -62,4 +62,3 @@ struct add_drawable_adaptor : public add_drawable<Drawable, AddPair> {
 }}
 
 #endif
-

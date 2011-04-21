@@ -3,6 +3,7 @@
 #include <cassert>
 #include <type_traits>
 #include <boost/mpl/at.hpp>
+#include <boost/noncopyable.hpp>
 #include <ngy313/graphic/detail/key.hpp>
 #include <ngy313/graphic/blend_tag.hpp>
 #include <ngy313/graphic/detail/windows/blend.hpp>
@@ -18,16 +19,19 @@ class scoped_blend {
 template <typename List>
 class scoped_blend<List, 
                    typename std::enable_if<!std::is_same<typename boost::mpl::at<List, detail::blend_pair_key>::type,
-                                                         boost::mpl::void_>::value>::type> {
+                                                         boost::mpl::void_>::value>::type> 
+    : private boost::noncopyable {
  public:
   explicit scoped_blend(const device_handle &device) : device_(device) {
     assert(device_);
+    device_->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
     set_blend_pair<boost::mpl::at<List, detail::blend_pair_key>::type>(device_);
   }
 
   ~scoped_blend() {
     assert(device_);
     set_blend_pair<default_blend>(device_);
+    device_->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
   }
 
  private:

@@ -1,5 +1,6 @@
 #ifndef NGY313_GRAPHIC_TEXTURE_HPP_
 #define NGY313_GRAPHIC_TEXTURE_HPP_
+#include <boost/noncopyable.hpp>
 #include <ngy313/platform.hpp>
 #if defined(NGY313_WINDOWS_VERSION)
 #include <ngy313/graphic/detail/windows/texture.hpp>
@@ -11,12 +12,12 @@
 namespace ngy313 { namespace graphic {
 struct texture_tag {};
 
-class texture {
+class texture : private boost::noncopyable {
  public:
   typedef texture texture_type;
 
   template <typename Image>
-  explicit texture(const Image &img) : texture1_(detail::texture_access::texture1(img)), 
+  explicit texture(const Image &img) : texture1_(detail::texture_core_access::texture1(img)), 
                                        width_(img.width()),
                                        height_(img.height()) {}
 
@@ -37,7 +38,6 @@ class texture {
   const int width_;
   const int height_;
 
-  friend class detail::texture_access;
   friend class detail::texture_core_access;
 };
 

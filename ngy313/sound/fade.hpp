@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NGY313_SOUND_FADE_HPP_
+#define NGY313_SOUND_FADE_HPP_
 #include <algorithm>
 #include <ngy313/sound/effect.hpp>
 
@@ -53,3 +54,5 @@ struct fade {
   const decltype(create_effect<fade_effect, fade_parameters>()) fade_;
 };
 }}
+
+#endif

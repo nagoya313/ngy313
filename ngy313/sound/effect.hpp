@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NGY313_SOUND_EFFECT_HPP_
+#define NGY313_SOUND_EFFECT_HPP_
 #include <ngy313/sound/detail/effect.hpp>
 
 namespace ngy313 { namespace sound {
@@ -13,3 +14,5 @@ std::unique_ptr<detail::effect<Effect, Parameter>, detail::xapo_delete> create_e
   return std::unique_ptr<detail::effect<Effect, Parameter>, detail::xapo_delete>(effect);
 }
 }}
+
+#endif

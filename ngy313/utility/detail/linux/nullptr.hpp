@@ -22,4 +22,3 @@ const class nullptr_t {
 #define nullptr ngy313::utility::nullptr
 
 #endif
-

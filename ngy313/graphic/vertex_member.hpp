@@ -109,4 +109,3 @@ struct tex_t<2> {
 }}
 
 #endif
-

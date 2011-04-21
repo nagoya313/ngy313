@@ -1,19 +1,9 @@
 #ifndef NGY313_WINDOW_WINDOW_HPP_
 #define NGY313_WINDOW_WINDOW_HPP_
 #include <cassert>
-#include <ngy313/window/detail/singleton.hpp>
+#include <ngy313/window/detail/window.hpp>
 
 namespace ngy313 { namespace window {
-inline
-void show() {
-  detail::window().show();
-}
-
-inline
-void hide() {
-  detail::window().hide();
-}
-
 inline
 std::string caption() {
   return detail::window().caption();
@@ -26,8 +16,13 @@ void set_caption(const utility::string_piece &text) {
 }
 
 inline
-void set_icon() {
-  detail::window().set_icon();
+void set_icon(const utility::string_piece &icon) {
+  detail::window().set_icon(icon);
+}
+
+inline
+std::string icon() {
+  return detail::window().icon();
 }
 
 inline
@@ -66,4 +61,3 @@ void resize(const int width_size, const int height_size) {
 }}
 
 #endif
-

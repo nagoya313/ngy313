@@ -14,4 +14,3 @@ typename std::remove_const<T>::type read(Stream &stream) {
 }}
 
 #endif
-

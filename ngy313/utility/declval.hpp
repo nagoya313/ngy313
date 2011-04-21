@@ -9,4 +9,3 @@ typename std::add_rvalue_reference<T>::type declval();
 }}
 
 #endif
-

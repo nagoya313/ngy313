@@ -3,7 +3,6 @@
 #include <cassert>
 #include <boost/noncopyable.hpp>
 #include <ngy313/graphic/detail/windows/device.hpp>
-#include <ngy313/graphic/detail/windows/render_targert.hpp>
 #include <ngy313/window/detail/windows/main_window.hpp>
 
 namespace ngy313 { namespace graphic { namespace detail {

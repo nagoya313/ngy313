@@ -1,6 +1,8 @@
-#pragma once
+#ifndef NGY313_SOUND_HPP_
+#define NGY313_SOUND_HPP_
 #include <boost/noncopyable.hpp>
-#include <ngy313/sound/detail/singleton.hpp>
+#include <ngy313/sound/detail/sound_device.hpp>
+#include <ngy313/sound/detail/voice.hpp>
 #include <ngy313/sound/submix.hpp>
 
 namespace ngy313 { namespace sound {
@@ -8,64 +10,43 @@ namespace ngy313 { namespace sound {
 template <typename Loader>
 class sound : private boost::noncopyable {
  public:
-  explicit sound(const Loader &loader)
-      : buffer_(loader), voice_(detail::create_source_voice(detail::device().device(), buffer_.format())) {
-    init();
-  }
-
+  explicit sound(const Loader &loader) : voice_(detail::device().device(), loader) {}
+  
+/*
   sound(const Loader &loader, const submix &mix)
       : buffer_(loader),
         voice_(detail::create_source_voice(detail::device().device(), buffer_.format(), mix.submix_voice())) {
     init();
-  }
+  }*/
 
   void start() {
-    assert(voice_);
-    voice_->Start();
+    voice_.start();
   }
 
   void pause() {
-    assert(voice_);
-    voice_->Stop();
+    voice_.pause();
   }
 
   void stop() {
-    assert(voice_);
-    voice_->Stop();
-    voice_->FlushSourceBuffers();
-    init();
+    voice_.stop();
   }
 
   void set_volume(const float volume) {
-    assert(voice_);
-    oice_->SetVolume(volume);
+    voice_.set_volume(volume);
   }
 
   float volume() const {
-    assert(voice_);
-    float vol;
-    voice_->GetVolume(&vol);
-    return vol;
+    return voice_.set_volume();
   }
 
   template <typename Effect>
   void set_effect(const Effect &effect) {
-    assert(voice_);
-    auto desc = effect.descriptor(buffer_.format().channels);
-    const XAUDIO2_EFFECT_CHAIN chain = {1, &desc};
-    voice_->SetEffectChain(&chain);
-    auto param = effect.parameters();
-    voice_->SetEffectParameters(0, &param, sizeof(param));
+    voice_.set_effect(effect);
   }
 
  private:
-  void init() {
-    assert(voice_);
-    const XAUDIO2_BUFFER buffer = {XAUDIO2_END_OF_STREAM, buffer_.size(), &(*buffer_.buffer()), 0, 0, 0, 0, 0, nullptr};
-    voice_->SubmitSourceBuffer(&buffer);
-  }
-
-  const Loader buffer_;
-  const detail::source_voice_handle voice_;
+  detail::voice<Loader> voice_;
 };
 }}
+
+#endif

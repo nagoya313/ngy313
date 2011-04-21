@@ -32,12 +32,11 @@ int message_box(const utility::string_piece &message,
                 const icon_code icon) {
   // Ç±ÇÍÇ≈Ç¢Ç¢Ç©ÇÕåãç\âˆÇµÇ¢Ç∆Ç±ÇÎ
   if (IsWindowVisible(window().window())) {
-    return MessageBox(window().window(), message.c_str(), caption.c_str(), botton | icon);
+    return MessageBoxA(window().window(), message.c_str(), caption.c_str(), botton | icon);
   } else {
-    return MessageBox(nullptr, message.c_str(), caption.c_str(), botton | icon);
+    return MessageBoxA(nullptr, message.c_str(), caption.c_str(), botton | icon);
   }
 }
 }}}
 
 #endif
-

@@ -150,4 +150,3 @@ const color_code_t kLightCoral = 0xFFF08080;
 }}
 
 #endif
-

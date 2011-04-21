@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NGY313_GRAPHIC_DETAIL_WINDOWS_PRIMITIVE_TYPE_HPP_
+#define NGY313_GRAPHIC_DETAIL_WINDOWS_PRIMITIVE_TYPE_HPP_
 #include <d3d9.h>
 
 namespace ngy313 { namespace graphic { namespace detail {
@@ -11,3 +12,5 @@ const primitive_type kTriangleList = D3DPT_TRIANGLELIST;
 const primitive_type kTriangleStrip = D3DPT_TRIANGLESTRIP;
 const primitive_type KTriangleFan = D3DPT_TRIANGLEFAN;
 }}}
+
+#endif

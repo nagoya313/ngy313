@@ -11,7 +11,7 @@ class sprite : public drawable<sprite, 4, 2, image_2d_fvf_tag, triangle_strip_pr
   template <typename Image>
   sprite(const float x, const float y, const Image &image) : texture_(image), x_(x), y_(y) {}
 
- private:
+ //private:
   vertex_array_type vertex() const {
     const vertex_array_type vertex = {{
       vertex_type(rhw_position_t(x_, y_), diffuse_t(0xFFFFFFFF), tex_t<1>(0.f, 0.f)),
@@ -26,9 +26,9 @@ class sprite : public drawable<sprite, 4, 2, image_2d_fvf_tag, triangle_strip_pr
     return texture_;
   }
 
-  const texture texture_;
-  const float x_;
-  const float y_;
+  texture texture_;
+  float x_;
+  float y_;
 
   friend class drawable_access;
   friend class texture_access;
@@ -55,11 +55,11 @@ class size_sprite : public drawable<size_sprite, 4, 2, image_2d_fvf_tag, triangl
     return texture_;
   }
   
-  const texture texture_;
-  const float x_;
-  const float y_;
-  const float width_;
-  const float height_;
+  texture texture_;
+  float x_;
+  float y_;
+  float width_;
+  float height_;
 
   friend class drawable_access;
   friend class texture_access;

@@ -6,11 +6,12 @@
 #include <ngy313/graphic/adaptor.hpp>
 #include <ngy313/graphic/fvf_traits.hpp>
 #include <ngy313/graphic/vertex_member.hpp>
+#include <ngy313/utility/nonsubstitutiable.hpp>
 #include <ngy313/utility/pipe_operator.hpp>
 
 namespace ngy313 { namespace graphic {
 template <std::size_t Index>
-struct transform_uv_move {
+struct transform_uv_move : private utility::nonsubstitutiable {
   transform_uv_move(const float move_u, const float move_v) : move_u_(move_u), move_v_(move_v) {}
 
   template <typename Vertex>
@@ -26,7 +27,8 @@ struct transform_uv_move {
 };
 
 template <typename Drawable, std::size_t Index>
-struct uv_moved_adaptor : public drawable_adaptor<uv_moved_adaptor<Drawable, Index>, Drawable> {
+struct uv_moved_adaptor : public drawable_adaptor<uv_moved_adaptor<Drawable, Index>, Drawable>,
+                          private utility::nonsubstitutiable {
   uv_moved_adaptor(const Drawable &drawable, const float move_u, const float move_v)
       : drawable_adaptor<uv_moved_adaptor<Drawable, Index>, Drawable>(drawable),
         move_(move_u, move_v) {}
@@ -47,7 +49,8 @@ uv_moved_adaptor<Drawable, Index> make_uv_moved(const Drawable &drawable, const 
 }
 
 template <std::size_t Index>
-struct uv_moved : public utility::pipe_operator::base<uv_moved<Index>> {
+struct uv_moved : public utility::pipe_operator::base<uv_moved<Index>>,
+                  private utility::nonsubstitutiable {
   uv_moved(const float move_u, const float move_v) : move_u_(move_u), move_v_(move_v) {}
 
   template <typename Drawable>
@@ -61,7 +64,8 @@ struct uv_moved : public utility::pipe_operator::base<uv_moved<Index>> {
 };
 
 template <typename Drawable, std::size_t Index>
-struct uv_moved_at_adaptor : public drawable_adaptor<uv_moved_at_adaptor<Drawable, Index>, Drawable> {
+struct uv_moved_at_adaptor : public drawable_adaptor<uv_moved_at_adaptor<Drawable, Index>, Drawable>,
+                             private utility::nonsubstitutiable {
   uv_moved_at_adaptor(const Drawable &drawable, const std::size_t at, const float move_u, const float move_v)
       : uv_moved_at_adaptor::drawable_adaptor(drawable), 
         at_(at),
@@ -90,7 +94,8 @@ uv_moved_at_adaptor<Drawable, Index> make_uv_moved_at(const Drawable &drawable,
 }
 
 template <std::size_t Index>
-struct uv_moved_at : public utility::pipe_operator::base<uv_moved_at<Index>> {
+struct uv_moved_at : public utility::pipe_operator::base<uv_moved_at<Index>>,
+                     private utility::nonsubstitutiable {
   uv_moved_at(const std::size_t at, const float move_u, const float move_v) : at_(at),
                                                                               move_u_(move_u),
                                                                               move_v_(move_v) {}

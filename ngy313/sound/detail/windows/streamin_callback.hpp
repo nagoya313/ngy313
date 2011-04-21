@@ -1,4 +1,6 @@
-#pragma once
+#ifndef NGY313_SOUND_DETAIL_WINDOWS_STREAMING_CALLBACK_HPP_
+#define NGY313_SOUND_DETAIL_WINDOWS_STREAMING_CALLBACK_HPP_
+#include <stdexcept>
 #include <boost/noncopyable.hpp>
 #include <XAudio2.h>
 
@@ -34,3 +36,5 @@ class streaming_callback : private IXAudio2VoiceCallback, private boost::noncopy
   friend StreamingSound;
 };
 }}}
+
+#endif

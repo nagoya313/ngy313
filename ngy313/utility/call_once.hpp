@@ -20,4 +20,3 @@ struct call_once {
 }}
 
 #endif
-

@@ -20,7 +20,7 @@ typedef std::unique_ptr<std::remove_pointer<HANDLE>::type, mutex_delete> mutex_h
 
 inline 
 mutex_handle create_mutex(const utility::string_piece &name) {
-  const HANDLE mutex = CreateMutex(nullptr, FALSE, name.c_str());
+  const HANDLE mutex = CreateMutexA(nullptr, FALSE, name.c_str());
   if (!mutex) {
     throw std::runtime_error("ミューテクスオブジェクトの作成に失敗しました");
   }

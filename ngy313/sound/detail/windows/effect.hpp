@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NGY313_SOUND_DETAIL_WINDOWS_EFFECT_HPP_
+#define NGY313_SOUND_DETAIL_WINDOWS_EFFECT_HPP_
 #include <cassert>
 #include <cstdlib>
 #include <stdexcept>
@@ -80,3 +81,5 @@ const XAPO_REGISTRATION_PROPERTIES effect<Effect, Parameter>::kProperties_ = {
   1
 };
 }}}
+
+#endif

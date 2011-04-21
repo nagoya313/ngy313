@@ -5,7 +5,7 @@
 #define _WIN32_DCOM
 #include <XAudio2.h>
 
-namespace ngy313 { namespace utility {
+namespace ngy313 { namespace utility { namespace detail {
 struct com_initializer : private boost::noncopyable {
   com_initializer() {
     if (FAILED(CoInitializeEx(nullptr, COINIT_MULTITHREADED))) {
@@ -17,7 +17,6 @@ struct com_initializer : private boost::noncopyable {
     CoUninitialize();
   }
 };
-}}
+}}}
 
 #endif
-

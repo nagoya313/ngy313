@@ -1,17 +1,21 @@
-#pragma once
-#include <d3d9.h>
+#ifndef NGY313_GRAPHIC_DETAIL_LINUX_BLEND_TYPE_HPP_
+#define NGY313_GRAPHIC_DETAIL_LINUX_BLEND_TYPE_HPP_
+#include <GL/gl.h>
 
 namespace ngy313 { namespace graphic { namespace detail {
-typedef D3DBLEND blend_type;
+typedef GLenum blend_type;
 
-const blend_type kBlendOne = D3DBLEND_ONE;
-const blend_type kBlendSrcAlpha = D3DBLEND_SRCALPHA;
-const blend_type kBlendInvSrcAlpha = D3DBLEND_INVSRCALPHA;
-const blend_type kBlendDestAlpha = D3DBLEND_DESTALPHA;
-const blend_type kBlendInvDestAlpha = D3DBLEND_INVDESTALPHA;
-const blend_type kBlendZero = D3DBLEND_ZERO;
-const blend_type kBlendSrcColor = D3DBLEND_SRCCOLOR;
-const blend_type kBlendInvSrcColor = D3DBLEND_INVSRCCOLOR;
-const blend_type kBlendDestColor = D3DBLEND_DESTCOLOR;
-const blend_type kBlendInvDestColor = D3DBLEND_INVDESTCOLOR;
+const blend_type kBlendOne = GL_ONE;
+const blend_type kBlendSrcAlpha = GL_SRC_ALPHA;
+const blend_type kBlendInvSrcAlpha = GL_ONE_MINUS_SRC_ALPHA;
+// const blend_type kBlendDestAlpha = GL_DEST_ALPHA;
+// const blend_type kBlendInvDestAlpha = GL_ONE_MINUS_DEST_ALPHA;
+const blend_type kBlendZero = GL_ZERO;
+const blend_type kBlendSrcColor = GL_SRC_COLOR;
+const blend_type kBlendInvSrcColor = GL_ONE_MINUS_SRC_COLOR;
+const blend_type kBlendDestColor = GL_DST_COLOR;
+const blend_type kBlendInvDestColor = GL_ONE_MINUS_DST_COLOR;
 }}}
+
+#endif
+

@@ -1,24 +1,25 @@
 #ifndef NGY313_GRAPHIC_CIRCLE_HPP_
 #define NGY313_GRAPHIC_CIRCLE_HPP_
 #include <cmath>
+#include <cstdint>
 #include <boost/preprocessor/repeat_from_to.hpp>
 #include <ngy313/graphic/drawable.hpp>
 #include <ngy313/graphic/fvf_tag.hpp>
 #include <ngy313/graphic/primitive_tag.hpp>
-#include <ngy313/graphic/radian.hpp>
+#include <ngy313/graphic/detail/radian.hpp>
 
 namespace ngy313 { namespace graphic {
 #define NGY313_CIRCLE_VERTEX_SIZE 62
 
 #define NGY313_CIRCLE_VERTEX_ELEM_GEN(z, n, data)\
-vertex_type(rhw_position_t(x + std::cos(vertex_radian<data, n>::value) * r,\
-  y + std::sin(vertex_radian<data, n>::value) * r), diffuse_t(0xFFFFFFFF)),
+vertex_type(rhw_position_t(x_ + std::cos(detail::vertex_radian<data, n>::value) * r_,\
+  y_ + std::sin(detail::vertex_radian<data, n>::value) * r_), diffuse_t(color_)),
 
 #define NGY313_LINE_CIRCLE_VERTEX_SIZE 60
 
 #define NGY313_LINE_CIRCLE_VERTEX_ELEM_GEN(z, n, data)\
-vertex_type(rhw_position_t(x + std::cos(line_vertex_radian<data, n>::value) * r,\
-  y + std::sin(line_vertex_radian<data, n>::value) * r), diffuse_t(0xFFFFFFFF)),
+vertex_type(rhw_position_t(x_ + std::cos(detail::line_vertex_radian<data, n>::value) * r_,\
+  y_ + std::sin(detail::line_vertex_radian<data, n>::value) * r_), diffuse_t(color_)),
 
 template <bool Filled>
 class circle_base
@@ -31,38 +32,47 @@ class circle_base
   typedef typename base::vertex_type vertex_type;
   typedef typename base::vertex_array_type vertex_array_type;
   
-  circle_base(const float x, const float y, const float r)
-      : vertex_(init_vertex<Filled>(x, y, r)) {}
+  circle_base(const float x, const float y, const float r, const std::uint32_t diffuse)
+      : x_(x), y_(y), r_(r), color_(diffuse) {}
+  
+  float x() const {
+    return x_;
+  }
+
+  float y() const {
+    return y_;
+  }
+
+  float r() const {
+    return r_;
+  }
 
  private:
   vertex_array_type vertex() const {
-    return vertex_;
+    return vertex_<Filled>();
   }
 
   template <bool Fill>
-  static vertex_array_type init_vertex(const float x,
-                                       const float y,
-                                       const float r, 
-                                       typename std::enable_if<Fill>::type * = 0) {
+  vertex_array_type vertex_(typename std::enable_if<Fill>::type * = 0) const {
     const vertex_array_type vertex = {{
-      vertex_type(rhw_position_t(x, y), diffuse_t(0xFFFFFFFF)),
+      vertex_type(rhw_position_t(x_, y_), diffuse_t(color_)),
       BOOST_PP_REPEAT_FROM_TO(1, NGY313_CIRCLE_VERTEX_SIZE, NGY313_CIRCLE_VERTEX_ELEM_GEN, circle_base)
     }};
     return vertex;
   }
 
   template <bool Fill>
-  static vertex_array_type init_vertex(const float x,
-                                       const float y, 
-                                       const float r,
-                                       typename std::enable_if<!Fill>::type * = 0) {
+  vertex_array_type vertex_(typename std::enable_if<!Fill>::type * = 0) const {
     const vertex_array_type vertex = {{
       BOOST_PP_REPEAT(NGY313_LINE_CIRCLE_VERTEX_SIZE, NGY313_LINE_CIRCLE_VERTEX_ELEM_GEN, circle_base)
     }};
     return vertex;
   }
 
-  const vertex_array_type vertex_;
+  float x_;
+  float y_;
+  float r_;
+  std::uint32_t color_;
 
   friend class drawable_access;
 };
@@ -77,4 +87,3 @@ typedef circle_base<false> line_circle;
 }}
 
 #endif
-

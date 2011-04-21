@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NGY313_GRAPHIC_TEXTURE_STAGE_HPP_
+#define NGY313_GRAPHIC_TEXTURE_STAGE_HPP_
 #include <boost/mpl/pair.hpp>
 #include <ngy313/graphic/detail/key.hpp>
 #include <ngy313/graphic/adaptor.hpp>
@@ -27,3 +28,5 @@ struct texture_stage : public utility::pipe_operator::base<texture_stage<Index, 
   }
 };
 }}
+
+#endif

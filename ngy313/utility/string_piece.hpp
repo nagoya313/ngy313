@@ -26,4 +26,3 @@ class string_piece {
 }}
 
 #endif
-

@@ -1,14 +1,16 @@
-#pragma once
+#ifndef NGY313_GRAPHIC_ROTATED_HPP_
+#define NGY313_GRAPHIC_ROTATED_HPP_
 #include <cmath>
 #include <boost/range/algorithm/transform.hpp>
 #include <ngy313/graphic/adaptor.hpp>
 #include <ngy313/graphic/fvf_traits.hpp>
 #include <ngy313/graphic/shape_position.hpp>
 #include <ngy313/graphic/vertex_member.hpp>
+#include <ngy313/utility/nonsubstitutiable.hpp>
 #include <ngy313/utility/pipe_operator.hpp>
 
 namespace ngy313 { namespace graphic {
-struct transform_rotate {
+struct transform_rotate : private utility::nonsubstitutiable {
   transform_rotate(const float base_point_x, const float base_point_y, const float angle) 
       : base_point_x_(base_point_x), base_point_y_(base_point_y), cos_(std::cos(angle)), sin_(std::sin(angle)) {}
 
@@ -29,7 +31,8 @@ struct transform_rotate {
 };
 
 template <typename Drawable>
-struct rotated_adaptor : public drawable_adaptor<rotated_adaptor<Drawable>, Drawable> {
+struct rotated_adaptor : public drawable_adaptor<rotated_adaptor<Drawable>, Drawable>,
+                         private utility::nonsubstitutiable {
   template <typename BasePoint>
   rotated_adaptor(const Drawable &drawable, const BasePoint &base_point, const float angle)
       : drawable_adaptor<rotated_adaptor<Drawable>, Drawable>(drawable), 
@@ -51,8 +54,9 @@ rotated_adaptor<Drawable> make_rotated(const Drawable &drawable, const BasePoint
 }
 
 template <typename BasePoint>
-struct rotated_t : public utility::pipe_operator::base<rotated_t<BasePoint>> {
-  explicit rotated_t(const BasePoint &base_point, const float angle) : base_point_(base_point), angle_(angle) {}
+struct rotated_t : public utility::pipe_operator::base<rotated_t<BasePoint>>,
+                   private utility::nonsubstitutiable {
+  rotated_t(const BasePoint &base_point, const float angle) : base_point_(base_point), angle_(angle) {}
 
   template <typename Drawable>
   rotated_adaptor<Drawable> operator ()(const Drawable &drawable) const {
@@ -69,3 +73,5 @@ rotated_t<BasePoint> rotated(const BasePoint &base_point, const float angle) {
   return rotated_t<BasePoint>(base_point, angle);
 }
 }}
+
+#endif

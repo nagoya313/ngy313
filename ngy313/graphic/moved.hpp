@@ -4,10 +4,11 @@
 #include <ngy313/graphic/adaptor.hpp>
 #include <ngy313/graphic/fvf_traits.hpp>
 #include <ngy313/graphic/vertex_member.hpp>
+#include <ngy313/utility/nonsubstitutiable.hpp>
 #include <ngy313/utility/pipe_operator.hpp>
 
 namespace ngy313 { namespace graphic {
-struct transform_move {
+struct transform_move : private utility::nonsubstitutiable {
  public:
   transform_move(const float move_x, const float move_y) : move_x_(move_x), move_y_(move_y) {}
 
@@ -24,7 +25,8 @@ struct transform_move {
 };
 
 template <typename Drawable>
-struct moved_adaptor : public drawable_adaptor<moved_adaptor<Drawable>, Drawable> {
+struct moved_adaptor : public drawable_adaptor<moved_adaptor<Drawable>, Drawable>,
+                       private utility::nonsubstitutiable {
   moved_adaptor(const Drawable &drawable, const float move_x, const float move_y)
       : drawable_adaptor<moved_adaptor<Drawable>, Drawable>(drawable), move_(move_x, move_y) {}
 
@@ -43,7 +45,8 @@ moved_adaptor<Drawable> make_moved(const Drawable &drawable, const float move_x,
   return moved_adaptor<Drawable>(drawable, move_x, move_y);
 }
 
-struct moved : public utility::pipe_operator::base<moved> {
+struct moved : public utility::pipe_operator::base<moved>,
+               private utility::nonsubstitutiable {
   moved(const float move_x, const float move_y) : move_x_(move_x), move_y_(move_y) {}
 
   template <typename Drawable>
@@ -57,7 +60,8 @@ struct moved : public utility::pipe_operator::base<moved> {
 };
 
 template <typename Drawable>
-struct moved_at_adaptor : public drawable_adaptor<moved_at_adaptor<Drawable>, Drawable> {
+struct moved_at_adaptor : public drawable_adaptor<moved_at_adaptor<Drawable>, Drawable>,
+                          private utility::nonsubstitutiable {
   moved_at_adaptor(const Drawable &drawable, const std::size_t at, const float move_x, const float move_y)
       : drawable_adaptor<moved_at_adaptor<Drawable>, Drawable>(drawable), 
         at_(at),
@@ -78,14 +82,13 @@ struct moved_at_adaptor : public drawable_adaptor<moved_at_adaptor<Drawable>, Dr
 };
 
 template <typename Drawable>
-moved_at_adaptor<Drawable> make_moved_at(const Drawable &drawable,
-                                         const std::size_t at,
-                                         const float move_x,
-                                         const float move_y) {
+moved_at_adaptor<Drawable> 
+    make_moved_at(const Drawable &drawable, const std::size_t at, const float move_x, const float move_y) {
   return moved_at_adaptor<Drawable>(drawable, at, move_x, move_y);
 }
 
-struct moved_at : public utility::pipe_operator::base<moved_at> {
+struct moved_at : public utility::pipe_operator::base<moved_at>,
+                  private utility::nonsubstitutiable {
   moved_at(const std::size_t at, const float move_x, const float move_y) : at_(at), move_x_(move_x), move_y_(move_y) {}
 
   template <typename Drawable>
@@ -101,4 +104,3 @@ struct moved_at : public utility::pipe_operator::base<moved_at> {
 }}
 
 #endif
-

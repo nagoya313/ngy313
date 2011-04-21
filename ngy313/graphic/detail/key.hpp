@@ -59,20 +59,21 @@ struct drawable_switch {
 
 struct dummy {};
 
-template <typename Drawable>
-typename drawable_fusion<Drawable>::type 
-    drawable_fusion_init(const Drawable &drawable,
-                         typename std::enable_if<drawable_switch<Drawable>::type::value == 1, dummy>::type = dummy()) {
-  return typename drawable_fusion<Drawable>::type(drawable);
-}
+struct drawable_fusion_initializer {
+  template <typename Drawable>
+  static typename drawable_fusion<Drawable>::type 
+      init(const Drawable &drawable,
+           typename std::enable_if<drawable_switch<Drawable>::type::value == 1, dummy>::type = dummy()) {
+    return typename drawable_fusion<Drawable>::type(drawable);
+  }
 
-template <typename Drawable>
-typename drawable_fusion<Drawable>::type 
-    drawable_fusion_init(const Drawable &drawable,
-                         typename std::enable_if<drawable_switch<Drawable>::type::value == 2, dummy>::type = dummy()) {
-  return typename drawable_fusion<Drawable>::type(drawable, graphic::texture_access::texture1(drawable));
-}
+  template <typename Drawable>
+  static typename drawable_fusion<Drawable>::type 
+      init(const Drawable &drawable,
+           typename std::enable_if<drawable_switch<Drawable>::type::value == 2, dummy>::type = dummy()) {
+    return typename drawable_fusion<Drawable>::type(drawable, graphic::texture_access::texture1(drawable));
+  }
+};
 }}}
 
 #endif
-

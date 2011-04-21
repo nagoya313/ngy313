@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NGY313_GRAPHIC_ADDRESSING_HPP_
+#define NGY313_GRAPHIC_ADDRESSING_HPP_
 #include <cstddef>
 #include <boost/mpl/pair.hpp>
 #include <ngy313/graphic/detail/key.hpp>
@@ -29,10 +30,10 @@ struct addressing : public utility::pipe_operator::base<addressing<Stage, UAddre
 };
 
 typedef addressing<0, wrap_addressing_tag, wrap_addressing_tag> wrap_addressing_t;
-typedef addressing<0, mirror_addressing_tag, mirror_addressing_tag> mirror_addressing_t;
 typedef addressing<0, clamp_addressing_tag, clamp_addressing_tag> clamp_addressing_t;
 
 const wrap_addressing_t wrap_addressing = wrap_addressing_t();
-const mirror_addressing_t mirror_addressing = mirror_addressing_t();
 const clamp_addressing_t clamp_addressing = clamp_addressing_t();
 }}
+
+#endif

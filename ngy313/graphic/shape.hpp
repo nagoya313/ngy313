@@ -8,4 +8,3 @@
 #include <ngy313/graphic/oval.hpp>
 
 #endif
-

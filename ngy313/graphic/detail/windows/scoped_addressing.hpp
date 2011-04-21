@@ -19,19 +19,19 @@ class scoped_addressing {
 template <typename List>
 class scoped_addressing<List, 
                         typename std::enable_if<
-                            !std::is_same<typename boost::mpl::at<List, detail::addressing_tuple_key>::type,
+                            !std::is_same<typename boost::mpl::at<List, addressing_tuple_key>::type,
                                           boost::mpl::void_>::value>::type> {
  public:
   explicit scoped_addressing(const device_handle &device) : device_(device) {
     assert(device_);
-    set_addressing_tuple<typename boost::mpl::at<List, detail::addressing_tuple_key>::type>(device_);
+    set_addressing_tuple<typename boost::mpl::at<List, addressing_tuple_key>::type>(device_);
   }
 
   ~scoped_addressing() {
     assert(device_);
-    set_blend_pair<
-        default_addressing<
-            typename boost::mpl::at<List, detail::addressing_tuple_key>::type::stage_type::value>::type>(device_);
+    set_addressing_tuple<
+        typename default_addressing<
+            boost::mpl::at<List, addressing_tuple_key>::type::stage_type::value>::type>();
   }
 
  private:

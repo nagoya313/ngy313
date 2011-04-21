@@ -147,9 +147,9 @@ class scoped_texture_stage<List,
   ~scoped_texture_stage() {
     assert(device_);
     set_texture_stage<
-        boost::mpl::at_c<
+        typename boost::mpl::at_c<
             default_stage, 
-            typename boost::mpl::at<List, detail::texture_stage_tuple_key>::type::stage_type::value>::type>(device_);
+            boost::mpl::at<List, detail::texture_stage_tuple_key>::type::stage_type::value>::type>(device_);
   }
 
  private:

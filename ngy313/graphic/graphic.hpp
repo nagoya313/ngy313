@@ -1,7 +1,6 @@
 #ifndef NGY313_GRAPHIC_GRAPHIC_HPP_
 #define NGY313_GRAPHIC_GRAPHIC_HPP_
 #include <ngy313/graphic/detail/graphic.hpp>
-#include <ngy313/window/window.hpp>
 
 namespace ngy313 { namespace graphic {
 enum screen_mode {
@@ -51,4 +50,3 @@ void draw(const Drawable &drawable) {
 }}
 
 #endif
-

@@ -4,20 +4,20 @@
 #include <cstdint>
 #include <stdexcept>
 #include <boost/noncopyable.hpp>
+#include <GL/glew.h>
 #include <gtkglmm.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <ngy313/graphic/detail/linux/device.hpp>
-//#include <ngy313/graphic/detail/render_targert.hpp>
 #include <ngy313/window/detail/linux/main_window.hpp>
 #include <ngy313/utility/call_once.hpp>
+#include <iostream>
 
 namespace ngy313 { namespace graphic { namespace detail {
 class device_handle : public Gtk::GL::DrawingArea {
  public:
-  device_handle(window::detail::main_window &window) : init_(&gl_init) {
-    Glib::RefPtr<Gdk::GL::Config> glconfig;
-    glconfig = Gdk::GL::Config::create(Gdk::GL::MODE_RGB | Gdk::GL::MODE_DEPTH | Gdk::GL::MODE_DOUBLE);
+  device_handle(window::detail::main_window &window) : init_(&gl_init), width_(window.width()), height_(window.height()) {
+    const Glib::RefPtr<Gdk::GL::Config> glconfig = Gdk::GL::Config::create(Gdk::GL::MODE_RGB | Gdk::GL::MODE_DEPTH | Gdk::GL::MODE_DOUBLE);
     if (!glconfig) {
       throw std::runtime_error("OpenGLÇÃèâä˙âªÇ…é∏îsÇµÇ‹ÇµÇΩ");
     }
@@ -25,21 +25,42 @@ class device_handle : public Gtk::GL::DrawingArea {
     window.set_graphic_device(*this);
   }
   
- private:  
-  virtual void on_realize() {
-    // ÉTÉCÉYê›íËÇÇøÇ·ÇÒÇ∆é¿ëïÇ∑ÇÈ
-    Gtk::DrawingArea::on_realize();
-    Glib::RefPtr<Gdk::GL::Window> glwindow = get_gl_window();
-    glwindow->gl_begin(get_gl_context());
-    glViewport(0, 0, 640, 480);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0.f, 640.f, 480.f, 0.f, 0.f, 1.f);
+  bool begin_scene() {
+    const Glib::RefPtr<Gdk::GL::Window> glwindow = get_gl_window();
+    return glwindow->gl_begin(get_gl_context());
+  }
+
+  void end_scene() {
+    const Glib::RefPtr<Gdk::GL::Window> glwindow = get_gl_window();
     glwindow->gl_end();
   }
   
+  int width() const {
+    return width_;
+  }
+
+  int height() const {
+    return height_;
+  }
+  
+ private:  
+  virtual bool on_configure_event (GdkEventConfigure * const event) {
+    const Glib::RefPtr<Gdk::GL::Window> glwindow = get_gl_window ();
+    glwindow->gl_begin(get_gl_context ());
+    glViewport(0, 0, width_, height_);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.f, static_cast<float>(width_), static_cast<float>(height_), 0.f, 0.f, 1.f);
+    glwindow->gl_end ();
+    return true;
+  }
+
+  virtual void on_realize() {
+    Gtk::DrawingArea::on_realize();
+  }
+  
   virtual bool on_expose_event(GdkEventExpose * const event) {
-    Glib::RefPtr<Gdk::GL::Window> glwindow = get_gl_window();
+    const Glib::RefPtr<Gdk::GL::Window> glwindow = get_gl_window();
     glwindow->gl_begin(get_gl_context());
     glwindow->swap_buffers ();
     glwindow->gl_end();
@@ -47,6 +68,8 @@ class device_handle : public Gtk::GL::DrawingArea {
   }
   
   const utility::call_once init_;
+  int width_;
+  int height_;
 };
 
 class graphic_device : private boost::noncopyable {
@@ -62,14 +85,13 @@ class graphic_device : private boost::noncopyable {
   }
 
   void present() {
-    Glib::RefPtr<Gdk::GL::Window> glwindow = device_.get_gl_window();
+    const Glib::RefPtr<Gdk::GL::Window> glwindow = device_.get_gl_window();
     glwindow->swap_buffers();
   }
 
   void resize(const int width_size, const int height_size) {
     width_ = width_size;
     height_ = height_size;
-    reset();
     assert(width_size == width());
     assert(height_size == height());
   }
@@ -98,19 +120,22 @@ class graphic_device : private boost::noncopyable {
   }
 
   bool begin_scene() {
-    Glib::RefPtr<Gdk::GL::Window> glwindow = device_.get_gl_window();
+    const Glib::RefPtr<Gdk::GL::Window> glwindow = device_.get_gl_window();
     return glwindow->gl_begin(device_.get_gl_context());
   }
 
   void end_scene() {
-    Glib::RefPtr<Gdk::GL::Window> glwindow = device_.get_gl_window();
+    const Glib::RefPtr<Gdk::GL::Window> glwindow = device_.get_gl_window();
     glwindow->gl_end();
   }
 
   std::uint32_t pixel_color(const int x, const int y) const {
     std::uint8_t pixel[3];
-    glReadPixels(x, y, x + 1, y + 1, GL_RGB, GL_UNSIGNED_INT, &pixel);
+    glReadBuffer(GL_BACK);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glReadPixels(x, y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixel);
     std::uint32_t result = 0xFF << 24 | pixel[0] << 16 | pixel[1] << 8 | pixel[2]; 
+    std::cout << "(" << x << "," << y << ")" << (int)pixel[0] << "," << (int)pixel[1] << "," << (int)pixel[2] << std::endl;
     return result;
   }
 

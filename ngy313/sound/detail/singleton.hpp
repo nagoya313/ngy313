@@ -1,10 +1,9 @@
-#pragma once
+#ifndef NGY313_SOUND_DETAIL_SINGLETON_HPP_
+#define NGY313_SOUND_DETAIL_SINGLETON_HPP_
 #include <boost/noncopyable.hpp>
-#include <ngy313/sound/detail/sound_device.hpp>
-#include <ngy313/sound/detail/device.hpp>
-#include <ngy313/utility/com_initializer.hpp>
 
 namespace ngy313 { namespace sound { namespace detail {
+template <typename Device>
 class singleton : private boost::noncopyable {
  public:
   static const singleton &instance() {
@@ -19,11 +18,8 @@ class singleton : private boost::noncopyable {
  private:
   singleton() : device_() {}
 
-  const sound_device device_;
+  const Device device_;
 };
-
-inline
-const sound_device &device() {
-  return singleton::instance().device();
-}
 }}}
+
+#endif

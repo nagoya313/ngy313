@@ -1,9 +1,15 @@
-#pragma once
+#ifndef NGY313_GRAPHIC_TEXT_HPP_
+#define NGY313_GRAPHIC_TEXT_HPP_
 #include <utility>
 #include <boost/bind.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/signals2/trackable.hpp>
-#include <ngy313/graphic/detail/texture.hpp>
+#include <ngy313/platform.hpp>
+#if defined(NGY313_WINDOWS_VERSION)
+#include <ngy313/graphic/detail/windows/texture.hpp>
+#elif defined(NGY313_LINUX_VERSION)
+#include <ngy313/graphic/detail/linux/texture.hpp>
+#endif
 #include <ngy313/graphic/texture.hpp>
 #include <ngy313/graphic/drawable.hpp>
 #include <ngy313/graphic/fvf_tag.hpp>
@@ -26,11 +32,11 @@ class text_image : public boost::signals2::trackable, private boost::noncopyable
     render();
   }
 
-  float width() const {
+  int width() const {
     return size_.first;
   }
 
-  float height() const {
+  int height() const {
     return size_.second;
   }
 
@@ -39,10 +45,10 @@ class text_image : public boost::signals2::trackable, private boost::noncopyable
   }
 
  private:
-  static std::pair<float, float> text_size(const utility::string_piece &text, const font &ft) {
+  static std::pair<int, int> text_size(const utility::string_piece &text, const font &ft) {
     RECT rect = {0, 0, 0, 0};
-    font_access::font(ft)->DrawText(nullptr, text.c_str(), -1, &rect, DT_CALCRECT, utility::kWhite);
-    return std::make_pair(static_cast<float>(rect.right), static_cast<float>(rect.bottom));
+    font_access::font(ft)->DrawTextA(nullptr, text.c_str(), -1, &rect, DT_CALCRECT, utility::kWhite);
+    return std::make_pair(rect.right, rect.bottom);
   }
 
   void render() {
@@ -50,23 +56,20 @@ class text_image : public boost::signals2::trackable, private boost::noncopyable
     const scoped_render_target target(text_); 
     clear_screen(utility::kClear);
     RECT rect = {0, 0, 0, 0};
-    font_->DrawText(nullptr, str_.c_str(), -1, &rect, DT_NOCLIP, utility::kWhite);
+    font_->DrawTextA(nullptr, str_.c_str(), -1, &rect, DT_NOCLIP, utility::kWhite);
   }
 
   const detail::texture_handle &texture1() const {
-    return detail::texture_access::texture1(text_);
+    return detail::texture_core_access::texture1(text_);
   }
 
   const detail::font_handle &font_;
-  const std::pair<float, float> size_;
+  const std::pair<int, int> size_;
   const std::string str_;
   render_target text_;
 
-  friend class detail::texture_access;
   friend class detail::texture_core_access;
 };
-
-#pragma warning(disable: 4512)
 
 class text : public drawable<text, 4, 2, image_2d_fvf_tag, triangle_strip_primitive_tag> {
  public:
@@ -88,14 +91,14 @@ class text : public drawable<text, 4, 2, image_2d_fvf_tag, triangle_strip_primit
     return texture_;
   }
 
-  const text_image image_;
-  const texture texture_;
-  const float x_;
-  const float y_;
+  text_image image_;
+  texture texture_;
+  float x_;
+  float y_;
 
   friend class drawable_access;
   friend class texture_access;
 };
-
-#pragma warning(default: 4512)
 }}
+
+#endif

@@ -1,6 +1,8 @@
-#pragma once
+#ifndef NGY313_GRAPHIC_DETAIL_WINDOWS_SCOPED_VIEWPORT_HPP_
+#define NGY313_GRAPHIC_DETAIL_WINDOWS_SCOPED_VIEWPORT_HPP_
 #include <boost/noncopyable.hpp>
-#include <ngy313/graphic/detail/viewport.hpp>
+#include <ngy313/graphic/detail/windows/device.hpp>
+#include <ngy313/graphic/detail/windows/viewport.hpp>
 
 namespace ngy313 { namespace graphic { namespace detail {
 class scoped_viewport : private boost::noncopyable {
@@ -16,3 +18,5 @@ class scoped_viewport : private boost::noncopyable {
   const viewport viewport_;
 };
 }}}
+
+#endif

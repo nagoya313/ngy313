@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NGY313_SOUND_REVERB_HPP_
+#define NGY313_SOUND_REVERB_HPP_
 #include <XAPOFX.h>
 #include <ngy313/sound/detail/device.hpp>
 #include <ngy313/sound/effect.hpp>
@@ -43,3 +44,5 @@ struct reverb {
   detail::unknown_handle reverb_;
 };
 }}
+
+#endif

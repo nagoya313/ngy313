@@ -7,8 +7,7 @@
 #include <ngy313/utility/color_code.hpp>
 
 int main() {
-  ngy313::window::show();
-  const ngy313::graphic::image image("test1.png");
+  const ngy313::graphic::image image("test1.png", ngy313::graphic::non_alpha_png_image_loader);
   return ngy313::process::run([&] {
     {
       const ngy313::graphic::scoped_render render;

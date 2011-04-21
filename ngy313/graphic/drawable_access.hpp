@@ -24,22 +24,9 @@ class drawable_access {
   template <typename Drawable, typename AddType>
   friend struct add_drawable_adaptor;
 
-  template <typename Positon>
   friend struct shape_position ;
-
-  template <typename Drawable>
-  friend float shape_center_x(const Drawable &drawable);
-
-  template <typename Drawable>
-  friend float shape_center_y(const Drawable &drawable);
-
-  template <std::size_t Index, typename Drawable>
-  friend float shape_center_u(const Drawable &drawable);
-
-  template <std::size_t Index, typename Drawable>
-  friend float shape_center_v(const Drawable &drawable);
+  friend struct shape_center;
 };
 }}
 
 #endif
-

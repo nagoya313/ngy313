@@ -1,5 +1,5 @@
-#pragma once
-#include <cstdint>
+#ifndef NGY313_GRAPHIC_TEXTURE_STAGE_TYPE_HPP_
+#define NGY313_GRAPHIC_TEXTURE_STAGE_TYPE_HPP_
 #include <d3d9.h>
 
 namespace ngy313 { namespace graphic { namespace detail {
@@ -32,8 +32,7 @@ const texture_option kTextureOptionDotProduct3 = D3DTOP_DOTPRODUCT3;
 const texture_option kTextureOptionMultiPlyadd = D3DTOP_MULTIPLYADD;
 const texture_option kTextureOptionLerp = D3DTOP_LERP;
 
-// ëÂêlÇµÇ≠DWORDÇ≈Ç‡Ç¢Ç¢Ç©Ç‡ÇµÇÍÇ»Ç¢
-typedef std::uint32_t texture_arg;
+typedef DWORD texture_arg;
 
 const texture_arg kTextureArgMask = D3DTA_SELECTMASK;
 const texture_arg kTextureArgDiffuse = D3DTA_DIFFUSE;
@@ -46,3 +45,5 @@ const texture_arg kTextureArgConstant = D3DTA_CONSTANT;
 const texture_arg kTextureArgComplement = D3DTA_COMPLEMENT;
 const texture_arg kTextureArgAlphaReplicate = D3DTA_ALPHAREPLICATE;
 }}}
+
+#endif

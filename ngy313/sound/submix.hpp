@@ -1,8 +1,11 @@
-#pragma once
+#ifndef NGY313_SOUND_SUBMIX_HPP_
+#define NGY313_SOUND_SUBMIX_HPP_
 #include <cassert>
 #include <cstdint>
-#include <ngy313/sound/detail/device.hpp>
-#include <ngy313/sound/detail/singleton.hpp>
+#include <ngy313/platform.hpp>
+#if defined(NGY313_WINDOWS_VERSION)
+#include <ngy313/sound/detail/windows/device.hpp>
+#include <ngy313/sound/detail/sound_device.hpp>
 
 namespace ngy313 { namespace sound {
 class submix {
@@ -33,3 +36,7 @@ class submix {
   friend class sound;
 };
 }}
+
+#endif
+
+#endif

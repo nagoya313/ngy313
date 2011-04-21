@@ -12,7 +12,7 @@
 namespace ngy313 { namespace window { namespace detail {
 class main_window : private boost::noncopyable {
  public:
-  main_window() : init_(), window_(), func_([] {}), width_(0), height_(0) {
+  main_window() : init_(), window_(), func_([] {}), icon_("default_icon") {
     window_.set_resizable(false);
   }
 
@@ -28,13 +28,17 @@ class main_window : private boost::noncopyable {
     assert(text.string() == caption());
   }
 
-  void set_icon() {
-    //set_icon(handle_);
+  void set_icon(const utility::string_piece &icon_name) {
+    window_.set_icon(Gdk::Pixbuf::create_from_file(icon_name.string()));
+    icon_ = icon_name.string();
+    assert(icon() == icon_name.string());
+  }
+  
+  std::string icon() const {
+    return icon_;
   }
 
   void move(const int x_pos, const int y_pos) {
-    x_ = x_pos;
-    y_ = y_pos;
     window_.move(x_pos, y_pos);
     assert(x() == x_pos);
     assert(y() == y_pos);
@@ -55,11 +59,17 @@ class main_window : private boost::noncopyable {
   }
 
   int x() const {
-    return x_;
+    int x;
+    int y;
+    window_.get_position(x, y);
+    return x;
   }
 
   int y() const {
-    return y_;
+    int x;
+    int y;
+    window_.get_position(x, y);
+    return y;
   }
 
   int width() const {
@@ -101,12 +111,10 @@ class main_window : private boost::noncopyable {
   } init_;
   Gtk::Window window_;
   std::function<void ()> func_;
-  int x_;
-  int y_;
   int width_;
   int height_;
+  std::string icon_;
 };
 }}}
 
 #endif
-

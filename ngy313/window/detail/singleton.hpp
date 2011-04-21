@@ -26,4 +26,3 @@ class singleton : private boost::noncopyable {
 }}}
 
 #endif
-

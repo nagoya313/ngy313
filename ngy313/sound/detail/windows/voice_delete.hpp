@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NGY313_SOUND_DETAIL_WINDOWS_VOICE_DELETE_HPP_
+#define NGY313_SOUND_DETAIL_WINDOWS_VOICE_DELETE_HPP_
 #include <cassert>
 #include <XAudio2.h>
 
@@ -25,3 +26,5 @@ struct source_voice_delete {
   }
 };
 }}}
+
+#endif

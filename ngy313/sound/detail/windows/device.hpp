@@ -1,11 +1,10 @@
-#pragma once
+#ifndef NGY313_SOUND_DETAIL_WINDOWS_DEVICE_HPP_
+#define NGY313_SOUND_DETAIL_WINDOWS_DEVICE_HPP_
 #include <cassert>
 #include <cstdint>
 #include <stdexcept>
-#include <ngy313/sound/detail/fwd.hpp>
-#include <ngy313/sound/detail/voice_delete.hpp>
+#include <ngy313/sound/detail/windows/fwd.hpp>
 #include <ngy313/sound/format.hpp>
-#include <ngy313/utility/com_delete.hpp>
 
 namespace ngy313 { namespace sound { namespace detail {
 inline
@@ -110,3 +109,5 @@ source_voice_handle create_source_voice(const device_handle &xaudio,
   return source_voice_handle(voice);
 }
 }}}
+
+#endif

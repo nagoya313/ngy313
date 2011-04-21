@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NGY313_SOUND_OGG_VORBIS_LOADER_HPP_
+#define NGY313_SOUND_OGG_VORBIS_LOADER_HPP_
 #include <algorithm>
 #include <string>
 #include <boost/range/algorithm/fill.hpp>
@@ -8,7 +9,7 @@ namespace ngy313 { namespace sound { namespace ogg_vorbis {
 class loader {
  public:
   explicit loader(const std::string &file_name) : buffer_(file_name), 
-                                                  file_(buffer_.get().buffer()),
+                                                  file_(buffer_.buffer()),
                                                   data_(kSize_),
                                                   offset_(0),
                                                   loop_size_(0),
@@ -20,7 +21,7 @@ class loader {
 
   loader(const std::string &file_name, const std::uint32_t offset, const std::uint32_t loop_size)
       : buffer_(file_name), 
-        file_(buffer_.get().buffer()),
+        file_(buffer_.buffer()),
         data_(kSize_),
         offset_(offset),
         loop_size_(loop_size),
@@ -39,7 +40,7 @@ class loader {
   }
 
   buffer_format format() const {
-    return buffer_.get().format();
+    return buffer_.format();
   }
 
   void start() {
@@ -109,3 +110,5 @@ class loader {
   static const std::size_t kSize_ = 4096;
 };
 }}}
+
+#endif

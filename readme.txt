@@ -7,18 +7,20 @@ C++(0x)のお勉強も兼ねているので結構やりたい放題なところ�
 
 コンパイラ対応
 -Windows(7でしか試してません)
-今のところVC++2010のみです。
+今のところVC++2010のみです。MinGWのg++4.5.1以降でも大丈夫だと思います。
 -Linux(Ubuntu10.10でしか試してません)
 今のところg++4.5.1以降のみです。あと-std=c++0x必須です。
 
 依存ライブラリ
 Boost必須です。出来るだけ新しいのがいいと思います。
 -Windows
-DirectXSDK(February 2010でしか試してませんが多分最新版で大丈夫だと思います)
+DirectXSDK(多分最新版で大丈夫だと思います)
 oggsdk
+#pragma commentでのリンクを削ったのでComCtl32.lib等は自前でリンクする必要があります。
 -Linux
 gtkglextmm
 oggsdk
+OpenAL
 Boost.Gilがlibpngやらlibjpegに依存してたりするのでこれらも必要かと思います。
 Ununtuだと、pngconf.hの336行目と337行目をコメントアウトしてあげないとコンパイルにこけるみたいです。
 

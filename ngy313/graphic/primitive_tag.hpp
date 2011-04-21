@@ -3,12 +3,10 @@
 #include <type_traits>
 #include <boost/mpl/vector.hpp>
 #include <ngy313/platform.hpp>
-#ifdef NGY313_WINDOWS
+#if defined(NGY313_WINDOWS_VERSION)
 #include <ngy313/graphic/detail/windows/primitive_type.hpp>
-#else
-#ifdef NGY313_LINUX
+#elif defined(NGY313_LINUX_VERSION)
 #include <ngy313/graphic/detail/linux/primitive_type.hpp>
-#endif
 #endif
 
 namespace ngy313 { namespace graphic {
@@ -48,4 +46,3 @@ typedef boost::mpl::vector<point_list_primitive_tag,
 }}
 
 #endif
-

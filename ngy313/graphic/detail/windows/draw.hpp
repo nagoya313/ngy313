@@ -29,7 +29,7 @@ class draw : private boost::noncopyable {
     const scoped_texture_stage<typename Drawable::list_type> texture_stage(device_);
     const scoped_addressing<typename Drawable::list_type> addressing(device_);
     const scoped_blend<typename Drawable::list_type> blend(device_);
-    set_texture(device_, drawable_);
+    set_texture::set(device_, drawable_);
     const auto vertex = drawable_access::copy_vertex(drawable_);
     device_->SetFVF(fvf_traits<typename boost::mpl::at<typename Drawable::list_type, fvf_key>::type>::fvf_type::value);
     device_->DrawPrimitiveUP(boost::mpl::at<typename Drawable::list_type, primitive_key>::type::type::value,

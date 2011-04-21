@@ -1,6 +1,7 @@
-#pragma once
+#ifndef NGY313_GRAPHIC_DETAIL_SCOPED_BACK_Z_AND_STENCIL_HPP_
+#define NGY313_GRAPHIC_DETAIL_SCOPED_BACK_Z_AND_STENCIL_HPP_
 #include <boost/noncopyable.hpp>
-#include <ngy313/graphic/detail/device.hpp>
+#include <ngy313/graphic/detail/windows/device.hpp>
 
 namespace ngy313 { namespace graphic { namespace detail {
 class scoped_back_z_and_stencil : private boost::noncopyable {
@@ -17,3 +18,5 @@ class scoped_back_z_and_stencil : private boost::noncopyable {
   const surface_handle back_z_and_stencil_;
 };
 }}}
+
+#endif

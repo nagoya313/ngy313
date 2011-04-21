@@ -18,4 +18,3 @@ int message_box(const utility::string_piece &message,
 }}
 
 #endif
-

@@ -1,98 +1,53 @@
-#pragma once
-#include <cassert>
-#include <boost/bind.hpp>
+#ifndef NGY313_GRAPHIC_RENDER_TARGET_HPP_
+#define NGY313_GRAPHIC_RENDER_TARGET_HPP_
 #include <boost/noncopyable.hpp>
-#include <boost/signals2/signal.hpp>
-#include <boost/signals2/trackable.hpp>
-#include <ngy313/graphic/detail/device.hpp>
-#include <ngy313/graphic/detail/render_targert.hpp>
-#include <ngy313/graphic/detail/scoped_back_buffer.hpp>
-#include <ngy313/graphic/detail/scoped_back_z_and_stencil.hpp>
-#include <ngy313/graphic/detail/scoped_viewport.hpp>
-#include <ngy313/graphic/detail/singleton.hpp>
-#include <ngy313/graphic/detail/texture.hpp>
+#include <ngy313/platform.hpp>
+#if defined(NGY313_WINDOWS_VERSION)
+#include <ngy313/graphic/detail/windows/render_target.hpp>
+#elif defined(NGY313_LINUX_VERSION)
+#include <ngy313/graphic/detail/linux/render_target.hpp>
+#endif
+#include <ngy313/graphic/detail/graphic.hpp>
 
 namespace ngy313 { namespace graphic {
-typedef boost::signals2::signal<void ()> reseted_signal;
-
-class render_target : public boost::signals2::trackable, private boost::noncopyable {
+class render_target : private boost::noncopyable {
  public:
-  render_target(const float width, const float height) 
-      : width_(width),
-        height_(height),
-        target_(detail::create_texture(detail::device().device(), width_, height_)),
-        target_surface_(detail::surface_level(target_)),
-        z_and_stencil_(detail::create_z_and_stencil(detail::device().device(), width_, height_)),
-        viewport_(detail::init_viewport(width_, height_)),
-        after_reset_() {
-    detail::device().before_reset.connect(boost::bind(&render_target::release, this, _1));
-    detail::device().after_reset.connect(boost::bind(&render_target::reset, this, _1));
+  render_target(const int width, const int height) : target_(detail::device(), width, height) {}
+
+  int width() const {
+    return target_.width();
   }
 
-  float width() const {
-    return width_;
+  int height() const {
+    return target_.height();
   }
 
-  float height() const {
-    return height_;
-  }
-
-  // äOïîÇ©ÇÁÇÃ()åƒÇ—èoÇµÇïïàÛÇµÇΩsignalÇ…ïœÇ¶ÇÈÇ©Ç‡ÇµÇÍÇ»Ç¢
-  void connect_after_reset(const reseted_signal::slot_type &slot) {
-    after_reset_.connect(slot);
+  void connect_after_reset(const boost::signals2::signal<void ()>::slot_type &slot) {
+    target_.after_reset.connect(slot);
   }
 
  private:
-  void begin() const {
-    detail::set_render_target(detail::device().device(), target_surface_);
-    detail::set_z_and_stencil(detail::device().device(), z_and_stencil_);
-    detail::set_viewport(detail::device().device(), viewport_);
-    detail::init_device(detail::device().device());
-  }
-
-  void release(const detail::device_handle &device) {
-    UNREFERENCED_PARAMETER(device);
-    target_.reset();
-    target_surface_.reset();
-    z_and_stencil_.reset();
-  }
-
-  void reset(const detail::device_handle &device) {
-    assert(device);
-    target_ = detail::create_texture(device, width_, height_);
-    target_surface_ = detail::surface_level(target_);
-    z_and_stencil_ = detail::create_z_and_stencil(device, width_, height_);
-    after_reset_();
-  }
-
-  const detail::texture_handle &texture1() const {
+  const detail::render_target &target() const {
     return target_;
   }
+  
+  const detail::texture_handle &texture1() const {
+    return detail::texture_core_access::texture1(target_);
+  }
 
-  const float width_;
-  const float height_;
-  detail::texture_handle target_;
-  detail::surface_handle target_surface_;
-  detail::surface_handle z_and_stencil_;
-  const detail::viewport viewport_;
-  reseted_signal after_reset_;
+  detail::render_target target_;
 
   friend class scoped_render_target;
-  friend class detail::texture_access;
   friend class detail::texture_core_access;
 };
 
 class scoped_render_target : private boost::noncopyable {
  public:
-  explicit scoped_render_target(const render_target &target) : viewport_(detail::device().device()),
-                                                               back_buffer_(detail::device().device()),
-                                                               back_z_and_stencil_(detail::device().device()) {
-    target.begin();
-  }
+  explicit scoped_render_target(const render_target &target) : target_(target.target()) {}
 
  private:
-  const detail::scoped_viewport viewport_;
-  const detail::scoped_back_buffer back_buffer_;
-  const detail::scoped_back_z_and_stencil back_z_and_stencil_;
+  const detail::scoped_render_target target_;
 };
 }}
+
+#endif

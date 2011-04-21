@@ -1,7 +1,6 @@
 #ifndef NGY313_GRAPHIC_DETAIL_WINDOWS_DEVICE_HPP_
 #define NGY313_GRAPHIC_DETAIL_WINDOWS_DEVICE_HPP_
 #include <cassert>
-#include <cstdint>
 #include <stdexcept>
 #include <ngy313/graphic/detail/windows/fwd.hpp>
 #include <ngy313/graphic/detail/windows/addressing.hpp>
@@ -45,9 +44,8 @@ base_handle create_base() {
 }
 
 inline
-device_handle create_device(const window::detail::main_window &window, 
-                            const base_handle &direct3d,
-                            const bool windowed) {
+device_handle create_device(
+    const window::detail::main_window &window, const base_handle &direct3d, const bool windowed) {
   assert(window.width());
   assert(direct3d);
   D3DPRESENT_PARAMETERS present_parameters = init_present_parameters(windowed, window.width(), window.height());
@@ -82,18 +80,34 @@ device_handle create_device(const window::detail::main_window &window,
 inline
 void init_device(const device_handle &device) {
   assert(device);
-  device->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-  set_blend_pair<default_blend>(device);
-  set_addressing_tuple<default_addressing<0>::type>(device);
-  set_addressing_tuple<default_addressing<1>::type>(device);
-  set_texture_stage<default_stage0>(device);
-  set_texture_stage<default_stage1>(device);
-  device->SetRenderState(D3DRS_LIGHTING, FALSE);
-  device->SetRenderState(D3DRS_ZENABLE, FALSE);
-  device->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR); 
-  device->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR); 
-  device->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR); 
+  //set_addressing_tuple<default_addressing<0>::type>(device);
+  //set_addressing_tuple<default_addressing<1>::type>(device);
+  //set_texture_stage<default_stage0>(device);
+  //set_texture_stage<default_stage1>(device);
+  //device->SetRenderState(D3DRS_LIGHTING, FALSE);
+  //device->SetRenderState(D3DRS_ZENABLE, FALSE);
+  //device->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR); 
+  //device->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR); 
+  //device->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR); 
 }
+
+inline
+surface_handle render_surface(const device_handle &device) {
+  assert(device);
+  LPDIRECT3DSURFACE9 target;
+  if (FAILED(device->GetRenderTarget(0, &target))) {
+    throw std::runtime_error("レンダリングターゲットのサーフエイスの取得に失敗しました");
+  }
+  return surface_handle(target);
+}
+
+inline
+void set_render_surface(const device_handle &device, const surface_handle &surface) {
+  assert(device);
+  assert(surface);
+  device->SetRenderTarget(0, surface.get());
+}
+
 
 inline
 surface_handle back_buffer(const device_handle &device) {
@@ -114,11 +128,11 @@ surface_handle z_and_stencil(const device_handle &device) {
 }
 
 inline
-texture_handle create_texture(const device_handle &device, const float width, const float height) {
+texture_handle create_texture(const device_handle &device, const int width, const int height) {
   assert(device);
   LPDIRECT3DTEXTURE9 tex;
-  if (FAILED(device->CreateTexture(static_cast<std::uint32_t>(width), 
-                                   static_cast<std::uint32_t>(height),
+  if (FAILED(device->CreateTexture(width, 
+                                   height,
                                    1,
                                    D3DUSAGE_RENDERTARGET,
                                    D3DFMT_A8R8G8B8, 
@@ -131,11 +145,11 @@ texture_handle create_texture(const device_handle &device, const float width, co
 }
 
 inline
-surface_handle create_z_and_stencil(const device_handle &device, const float width, const float height) {
+surface_handle create_z_and_stencil(const device_handle &device, const int width, const int height) {
   assert(device);
   LPDIRECT3DSURFACE9 suf;
-  if (FAILED(device->CreateDepthStencilSurface(static_cast<std::uint32_t>(width), 
-                                               static_cast<std::uint32_t>(height),
+  if (FAILED(device->CreateDepthStencilSurface(width, 
+                                               height,
                                                D3DFMT_D24S8,
                                                D3DMULTISAMPLE_NONE,
                                                0, 
