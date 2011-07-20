@@ -8,7 +8,7 @@
 #include <boost/operators.hpp>
 #include <boost/range/iterator_range.hpp>
 
-namespace ngy313 { 
+namespace ngy313 {
 template <typename Char>
 class basic_string_wrap : public boost::iterator_range<const Char *>,
                           boost::equality_comparable<basic_string_wrap<Char>>,
@@ -23,8 +23,8 @@ class basic_string_wrap : public boost::iterator_range<const Char *>,
 
   template <typename CharTraits, typename Allocator>
   basic_string_wrap(const std::basic_string<Char,
-  		                                        CharTraits,
-  		                                        Allocator> &str)
+  		                                       CharTraits,
+  		                                       Allocator> &str)
       : base_type() {
     const char * const p = str.c_str();
     base_type::operator=(base_type(p, p + str.size()));
@@ -51,17 +51,17 @@ class basic_string_wrap : public boost::iterator_range<const Char *>,
 template <typename Char>
 bool operator ==(const basic_string_wrap<Char> &rhs,
                  const basic_string_wrap<Char> &lhs) {
-  return !std::memcmp(lhs.data(),
-                      rhs.data(),
-                      std::min(lhs.size(), 
+  return !std::memcmp(lhs.c_str(),
+                      rhs.c_str(),
+                      std::min(lhs.size(),
                                rhs.size())) && rhs.size() == lhs.size();
 }
 
 template <typename Char>
 bool operator <(const basic_string_wrap<Char> &lhs,
                 const basic_string_wrap<Char> &rhs) {
-  const int r = std::memcmp(lhs.data(), 
-                            rhs.data(),
+  const int r = std::memcmp(lhs.c_str(),
+                            rhs.c_str(),
                             std::min(lhs.size(), rhs.size()));
   return (r < 0 || (!r && lhs.size() < rhs.size()));
 }
