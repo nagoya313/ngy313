@@ -35,15 +35,19 @@ class basic_main_singleton : boost::noncopyable {
     return *main_;
   }
 
-  Window &window() {
+  boost::optional<Window> &window_optional() {
 //#if defined(BOOST_NO_0X_HDR_THREAD)
-  	//static boost::once_flag flag = BOOST_ONCE_INIT;
+ 	  //static boost::once_flag flag = BOOST_ONCE_INIT;
   	//boost::call_once([this] {window_init();}, flag);
 //#else
-  	static std::once_flag flag;
-  	std::call_once(flag, [this] {this->window_init();});
+	  	static std::once_flag flag;
+ 	  	std::call_once(flag, [this] {this->window_init();});
 //#endif
-    return *window_;
+  	return window_;
+  }
+
+  Window &window() {
+    return *window_optional();
   }
 
   Graphic &graphic() {
