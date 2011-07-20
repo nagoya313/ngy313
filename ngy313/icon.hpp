@@ -14,7 +14,7 @@
 namespace ngy313 { namespace detail {
 struct init_base {
 	init_base() {
-		detail::main_singleton::instance();
+		detail::main_singleton::instance().main();
 	}
 };
 }}
