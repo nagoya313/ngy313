@@ -60,7 +60,7 @@ class vector2 : boost::equality_comparable<vector2>,
 
 inline
 bool operator ==(const vector2 &lhs, const vector2 &rhs) {
-  return lhs.x() == rhs.x() && lhs.y() == rhs.y();
+  return lhs.get_x() == rhs.get_x() && lhs.get_y() == rhs.get_y();
 }
 }
 
