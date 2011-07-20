@@ -18,10 +18,10 @@ struct transformed {
   Vertex operator ()(Vertex vertex) const {
     vertex_member_at<position_member>(vertex).x_ =
         extend_position(vertex_member_at<position_member>(vertex).x_,
-        		              base_point_.x(), extend_.x());
+        		              base_point_.get_x(), extend_.get_x());
     vertex_member_at<position_member>(vertex).y_ =
         extend_position(vertex_member_at<position_member>(vertex).y_,
-        		              base_point_.y(), extend_.y());
+        		              base_point_.get_y(), extend_.get_y());
     return vertex;
   }
 
