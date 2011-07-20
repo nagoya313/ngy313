@@ -139,10 +139,10 @@ class gtkglextmm_graphic_system : boost::noncopyable {
 
     template <typename Wrap>
     void clear(const basic_color_wrap<Wrap> &color) {
-      glClearColor(color.blue_float(), 
-                   color.green_float(),
-                   color.red_float(),
-                   color.alpha_float());
+      glClearColor(color.get_blue_float(),
+                   color.get_green_float(),
+                   color.get_red_float(),
+                   color.get_alpha_float());
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
