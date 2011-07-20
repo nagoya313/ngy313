@@ -2,6 +2,7 @@
 #define NGY313_DETAIL_WINDOW_HPP_
 
 #include <cassert>
+#include <ngy313/fwd.hpp>
 #include <ngy313/string_wrap.hpp>
 
 #if defined(_WIN32)
@@ -26,7 +27,7 @@ class basic_window {
   }
 
   template <typename Icon>
-  void set_icon(const Icon &icon) {
+  void set_icon(const basic_icon<Icon> &icon) {
     window_.set_icon(icon);
   }
 
