@@ -8,7 +8,6 @@
 #define _WIN32_DCOM
 #define _WIN32_WINNT 0x501
 #define NOMINMAX
-#endif
 #elif defined(__linux__)
 #if !(defined(__GNUC__) && (__GNUC__ >= 4) && (__GNUC_MINOR__ >= 6))
 #error It is a compiler of non-correspondence.
