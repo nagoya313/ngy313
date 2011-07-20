@@ -5,7 +5,7 @@
 #include <type_traits>
 #include <boost/noncopyable.hpp>
 #include <gtkmm.h>
-#include <ngy313/string_weap.hpp>
+#include <ngy313/string_wrap.hpp>
 
 namespace ngy313 { namespace detail {
 template <typename Texture>
