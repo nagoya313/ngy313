@@ -18,8 +18,8 @@ struct adaptor : drawable_adaptor<adaptor<Drawable>, Drawable> {
 
   template <typename VertexArray>
   void transform(VertexArray &vertex) const {
-  	vertex_member_at<position_member>(vertex[at_]).x_ += move_.x();
-  	vertex_member_at<position_member>(vertex[at_]).y_ += move_.y();
+  	vertex_member_at<position_member>(vertex[at_]).x_ += move_.get_x();
+  	vertex_member_at<position_member>(vertex[at_]).y_ += move_.get_y();
   }
 
  private:
