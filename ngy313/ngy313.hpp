@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <string>
 #include <ngy313/platform.hpp>
-#include <ngy313/fwd.hpp>
+#include <ngy313/color.hpp>
 #include <ngy313/string_wrap.hpp>
 #include <ngy313/detail/ngy313.hpp>
 
@@ -79,8 +79,8 @@ void resize_screen(int width, int height) {
   detail::main_singleton::instance().graphic().resize(width, height);
 }
 
-template <typename Wrap>
-void clear_screen(const basic_color_wrap<Wrap> &color) {
+inline
+void clear_screen(const color_wrap &color) {
   detail::main_singleton::instance().graphic().clear_screen(color);
 }
 
