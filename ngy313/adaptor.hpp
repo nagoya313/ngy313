@@ -27,7 +27,7 @@ struct drawable_adaptor {
   }
 
  private:
-  const typename detail::drawable_fusion<Drawable>::type list_;
+  typename detail::drawable_fusion<Drawable>::type list_;
 };
 
 template <typename Drawable, typename AddData>
@@ -49,7 +49,7 @@ struct add_drawable_adaptor {
   }
 
  private:
-  const typename detail::drawable_fusion<Drawable>::type list_;
+  typename detail::drawable_fusion<Drawable>::type list_;
 };
 }
 
