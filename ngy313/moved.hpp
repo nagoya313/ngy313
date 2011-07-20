@@ -15,8 +15,8 @@ struct transformed {
 
   template <typename Vertex>
   Vertex operator ()(Vertex vertex) const {
-    vertex_member_at<position_member>(vertex).x_ += move_.x();
-    vertex_member_at<position_member>(vertex).y_ += move_.y();
+    vertex_member_at<position_member>(vertex).x_ += move_.get_x();
+    vertex_member_at<position_member>(vertex).y_ += move_.get_y();
     return vertex;
   }
 
