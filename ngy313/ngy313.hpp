@@ -101,7 +101,7 @@ void draw(Drawable &&drawable) {
 }
 
 template <typename Scene>
-void render(const Scene scene) {
+void render(Scene scene) {
 	const detail::scoped_render<detail::graphic_system>
 	  	render(detail::main_singleton::instance().graphic());
 	if (render.succeeded()) {
