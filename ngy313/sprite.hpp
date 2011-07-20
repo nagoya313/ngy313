@@ -107,11 +107,11 @@ class size_sprite : public drawable_traits<size_sprite,
     const vertex_array_type vertex = {{
       vertex_type(rhw_position_t(vector2(0.f, 0.f)),
       		         texture_t<1>(vector2(0.f, 0.f))),
-      vertex_type(rhw_position_t(vector2(size.x(), 0.f)),
+      vertex_type(rhw_position_t(vector2(size.get_x(), 0.f)),
       		         texture_t<1>(vector2(1.f, 0.f))),
-      vertex_type(rhw_position_t(vector2(0.f, size.y())),
+      vertex_type(rhw_position_t(vector2(0.f, size.get_y())),
       		         texture_t<1>(vector2(0.f, 1.f))),
-      vertex_type(rhw_position_t(vector2(size.x(), size.y())),
+      vertex_type(rhw_position_t(vector2(size.get_x(), size.get_y())),
       		         texture_t<1>(vector2(1.f, 1.f)))
      }};
     return vertex;
@@ -146,13 +146,13 @@ class bright_size_sprite : public drawable_traits<bright_size_sprite,
       vertex_type(rhw_position_t(vector2(0.f, 0.f)),
       		         diffuse_t(),
       		         texture_t<1>(vector2(0.f, 0.f))),
-      vertex_type(rhw_position_t(vector2(size.x(), 0.f)),
+      vertex_type(rhw_position_t(vector2(size.get_x(), 0.f)),
       		         diffuse_t(),
       		         texture_t<1>(vector2(1.f, 0.f))),
-      vertex_type(rhw_position_t(vector2(0.f, size.y())),
+      vertex_type(rhw_position_t(vector2(0.f, size.get_y())),
       		         diffuse_t(),
       		         texture_t<1>(vector2(0.f, 1.f))),
-      vertex_type(rhw_position_t(vector2(size.x(), size.y())),
+      vertex_type(rhw_position_t(vector2(size.get_x(), size.get_y())),
       		         diffuse_t(),
       		         texture_t<1>(vector2(1.f, 1.f)))
      }};
