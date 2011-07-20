@@ -173,8 +173,8 @@ class box_base
   		                           typename std::enable_if<Fill>::type * = nullptr) {
     const vertex_array_type vertex = {{
       vertex_type(rhw_position_t(vector2(0.f, 0.f)), diffuse_t()),
-      vertex_type(rhw_position_t(vector2(size.x(), 0.f)), diffuse_t()),
-      vertex_type(rhw_position_t(vector2(0.f, size.y())), diffuse_t()),
+      vertex_type(rhw_position_t(vector2(size.get_x(), 0.f)), diffuse_t()),
+      vertex_type(rhw_position_t(vector2(0.f, size.get_y())), diffuse_t()),
       vertex_type(rhw_position_t(size), diffuse_t())
     }};
     return vertex;
@@ -185,9 +185,9 @@ class box_base
   		                           typename std::enable_if<!Fill>::type * = nullptr) {
     const vertex_array_type vertex = {{
       vertex_type(rhw_position_t(vector2(0.f, 0.f)), diffuse_t()),
-      vertex_type(rhw_position_t(vector2(size.x(), 0.f)), diffuse_t()),
+      vertex_type(rhw_position_t(vector2(size.get_x(), 0.f)), diffuse_t()),
       vertex_type(rhw_position_t(size), diffuse_t()),
-      vertex_type(rhw_position_t(vector2(0.f, size.y())), diffuse_t()),
+      vertex_type(rhw_position_t(vector2(0.f, size.get_y())), diffuse_t()),
       vertex_type(rhw_position_t(vector2(0.f, 0.f)), diffuse_t())
     }};
     return vertex;
@@ -278,8 +278,8 @@ typedef circle_base<false> line_circle;
 #define NGY313_OVAL_VERTEX_ELEM_GEN(z, n, data)\
 vertex_type(\
 		rhw_position_t(\
-			  vector2(std::cos(detail::vertex_radian<data>(n)) * r.x(),\
-               std::sin(detail::vertex_radian<data>(n)) * r.y())),\
+			  vector2(std::cos(detail::vertex_radian<data>(n)) * r.get_x(),\
+               std::sin(detail::vertex_radian<data>(n)) * r.get_y())),\
         diffuse_t()),
 
 #define NGY313_LINE_OVAL_VERTEX_SIZE 60
@@ -287,8 +287,8 @@ vertex_type(\
 #define NGY313_LINE_OVAL_VERTEX_ELEM_GEN(z, n, data)\
 vertex_type(\
 		rhw_position_t(\
-       vector2(std::cos(detail::line_vertex_radian<data>(n)) * r.x(),\
-               std::sin(detail::line_vertex_radian<data>(n)) * r.y())),\
+       vector2(std::cos(detail::line_vertex_radian<data>(n)) * r.get_x(),\
+               std::sin(detail::line_vertex_radian<data>(n)) * r.get_y())),\
        diffuse_t()),
 
 template <bool Filled>
