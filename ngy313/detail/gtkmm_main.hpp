@@ -10,7 +10,7 @@
 namespace ngy313 { namespace detail {
 class gtkmm_main : boost::noncopyable {
  public:
-  gtkmm_main() : main_(0, nullptr), error_(false) {}
+  gtkmm_main() : main_(0, nullptr) {}
 
   template <typename Pred>
   int run(const Pred pred) {
