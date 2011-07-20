@@ -20,15 +20,15 @@ struct transformed {
   template <typename Vertex>
   Vertex operator ()(Vertex vertex) const {
     const float x = vertex_member_at<position_member>(vertex).x_ -
-    		             base_point_.x();
+    		             base_point_.get_x();
     const float y = vertex_member_at<position_member>(vertex).y_ -
-    		             base_point_.y();
+    		             base_point_.get_y();
     vertex_member_at<position_member>(vertex).x_ = x * cos_ -
     		                                            y * sin_ +
-    		                                            base_point_.x();
+    		                                            base_point_.get_x();
     vertex_member_at<position_member>(vertex).y_ = x * sin_ +
     		                                            y * cos_ +
-    		                                            base_point_.y();
+    		                                            base_point_.get_y();
     return vertex;
   }
 
