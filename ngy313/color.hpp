@@ -14,8 +14,6 @@
 #endif
 
 namespace ngy313 {
-typedef std::uint32_t std::uint32_t;
-
 template <typename Color>
 class basic_color : boost::equality_comparable<basic_color<Color>>,
                     boost::addable<basic_color<Color>>,
