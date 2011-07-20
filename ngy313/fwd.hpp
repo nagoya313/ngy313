@@ -5,6 +5,9 @@ namespace ngy313 {
 template <typename Code>
 class basic_color;
 
+template <typename Wrap>
+class basic_color_wrap;
+
 template <typename Icon>
 class basic_icon;
 
