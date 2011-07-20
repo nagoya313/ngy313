@@ -265,7 +265,8 @@ class gtkglextmm_graphic_system : boost::noncopyable {
     graphic_->present();
   }
 
-  void clear_screen(const color_wrap &color) {
+  template <typename Wrap>
+  void clear_screen(const basic_color_wrap<Wrap> &color) {
     graphic_->clear(color);
   }
 
