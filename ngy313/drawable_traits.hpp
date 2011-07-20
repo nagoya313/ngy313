@@ -5,7 +5,6 @@
 #include <array>
 #include <type_traits>
 #include <boost/mpl/contains.hpp>
-#include <boost/mpl/insert.hpp>
 #include <boost/mpl/map.hpp>
 #include <ngy313/fvf_traits.hpp>
 #include <ngy313/types.hpp>
@@ -32,21 +31,6 @@ struct drawable_traits {
 
   typedef typename fvf_traits<FVFTag>::vertex_type vertex_type; 
   typedef std::array<vertex_type, Size> vertex_array_type;
-};
-
-template <typename Drawable>
-struct copy_drawable {
-  typedef typename Drawable::list_type list_type;
-  typedef typename Drawable::vertex_type vertex_type;
-  typedef typename Drawable::vertex_array_type vertex_array_type;
-};
-
-template <typename Drawable, typename AddData>
-struct add_drawable {
-  typedef typename boost::mpl::insert<typename Drawable::list_type,
-                                      AddData>::type list_type;
-  typedef typename Drawable::vertex_type vertex_type;
-  typedef typename Drawable::vertex_array_type vertex_array_type;
 };
 }
 
