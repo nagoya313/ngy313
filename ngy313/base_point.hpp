@@ -11,22 +11,22 @@ struct base_point_set {
 
   template <typename Drawable>
   float x(const Drawable &) const {
-    return pos_.x();
+    return pos_.get_x();
   }
 
   template <typename Drawable>
   float y(const Drawable &) const {
-    return pos_.y();
+    return pos_.get_y();
   }
 
   template <std::size_t Index, typename Drawable>
   float u(const Drawable &) const {
-    return pos_.x();
+    return pos_.get_x();
   }
 
   template <std::size_t Index, typename Drawable>
   float v(const Drawable &) const {
-    return pos_.y();
+    return pos_.get_y();
   }
 
  private:
