@@ -12,7 +12,7 @@
 
 namespace ngy313 { namespace detail {
 template <typename Main>
-class basic_main : private boost::noncopyable {
+class basic_main : boost::noncopyable {
  public:
   basic_main() : main_() {}
 
