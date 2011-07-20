@@ -2,8 +2,8 @@
 #define NGY313_ICON_HPP_
 
 #include <boost/noncopyable.hpp>
-#include <ngycl/string_piece.hpp>
-#include <ngycl/detail/ngycl.hpp>
+#include <ngy313/string_wrap.hpp>
+#include <ngy313/detail/ngy313.hpp>
 
 #if defined(_WIN32)
 #include <ngy313/detail/win32_icon.hpp>
@@ -23,7 +23,7 @@ namespace ngy313 {
 template <typename Icon>
 class basic_icon : detail::init_base, boost::noncopyable {
  public:
-  explicit basic_icon(const string_piece &file_name) 
+  explicit basic_icon(const string_wrap &file_name)
       : icon_(file_name) {}
       
   typename Icon::handle_type handle() const {
