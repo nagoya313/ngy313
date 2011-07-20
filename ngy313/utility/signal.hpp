@@ -1,4 +1,0 @@
-#ifndef NGY313_UTILITY_SIGNAL_HPP_
-#define NGY313_UTILITY_SIGNAL_HPP_
-
-#endif
