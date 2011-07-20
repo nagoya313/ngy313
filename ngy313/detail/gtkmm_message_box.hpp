@@ -29,15 +29,16 @@ class gtkmm_message_box : boost::noncopyable {
   static int run(const Window &window,
                  const string_wrap &message,
                  const string_wrap &caption,
-                 Gtk::MessageType botton,
-                 Gtk::ButtonsType icon) {
-    Gtk::MessageDialog diag(window().handle(), 
+                 Gtk::ButtonsType botton,
+                 Gtk::MessageType icon) {
+    Gtk::MessageDialog diag(*window.handle(),
                             message.c_str(),
                             false, 
                             icon, 
                             botton);
     diag.set_title(caption.c_str());
     return diag.run();
+  	return 0;
   }
 
   BOOST_STATIC_CONSTEXPR Gtk::MessageType kNoIcon
