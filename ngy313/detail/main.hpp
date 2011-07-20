@@ -17,7 +17,7 @@ class basic_main : private boost::noncopyable {
   basic_main() : main_() {}
 
   template <typename Pred>
-  int run(const Pred &pred) {
+  int run(Pred pred) {
     return main_.run(pred);
   }
 
@@ -25,7 +25,7 @@ class basic_main : private boost::noncopyable {
     Main::quit();
   }
 
-  static void sleep(const std::uint32_t time) {
+  static void sleep(std::uint32_t time) {
     Main::sleep(time);
   }
 
