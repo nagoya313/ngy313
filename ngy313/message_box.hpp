@@ -29,10 +29,16 @@ int message_box(const string_wrap &message,
                 const string_wrap &caption,
                 const button_code button,
                 const icon_code icon) {
-	detail::main_singleton::instance();
-  return detail::message_box::run(
-             message, 
-             caption, 
+	const auto &window = detail::main_singleton::instance().window_optional();
+	return window ?
+			    detail::message_box::run(*window,
+			        message,
+			        caption,
+			        detail::message_box::transform_button_type(button),
+			        detail::message_box::transform_icon_type(icon)) :
+         detail::message_box::run(
+             message,
+             caption,
              detail::message_box::transform_button_type(button),
              detail::message_box::transform_icon_type(icon));
 }
