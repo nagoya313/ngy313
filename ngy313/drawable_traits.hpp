@@ -30,15 +30,6 @@ struct drawable_traits {
       boost::mpl::pair<detail::fvf_key, FVFTag>,
       boost::mpl::pair<detail::primitive_key, PrimitiveTag>> list_type;
 
-  typedef typename boost::mpl::at<list_type,
-                                  detail::size_key>::type size_type;
-  typedef typename boost::mpl::at<list_type,
-                                  detail::count_key>::type count_type;
-  typedef typename boost::mpl::at<list_type,
-                                  detail::fvf_key>::type fvf_type;
-  typedef typename boost::mpl::at<list_type,
-                                  detail::primitive_key>::type primitive_type;
-
   typedef typename fvf_traits<FVFTag>::vertex_type vertex_type; 
   typedef std::array<vertex_type, Size> vertex_array_type;
 };
