@@ -31,7 +31,7 @@ struct rhw_position_t {
   typedef position_member type;
 
   rhw_position_t(const vector2 &position)
-      : x_(position.x()), y_(position.y()), z_(0.f) {}
+      : x_(position.get_x()), y_(position.get_y()), z_(0.f) {}
 
   float x_;
   float y_;
@@ -105,8 +105,8 @@ struct texture_t<1> {
   typedef texture_member type;
 
   explicit texture_t(const vector2 &uv) : texture_array() {
-    texture_array[0].u = uv.x();
-    texture_array[0].v = uv.y();
+    texture_array[0].u = uv.get_x();
+    texture_array[0].v = uv.get_y();
   }
 
   std::array<uv_t, 1> texture_array;
@@ -118,10 +118,10 @@ struct texture_t<2> {
 
   explicit texture_t(const vector2 &uv1,
                      const vector2 &uv2) : texture_array() {
-    texture_array[0].u = uv1.x();
-    texture_array[0].v = uv1.y();
-    texture_array[1].u = uv2.x();
-    texture_array[1].v = uv2.y();
+    texture_array[0].u = uv1.get_x();
+    texture_array[0].v = uv1.get_y();
+    texture_array[1].u = uv2.get_x();
+    texture_array[1].v = uv2.get_y();
   }
 
   std::array<uv_t, 2> texture_array;
