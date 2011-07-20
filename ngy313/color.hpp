@@ -17,11 +17,11 @@ namespace ngy313 {
 typedef std::uint32_t std::uint32_t;
 
 template <typename Color>
-class basic_color : boost::equality_comparable<basic_color<Code>>,
-                    boost::addable<basic_color<Code>>,
-                    boost::subtractable<basic_color<Code>>,
-                    boost::dividable2<basic_color<Code>, float>,
-                    boost::multipliable2<basic_color<Code>, float> {
+class basic_color : boost::equality_comparable<basic_color<Color>>,
+                    boost::addable<basic_color<Color>>,
+                    boost::subtractable<basic_color<Color>>,
+                    boost::dividable2<basic_color<Color>, float>,
+                    boost::multipliable2<basic_color<Color>, float> {
  public:
   explicit BOOST_CONSTEXPR basic_color(std::uint32_t code)
       : red_(detail::uint32_to_float(code, Color::kRedShift_)),
@@ -80,34 +80,34 @@ class basic_color : boost::equality_comparable<basic_color<Code>>,
   }
 
   basic_color &operator +=(const basic_color &rhs) {
-    red_ = std::max(std::min(red_ + rhs.red_, 1.f), 0.f); 
-    green_ = std::max(std::min(green_ + rhs.green_, 1.f), 0.f); 
-    blue_ = std::max(std::min(blue_ + rhs.blue_, 1.f), 0.f); 
-    alpha_ = std::max(std::min(alpha_ + rhs.alpha_, 1.f), 0.f); 
+    red_ = std::max(std::min(red_ + rhs.red_, 1.f), 0.f);
+    green_ = std::max(std::min(green_ + rhs.green_, 1.f), 0.f);
+    blue_ = std::max(std::min(blue_ + rhs.blue_, 1.f), 0.f);
+    alpha_ = std::max(std::min(alpha_ + rhs.alpha_, 1.f), 0.f);
     return *this;
   }
 
   basic_color &operator -=(const basic_color &rhs) {
-    red_ = std::max(std::min(red_ - rhs.red_, 1.f), 0.f); 
-    green_ = std::max(std::min(green_ - rhs.green_, 1.f), 0.f); 
-    blue_ = std::max(std::min(blue_ - rhs.blue_, 1.f), 0.f); 
-    alpha_ = std::max(std::min(alpha_ - rhs.alpha_, 1.f), 0.f); 
+    red_ = std::max(std::min(red_ - rhs.red_, 1.f), 0.f);
+    green_ = std::max(std::min(green_ - rhs.green_, 1.f), 0.f);
+    blue_ = std::max(std::min(blue_ - rhs.blue_, 1.f), 0.f);
+    alpha_ = std::max(std::min(alpha_ - rhs.alpha_, 1.f), 0.f);
     return *this;
   }
 
   basic_color &operator *=(float rhs) {
-    red_ = std::max(std::min(red_ * rhs, 1.f), 0.f); 
-    green_ = std::max(std::min(green_ * rhs, 1.f), 0.f); 
-    blue_ = std::max(std::min(blue_ * rhs, 1.f), 0.f); 
-    alpha_ = std::max(std::min(alpha_ * rhs, 1.f), 0.f); 
+    red_ = std::max(std::min(red_ * rhs, 1.f), 0.f);
+    green_ = std::max(std::min(green_ * rhs, 1.f), 0.f);
+    blue_ = std::max(std::min(blue_ * rhs, 1.f), 0.f);
+    alpha_ = std::max(std::min(alpha_ * rhs, 1.f), 0.f);
     return *this;
   }
 
   basic_color &operator /=(float rhs) {
-    red_ = std::max(std::min(red_ / rhs, 1.f), 0.f); 
-    green_ = std::max(std::min(green_ / rhs, 1.f), 0.f); 
-    blue_ = std::max(std::min(blue_ / rhs, 1.f), 0.f); 
-    alpha_ = std::max(std::min(alpha_ / rhs, 1.f), 0.f); 
+    red_ = std::max(std::min(red_ / rhs, 1.f), 0.f);
+    green_ = std::max(std::min(green_ / rhs, 1.f), 0.f);
+    blue_ = std::max(std::min(blue_ / rhs, 1.f), 0.f);
+    alpha_ = std::max(std::min(alpha_ / rhs, 1.f), 0.f);
     return *this;
   }
 
@@ -121,9 +121,9 @@ class basic_color : boost::equality_comparable<basic_color<Code>>,
 template <typename Color>
 bool operator ==(const basic_color<Color> &lhs,
                  const basic_color<Color> &rhs) {
-  return lhs.red() == rhs.red() 
+  return lhs.red() == rhs.red()
              && lhs.green() == rhs.green()
-                 && lhs.blue() == rhs.blue() 
+                 && lhs.blue() == rhs.blue()
                      && lhs.alpha() == rhs.alpha();
 }
 
