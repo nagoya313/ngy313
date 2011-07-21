@@ -9,6 +9,7 @@
 #include <type_traits>
 #include <boost/mpl/at.hpp>
 #include <boost/noncopyable.hpp>
+#include <boost/signals2.hpp>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <gtkglmm.h>
@@ -122,7 +123,8 @@ class gtkglextmm_graphic_system : boost::noncopyable {
     explicit system_impl(const Window &window) 
         : flag_(),
           width_(window.width()),
-          height_(window.height()) {
+          height_(window.height()),
+          realized_(false) {
     	 std::call_once(flag_, [] {Gtk::GL::init(0, 0);});
       const Glib::RefPtr<Gdk::GL::Config> gl_config
           = Gdk::GL::Config::create(
@@ -179,6 +181,18 @@ class gtkglextmm_graphic_system : boost::noncopyable {
       return height_;
     }
 
+    bool realized() const {
+    	return realized_;
+    }
+
+    boost::signals2::signal<void ()> &before_reset() {
+      return before_reset_;
+    }
+
+    boost::signals2::signal<void ()> &after_reset() {
+      return after_reset_;
+    }
+
    protected:
     virtual bool on_configure_event(GdkEventConfigure *event) {
       const scoped_gl gl(*this);
@@ -196,6 +210,8 @@ class gtkglextmm_graphic_system : boost::noncopyable {
 
     virtual void on_realize() {
       Gtk::DrawingArea::on_realize();
+      after_reset_();
+      realized_ = true;
     }
   
     virtual bool on_expose_event(GdkEventExpose *event) {
@@ -209,6 +225,9 @@ class gtkglextmm_graphic_system : boost::noncopyable {
     std::once_flag flag_;
     int width_;
     int height_;
+    bool realized_;
+    boost::signals2::signal<void ()> before_reset_;
+    boost::signals2::signal<void ()> after_reset_;
   };
   
  public:
@@ -216,13 +235,17 @@ class gtkglextmm_graphic_system : boost::noncopyable {
   
   class scoped_render : boost::noncopyable {
    public:
-  	template <typename Graphic>
+    template <typename Graphic>
     explicit scoped_render(const Graphic &system)
-        : gl_window_(system.handle()->get_gl_window()),
+        : gl_window_(system.handle()->realized() ?
+                     system.handle()->get_gl_window() :
+                     Glib::RefPtr<Gdk::GL::Window>()),
           succeeded_(begin_scene(*system.handle())) {}
 
     ~scoped_render() {
-      end_scene();
+      if (succeeded()) {
+      	end_scene();
+      }
     }
 
     bool succeeded() const {
@@ -231,8 +254,7 @@ class gtkglextmm_graphic_system : boost::noncopyable {
 
    private:
     bool begin_scene(Gtk::GL::DrawingArea &area) {
-      assert(gl_window_);
-      return gl_window_->gl_begin(area.get_gl_context());
+      return gl_window_ ? gl_window_->gl_begin(area.get_gl_context()) : false;
     }
 
     void end_scene() {
@@ -304,8 +326,16 @@ class gtkglextmm_graphic_system : boost::noncopyable {
     return graphic_;
   }
 
+  boost::signals2::signal<void ()> &before_reset() {
+    return graphic_->before_reset();
+  }
+
+  boost::signals2::signal<void ()> &after_reset() {
+    return graphic_->after_reset();
+  }
+
  private:
-  const std::unique_ptr<system_impl> graphic_;
+  std::unique_ptr<system_impl> graphic_;
 };
 }}
 
