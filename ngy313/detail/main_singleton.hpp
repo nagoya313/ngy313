@@ -6,11 +6,11 @@
 
 #include <boost/config.hpp>
 
-//#if defined(BOOST_NO_0X_HDR_THREAD)
-//#include <boost/thread.hpp>
-//#else
+#if defined(BOOST_NO_0X_HDR_THREAD)
+#include <boost/thread.hpp>
+#else
 #include <thread>
-//#endif
+#endif
 
 namespace ngy313 { namespace detail {
 template <typename Main,
@@ -31,13 +31,13 @@ class basic_main_singleton : boost::noncopyable {
 
   boost::optional<Window> &window_optional() {
     main_init();
-//#if defined(BOOST_NO_0X_HDR_THREAD)
- 	  //static boost::once_flag flag = BOOST_ONCE_INIT;
-  	//boost::call_once([this] {window_init();}, flag);
-//#else
+#if defined(BOOST_NO_0X_HDR_THREAD)
+ 	  static boost::once_flag flag = BOOST_ONCE_INIT;
+  	boost::call_once([this] {window_init();}, flag);
+#else
     static std::once_flag flag;
     std::call_once(flag, [this] {this->window_init();});
-//#endif
+#endif
     return window_;
   }
 
@@ -46,24 +46,24 @@ class basic_main_singleton : boost::noncopyable {
   }
 
   Graphic &graphic() {
-//#if defined(BOOST_NO_0X_HDR_THREAD)
-  	//static boost::once_flag flag = BOOST_ONCE_INIT;
-  	//boost::call_once([this] {graphic_init();}, flag);
-//#else
+#if defined(BOOST_NO_0X_HDR_THREAD)
+  	static boost::once_flag flag = BOOST_ONCE_INIT;
+  	boost::call_once([this] {graphic_init();}, flag);
+#else
   	static std::once_flag flag;
   	std::call_once(flag, [this] {this->graphic_init();});
-//#endif
+#endif
     return *graphic_;
   }
 
   Sound &sound() {
-//#if defined(BOOST_NO_0X_HDR_THREAD)
-  	//static boost::once_flag flag = BOOST_ONCE_INIT;
-  	//boost::call_once([this] {sound_init();}, flag);
-//#else
+#if defined(BOOST_NO_0X_HDR_THREAD)
+  	static boost::once_flag flag = BOOST_ONCE_INIT;
+  	boost::call_once([this] {sound_init();}, flag);
+#else
   	static std::once_flag flag;
   	std::call_once(flag, [this] {this->sound_init();});
-//#endif
+#endif
     return *sound_;
   }
 
@@ -82,13 +82,13 @@ class basic_main_singleton : boost::noncopyable {
   }
 
   void main_init() {
-//#if defined(BOOST_NO_0X_HDR_THREAD)
-  	//static boost::once_flag flag = BOOST_ONCE_INIT;
-  	//boost::call_once([this] {main_init();}, flag);
-//#else
+#if defined(BOOST_NO_0X_HDR_THREAD)
+  	static boost::once_flag flag = BOOST_ONCE_INIT;
+  	boost::call_once([this] {main_init();}, flag);
+#else
 	  	static std::once_flag flag;
  	  	std::call_once(flag, [this] {main_ = boost::in_place();});
-//#endif
+#endif
   }
 
   void window_init() {
