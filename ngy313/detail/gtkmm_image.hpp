@@ -3,13 +3,12 @@
 
 #include <stdexcept>
 #include <type_traits>
-#include <boost/noncopyable.hpp>
 #include <gtkmm.h>
 #include <ngy313/string_wrap.hpp>
 
 namespace ngy313 { namespace detail {
 template <typename Texture>
-class gtkmm_image : boost::noncopyable {
+class gtkmm_image {
  public:
 	explicit gtkmm_image(const string_wrap &file_name)
 	    : file_name_(file_name.string()) {}
@@ -20,16 +19,15 @@ class gtkmm_image : boost::noncopyable {
                                   typename Texture::handle_type>::type,
             typename Deleter = typename Texture::deleter_type>
   Result operator ()(const Device &device) const {
-  	try {
-  	  const Glib::RefPtr<Gdk::Pixbuf> pixel(
+    try {
+      const Glib::RefPtr<Gdk::Pixbuf> pixel(
   		  	Gdk::Pixbuf::create_from_file(file_name_.c_str()));
-  	  const typename Device::scoped_render render(device);
       const Handle id(new GLuint(), Deleter(device));
       glEnable(GL_TEXTURE_2D);
       glGenTextures(1, id.get());
       glBindTexture(GL_TEXTURE_2D, *id);
       gluBuild2DMipmaps(GL_TEXTURE_2D,
-                       3,
+                           3,
                         pixel->get_width(),
                         pixel->get_height(),
                         GL_RGBA,
@@ -42,7 +40,7 @@ class gtkmm_image : boost::noncopyable {
   }
 
  private:
-  const std::string file_name_;
+  std::string file_name_;
 };
 }}
 
