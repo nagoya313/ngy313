@@ -47,11 +47,21 @@ struct base_point_set_at {
     return shape_position_y(drawable, at_);
   }
 
+  template <std::size_t Index, typename Drawable>
+  float u(const Drawable &drawable) const {
+    return shape_position_u(drawable, at_);
+  }
+
+  template <std::size_t Index, typename Drawable>
+  float v(const Drawable &drawable) const {
+    return shape_position_v(drawable, at_);
+  }
+
  private:
   std::size_t at_;
 };
 
-BOOST_CONSTEXPR_OR_CONST struct base_point_set_center_t {
+const struct base_point_set_center_t {
   template <typename Drawable>
   float x(const Drawable &drawable) const {
     return shape_center_x(drawable);
@@ -60,6 +70,16 @@ BOOST_CONSTEXPR_OR_CONST struct base_point_set_center_t {
   template <typename Drawable>
   float y(const Drawable &drawable) const {
     return shape_center_y(drawable);
+  }
+
+  template <std::size_t Index, typename Drawable>
+  float u(const Drawable &drawable) const {
+    return shape_center_u<Index>(drawable);
+  }
+
+  template <std::size_t Index, typename Drawable>
+  float v(const Drawable &drawable) const {
+    return shape_center_v<Index>(drawable);
   }
 
 } base_point_set_center = {};
