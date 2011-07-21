@@ -55,7 +55,7 @@ class bright_sprite : public drawable_traits<bright_sprite,
  public:
   template <typename Image>
   explicit bright_sprite(const Image &image)
-      : texture_(image), vertex_(init(texture_)) {}
+      : texture_(image.get_texture()), vertex_(init(texture_)) {}
 
   vertex_array_type vertex() const {
     return vertex_;
@@ -100,7 +100,7 @@ class size_sprite : public drawable_traits<size_sprite,
  public:
   template <typename Image>
   explicit size_sprite(const vector2 &size, const Image &image)
-      : vertex_(init(size)), texture_(image) {}
+      : vertex_(init(size)), texture_(image.get_texture()) {}
 
   vertex_array_type vertex() const {
     return vertex_;
@@ -138,7 +138,7 @@ class bright_size_sprite
  public:
   template <typename Image>
   explicit bright_size_sprite(const vector2 &size, const Image &image)
-      : vertex_(init(size)), texture_(image) {}
+      : vertex_(init(size)), texture_(image.get_texture()) {}
 
   vertex_array_type vertex() const {
     return vertex_;
