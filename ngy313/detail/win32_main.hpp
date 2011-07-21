@@ -15,7 +15,7 @@ class win32_main : boost::noncopyable {
   }
 
   template <typename Pred>
-  static int run(const Pred &pred) {
+  static int run(Pred pred) {
     for (;;) {
       MSG mes;
       if (PeekMessage(&mes, nullptr, 0, 0, PM_NOREMOVE)) {
@@ -35,7 +35,7 @@ class win32_main : boost::noncopyable {
     PostQuitMessage(0);
   }
 
-  static void sleep(const std::uint32_t time) {
+  static void sleep(std::uint32_t time) {
     Sleep(time);
   }
 
