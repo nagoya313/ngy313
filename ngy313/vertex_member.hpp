@@ -20,6 +20,18 @@ struct rhw_position_t {
   rhw_position_t(const vector2 &position)
       : x_(position.get_x()), y_(position.get_y()), z_(0.f), rhw_(1.f) {}
 
+  rhw_position_t &operator +=(const vector2 &position) {
+    x_ += position.get_x();
+    y_ += position.get_y();
+    return *this;
+  }
+
+  rhw_position_t &operator -=(const vector2 &position) {
+    x_ -= position.get_x();
+    y_ -= position.get_y();
+    return *this;
+  }
+
   float x_;
   float y_;
   float z_;
@@ -32,6 +44,18 @@ struct rhw_position_t {
 
   rhw_position_t(const vector2 &position)
       : x_(position.get_x()), y_(position.get_y()), z_(0.f) {}
+
+  rhw_position_t &operator +=(const vector2 &position) {
+    x_ += position.get_x();
+    y_ += position.get_y();
+    return *this;
+  }
+
+  rhw_position_t &operator -=(const vector2 &position) {
+    x_ -= position.get_x();
+    y_ -= position.get_y();
+    return *this;
+  }
 
   float x_;
   float y_;
