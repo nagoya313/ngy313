@@ -52,6 +52,10 @@ class vector2 : boost::equality_comparable<vector2>,
     y_ /= rhs;
     return *this;
   }
+
+  BOOST_CONSTEXPR vector2 operator -() const {
+    return vector2(-x_, -y_);
+  }
    
  private:
   float x_;
