@@ -68,18 +68,18 @@ template <BOOST_PP_ENUM_PARAMS_WITH_A_DEFAULT(NGY313_TAG_MAX, typename T, boost:
 class make_fvf_tag {
   class safe_tag_insert {
     typedef boost::mpl::vector<dimension2_fvf_tag,
-    		                        dimension3_fvf_tag,
-    		                        normal_fvf_tag,
-    		                        diffuse_fvf_tag,
-    		                        specular_fvf_tag,
-    		                        texture1_fvf_tag,
-    		                        texture2_fvf_tag> tag_list;
+    		                       dimension3_fvf_tag,
+    		                       normal_fvf_tag,
+    		                       diffuse_fvf_tag,
+    		                       specular_fvf_tag,
+    		                       texture1_fvf_tag,
+    		                       texture2_fvf_tag> tag_list;
 
    public:
     template <typename Lhs, typename Rhs>
     struct apply {
       static_assert(boost::mpl::contains<tag_list, Rhs>::value,
-      		           "Rhs is not fvf tag.");
+                    "Rhs is not fvf_tag.");
       static_assert(boost::mpl::count_if<
                         Lhs,
                         std::is_base_of<position_fvf_tag,
@@ -90,7 +90,8 @@ class make_fvf_tag {
       		              std::is_base_of<texture_fvf_tag,
       		                              boost::mpl::_1>>::value <= 1,
                     "texture_fvf_tag overlaps.");
-      typedef typename boost::fusion::result_of::push_back<Lhs, Rhs>::type type;
+      typedef typename boost::fusion::result_of::push_back<Lhs, 
+                                                           Rhs>::type type;
     };
   };
 
