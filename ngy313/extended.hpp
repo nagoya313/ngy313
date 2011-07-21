@@ -80,7 +80,7 @@ struct extended_t : pipe_operator::base<extended_t<BasePoint>> {
 
 template <typename BasePoint>
 BOOST_CONSTEXPR extended_t<BasePoint> extended(const BasePoint &base_point,
-　　　　　　　　　　　　　　　　　　　　　　　　　　　　　const vector2 &extend) {
+                                               const vector2 &extend) {
   return extended_t<BasePoint>(base_point, extend);
 }
 }}
