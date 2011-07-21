@@ -109,10 +109,11 @@ class basic_triangle
 
  private:
   template <bool Fill>
-  static vertex_array_type_ init(const vector2 &p1,
-                                 const vector2 &p2,
-                                 const vector2 &p3,
-                                 typename std::enable_if<Fill>::type * = nullptr) {
+  static vertex_array_type_ init(
+      const vector2 &p1,
+      const vector2 &p2,
+      const vector2 &p3,
+      typename std::enable_if<Fill>::type * = nullptr) {
     const vertex_array_type_ vertex = {{
       vertex_type_(rhw_position_t(p1), diffuse_t()),
       vertex_type_(rhw_position_t(p2), diffuse_t()),
@@ -122,10 +123,11 @@ class basic_triangle
   }
 
   template <bool Fill>
-  static vertex_array_type_ init(const vector2 &p1,
-                                 const vector2 &p2,
-                                 const vector2 &p3,
-                                 typename std::enable_if<!Fill>::type * = nullptr) {
+  static vertex_array_type_ init(
+      const vector2 &p1,
+      const vector2 &p2,
+      const vector2 &p3,
+      typename std::enable_if<!Fill>::type * = nullptr) {
     const vertex_array_type_ vertex = {{
       vertex_type_(rhw_position_t(p1), diffuse_t()),
       vertex_type_(rhw_position_t(p2), diffuse_t()),
@@ -143,17 +145,18 @@ typedef basic_triangle<false> line_triangle;
 
 template <bool Filled>
 class basic_box
-    : public std::conditional<Filled,
-                              drawable_traits<basic_box<Filled>,
-                                                    4,
-                                                    2,
-                                              shape_2d_fvf_tag,
-                                              triangle_strip_primitive_tag>,
-                              drawable_traits<basic_box<Filled>,
-                                                    5,
-                                                    4,
-                                              shape_2d_fvf_tag,
-                                              line_strip_primitive_tag>>::type {
+    : public std::conditional<
+                 Filled,
+                 drawable_traits<basic_box<Filled>,
+                                 4,
+                                 2,
+                                 shape_2d_fvf_tag,
+                                 triangle_strip_primitive_tag>,
+                 drawable_traits<basic_box<Filled>,
+                                 5,
+                                 4,
+                                 shape_2d_fvf_tag,
+                                 line_strip_primitive_tag>>::type {
   typedef typename basic_box::drawable_traits base_;
   typedef typename base_::vertex_type vertex_type_;
   typedef typename base_::vertex_array_type vertex_array_type_;
@@ -167,8 +170,8 @@ class basic_box
 
  private:
   template <bool Fill>
-  static vertex_array_type_ init(const vector2 &size,
-                                 typename std::enable_if<Fill>::type * = nullptr) {
+  static vertex_array_type_ init(
+      const vector2 &size, typename std::enable_if<Fill>::type * = nullptr) {
     const vertex_array_type_ vertex = {{
       vertex_type_(rhw_position_t(vector2(0.f, 0.f)), diffuse_t()),
       vertex_type_(rhw_position_t(vector2(size.get_x(), 0.f)), diffuse_t()),
@@ -179,8 +182,8 @@ class basic_box
   }
 
   template <bool Fill>
-  static vertex_array_type_ init(const vector2 &size,
-                                 typename std::enable_if<!Fill>::type * = nullptr) {
+  static vertex_array_type_ init(
+      const vector2 &size, typename std::enable_if<!Fill>::type * = nullptr) {
     const vertex_array_type_ vertex = {{
       vertex_type_(rhw_position_t(vector2(0.f, 0.f)), diffuse_t()),
       vertex_type_(rhw_position_t(vector2(size.get_x(), 0.f)), diffuse_t()),
@@ -217,17 +220,18 @@ vertex_type_(\
 
 template <bool Filled>
 class basic_circle
-    : public std::conditional<Filled,
-                              drawable_traits<basic_circle<Filled>,
-                                                     62,
-                                                     60,
-                                              shape_2d_fvf_tag,
-                                              triangle_fan_primitive_tag>,
-                              drawable_traits<basic_circle<Filled>,
-                                                    60,
-                                                    59,
-                                              shape_2d_fvf_tag,
-                                              line_strip_primitive_tag>>::type {
+    : public std::conditional<
+                 Filled,
+                 drawable_traits<basic_circle<Filled>,
+                                 62,
+                                 60,
+                                 shape_2d_fvf_tag,
+                                 triangle_fan_primitive_tag>,
+                 drawable_traits<basic_circle<Filled>,
+                                 60,
+                                 59,
+                                 shape_2d_fvf_tag,
+                                 line_strip_primitive_tag>>::type {
   typedef typename basic_circle::drawable_traits base_;
   typedef typename base_::vertex_type vertex_type_;
   typedef typename base_::vertex_array_type vertex_array_type_;
@@ -241,8 +245,8 @@ class basic_circle
 
  private:
   template <bool Fill>
-  static vertex_array_type_ init(float r,
-                                 typename std::enable_if<Fill>::type * = nullptr) {
+  static vertex_array_type_ init(
+      float r, typename std::enable_if<Fill>::type * = nullptr) {
     const vertex_array_type_ vertex = {{
       vertex_type_(rhw_position_t(vector2(0.f, 0.f)), diffuse_t()),
       BOOST_PP_REPEAT_FROM_TO(1, NGY313_CIRCLE_VERTEX_SIZE, NGY313_CIRCLE_VERTEX_ELEM_GEN, basic_circle)
@@ -251,8 +255,8 @@ class basic_circle
   }
 
   template <bool Fill>
-  static vertex_array_type_ init(float r,
-                                 typename std::enable_if<!Fill>::type * = nullptr) {
+  static vertex_array_type_ init(
+      float r, typename std::enable_if<!Fill>::type * = nullptr) {
     const vertex_array_type_ vertex = {{
       BOOST_PP_REPEAT(NGY313_LINE_CIRCLE_VERTEX_SIZE, NGY313_LINE_CIRCLE_VERTEX_ELEM_GEN, basic_circle)
     }};
@@ -290,17 +294,18 @@ vertex_type_(\
 
 template <bool Filled>
 class basic_oval
-    : public std::conditional<Filled,
-                              drawable_traits<basic_oval<Filled>,
-                                                     62,
-                                                     60,
-                                              shape_2d_fvf_tag,
-                                              triangle_fan_primitive_tag>,
-                              drawable_traits<basic_oval<Filled>,
-                                                     60,
-                                                     59,
-                                              shape_2d_fvf_tag,
-                                              line_strip_primitive_tag>>::type {
+    : public std::conditional<
+                 Filled,
+                 drawable_traits<basic_oval<Filled>,
+                                 62,
+                                 60,
+                                 shape_2d_fvf_tag,
+                                 triangle_fan_primitive_tag>,
+                 drawable_traits<basic_oval<Filled>,
+                                 60,
+                                 59,
+                                 shape_2d_fvf_tag,
+                                 line_strip_primitive_tag>>::type {
   typedef typename basic_oval::drawable_traits base_;
   typedef typename base_::vertex_type vertex_type_;
   typedef typename base_::vertex_array_type vertex_array_type_;
@@ -314,8 +319,8 @@ class basic_oval
 
  private:
   template <bool Fill>
-  static vertex_array_type_ init(const vector2 &r,
-  		                           typename std::enable_if<Fill>::type * = nullptr) {
+  static vertex_array_type_ init(
+      const vector2 &r, typename std::enable_if<Fill>::type * = nullptr) {
     const vertex_array_type_ vertex = {{
       vertex_type_(rhw_position_t(vector2(0.f, 0.f)), diffuse_t()),
       BOOST_PP_REPEAT_FROM_TO(1, NGY313_OVAL_VERTEX_SIZE, NGY313_OVAL_VERTEX_ELEM_GEN, basic_oval)
@@ -324,8 +329,8 @@ class basic_oval
   }
 
   template <bool Fill>
-  static vertex_array_type_ init(const vector2 &r,
-  		                           typename std::enable_if<!Fill>::type * = nullptr) {
+  static vertex_array_type_ init(
+      const vector2 &r, typename std::enable_if<!Fill>::type * = nullptr) {
     const vertex_array_type_ vertex = {{
       BOOST_PP_REPEAT(NGY313_LINE_OVAL_VERTEX_SIZE, NGY313_LINE_OVAL_VERTEX_ELEM_GEN, basic_oval)
     }};
