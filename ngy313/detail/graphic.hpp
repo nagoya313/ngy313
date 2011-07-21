@@ -6,6 +6,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/signals2.hpp>
 #include <ngy313/fwd.hpp>
+#include <ngy313/detail/drawable_traits_key.hpp>
 
 #if defined(_WIN32)
 #include <ngy313/detail/direct3d9_graphic_system.hpp>
