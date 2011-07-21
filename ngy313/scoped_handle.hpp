@@ -12,13 +12,13 @@ template <typename T>
 struct default_delete {
 	BOOST_CONSTEXPR default_delete() = default;
 
-  void operator ()(const T t) const {}
+  void operator ()(typename boost::call_traits<T>::param_type t) const {}
 
   BOOST_CONSTEXPR T null_value() const {
   	return T();
   }
 
-  BOOST_CONSTEXPR bool null_check(const T t) const {
+  BOOST_CONSTEXPR bool null_check(typename boost::call_traits<T>::param_type t) const {
    	return true;
   }
 };
@@ -30,10 +30,10 @@ class scoped_handle : boost::operators<scoped_handle<T, Deleter>> {
 
 	BOOST_CONSTEXPR scoped_handle() : data_(T(), default_delete<T>()) {}
 
-  explicit scoped_handle(const typename boost::call_traits<T>::param_type t)
+  explicit scoped_handle(typename boost::call_traits<T>::param_type t)
       : data_(t, Deleter()) {}
 
-  explicit scoped_handle(const typename boost::call_traits<T>::param_type t,
+  explicit scoped_handle(typename boost::call_traits<T>::param_type t,
   		                    const Deleter &deleter)
       : data_(t, deleter) {}
 
