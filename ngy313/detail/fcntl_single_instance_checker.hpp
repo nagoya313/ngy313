@@ -29,7 +29,7 @@ class fcntl_single_instance_checker : boost::noncopyable {
 
  public:
   explicit fcntl_single_instance_checker(const string_wrap &name)
-      : file_(open_file(name.c_str())),
+      : file_(open_file(name)),
         another_running_(check_multiplex_starting(file_)) {}
   
   bool another_running() const {
@@ -50,8 +50,8 @@ class fcntl_single_instance_checker : boost::noncopyable {
 
   static scoped_handle<int, file_delete> open_file(const string_wrap &name) {
     const int id = open(name.c_str(),
-                   O_WRONLY | O_CREAT, 
-                   S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+                        O_WRONLY | O_CREAT,
+                        S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     if (id < 0) {
       throw std::runtime_error("ファイルを開くのに失敗しました");
     }
