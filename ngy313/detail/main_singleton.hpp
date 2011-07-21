@@ -25,25 +25,20 @@ class basic_main_singleton : boost::noncopyable {
   }
 
   Main &main() {
-//#if defined(BOOST_NO_0X_HDR_THREAD)
-  	//static boost::once_flag flag = BOOST_ONCE_INIT;
-  	//boost::call_once([this] {main_init();}, flag);
-//#else
-  	static std::once_flag flag;
-  	std::call_once(flag, [this] {this->main_init();});
-//#endif
+    main_init();
     return *main_;
   }
 
   boost::optional<Window> &window_optional() {
+    main_init();
 //#if defined(BOOST_NO_0X_HDR_THREAD)
  	  //static boost::once_flag flag = BOOST_ONCE_INIT;
   	//boost::call_once([this] {window_init();}, flag);
 //#else
-	  	static std::once_flag flag;
- 	  	std::call_once(flag, [this] {this->window_init();});
+    static std::once_flag flag;
+    std::call_once(flag, [this] {this->window_init();});
 //#endif
-  	return window_;
+    return window_;
   }
 
   Window &window() {
@@ -87,7 +82,13 @@ class basic_main_singleton : boost::noncopyable {
   }
 
   void main_init() {
-  	main_ = boost::in_place();
+//#if defined(BOOST_NO_0X_HDR_THREAD)
+  	//static boost::once_flag flag = BOOST_ONCE_INIT;
+  	//boost::call_once([this] {main_init();}, flag);
+//#else
+	  	static std::once_flag flag;
+ 	  	std::call_once(flag, [this] {main_ = boost::in_place();});
+//#endif
   }
 
   void window_init() {
