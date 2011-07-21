@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cstdint>
 #include <boost/noncopyable.hpp>
+#include <boost/signals2.hpp>
 #include <ngy313/fwd.hpp>
 
 #if defined(_WIN32)
@@ -115,6 +116,14 @@ class basic_graphic_system : boost::noncopyable {
 
   typename Graphic::handle_type handle() const {
     return graphic_.handle();
+  }
+
+  boost::signals2::signal<void ()> &before_reset() {
+  	return graphic_.before_reset();
+  }
+
+  boost::signals2::signal<void ()> &after_reset() {
+    return graphic_.after_reset();
   }
 
  private:
