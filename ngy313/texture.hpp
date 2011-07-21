@@ -5,7 +5,7 @@
 #include <ngy313/detail/ngy313.hpp>
 
 #if defined(_WIN32)
-#incldue <ngy313/detail/direct3d9_texture.hpp>
+#include <ngy313/detail/direct3d9_texture.hpp>
 #elif defined(__linux__)
 #include <ngy313/detail/opengl_texture.hpp>
 #endif
