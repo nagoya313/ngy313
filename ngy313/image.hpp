@@ -1,9 +1,9 @@
 #ifndef NGY313_IMAGE_HPP_
 #define NGY313_IMAGE_HPP_
 
-#include <boost/noncopyable.hpp>
 #include <ngy313/texture.hpp>
 #include <ngy313/string_wrap.hpp>
+#include <ngy313/detail/init_base.hpp>
 
 #if defined(_WIN32)
 #include <ngy313/detail/direct3d9_image.hpp>
@@ -13,7 +13,7 @@
 
 namespace ngy313 {
 template <typename Image>
-class basic_image : boost::noncopyable {
+class basic_image : detail::init_base {
  public:
   explicit basic_image(const string_wrap &file_name)
       : tuxture_(Image(file_name)) {}
@@ -31,7 +31,7 @@ class basic_image : boost::noncopyable {
   }
 
  private:
-  const texture tuxture_;
+  texture tuxture_;
 };
 
 #if defined(_WIN32)
