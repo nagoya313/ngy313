@@ -29,11 +29,11 @@ class sprite : public drawable_traits<sprite,
     const vertex_array_type vertex = {{
       vertex_type(rhw_position_t(vector2(0.f, 0.f)),
       		         texture_t<1>(vector2(0.f, 0.f))),
-      vertex_type(rhw_position_t(vector2(tex.width(), 0.f)),
+      vertex_type(rhw_position_t(vector2(static_cast<float>(tex.width()), 0.f)),
       		         texture_t<1>(vector2(1.f, 0.f))),
-      vertex_type(rhw_position_t(vector2(0.f, tex.height())),
+      vertex_type(rhw_position_t(vector2(0.f, static_cast<float>(tex.height()))),
       		         texture_t<1>(vector2(0.f, 1.f))),
-      vertex_type(rhw_position_t(vector2(tex.width(), tex.height())),
+      vertex_type(rhw_position_t(vector2(static_cast<float>(tex.width()), static_cast<float>(tex.height()))),
       		         texture_t<1>(vector2(1.f, 1.f)))
      }};
     return vertex;
@@ -67,13 +67,13 @@ class bright_sprite : public drawable_traits<bright_sprite,
       vertex_type(rhw_position_t(vector2(0.f, 0.f)),
       		         diffuse_t(),
       		         texture_t<1>(vector2(0.f, 0.f))),
-      vertex_type(rhw_position_t(vector2(tex.width(), 0.f)),
+      vertex_type(rhw_position_t(vector2(static_cast<float>(tex.width()), 0.f)),
       		         diffuse_t(),
       		         texture_t<1>(vector2(1.f, 0.f))),
-      vertex_type(rhw_position_t(vector2(0.f, tex.height())),
+      vertex_type(rhw_position_t(vector2(0.f, static_cast<float>(tex.height()))),
       		         diffuse_t(),
       		         texture_t<1>(vector2(0.f, 1.f))),
-      vertex_type(rhw_position_t(vector2(tex.width(), tex.height())),
+      vertex_type(rhw_position_t(vector2(static_cast<float>(tex.width()), static_cast<float>(tex.height()))),
       		         diffuse_t(),
       		         texture_t<1>(vector2(1.f, 1.f)))
     }};
