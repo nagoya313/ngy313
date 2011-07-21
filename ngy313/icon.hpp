@@ -3,21 +3,13 @@
 
 #include <boost/noncopyable.hpp>
 #include <ngy313/string_wrap.hpp>
-#include <ngy313/detail/ngy313.hpp>
+#include <ngy313/detail/init_base.hpp>
 
 #if defined(_WIN32)
 #include <ngy313/detail/win32_icon.hpp>
 #elif defined(__linux__)
 #include <ngy313/detail/gtkmm_icon.hpp>
 #endif
-
-namespace ngy313 { namespace detail {
-struct init_base {
-	init_base() {
-		detail::main_singleton::instance().main();
-	}
-};
-}}
 
 namespace ngy313 {
 template <typename Icon>
@@ -31,7 +23,7 @@ class basic_icon : detail::init_base, boost::noncopyable {
   }
   
  private:
-  const Icon icon_;
+  Icon icon_;
 };
 
 #if defined(_WIN32)
