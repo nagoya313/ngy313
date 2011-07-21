@@ -133,6 +133,7 @@ typedef basic_color<detail::opengl_color> color;
 
 template <typename Wrap>
 class basic_color_wrap {
+ public:
   basic_color_wrap(std::uint32_t color) : wrap_(color) {}
 
   template <typename Code>
