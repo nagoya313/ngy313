@@ -33,7 +33,7 @@ class basic_main_singleton : boost::noncopyable {
     main_init();
 #if defined(BOOST_NO_0X_HDR_THREAD)
  	  static boost::once_flag flag = BOOST_ONCE_INIT;
-  	boost::call_once([this] {window_init();}, flag);
+  	boost::call_once(flag, [this] {window_init();});
 #else
     static std::once_flag flag;
     std::call_once(flag, [this] {this->window_init();});
@@ -48,7 +48,7 @@ class basic_main_singleton : boost::noncopyable {
   Graphic &graphic() {
 #if defined(BOOST_NO_0X_HDR_THREAD)
   	static boost::once_flag flag = BOOST_ONCE_INIT;
-  	boost::call_once([this] {graphic_init();}, flag);
+  	boost::call_once(flag, [this] {graphic_init();});
 #else
   	static std::once_flag flag;
   	std::call_once(flag, [this] {this->graphic_init();});
@@ -59,7 +59,7 @@ class basic_main_singleton : boost::noncopyable {
   Sound &sound() {
 #if defined(BOOST_NO_0X_HDR_THREAD)
   	static boost::once_flag flag = BOOST_ONCE_INIT;
-  	boost::call_once([this] {sound_init();}, flag);
+  	boost::call_once(flag, [this] {sound_init();});
 #else
   	static std::once_flag flag;
   	std::call_once(flag, [this] {this->sound_init();});
@@ -84,7 +84,7 @@ class basic_main_singleton : boost::noncopyable {
   void main_init() {
 #if defined(BOOST_NO_0X_HDR_THREAD)
   	static boost::once_flag flag = BOOST_ONCE_INIT;
-  	boost::call_once([this] {main_init();}, flag);
+  	boost::call_once(flag, [this] {main_ = boost::in_place();});
 #else
 	  	static std::once_flag flag;
  	  	std::call_once(flag, [this] {main_ = boost::in_place();});
