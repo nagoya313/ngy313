@@ -3,16 +3,16 @@
 
 #include <cstdint>
 #include <vector>
-#include <ngy313/platform.hpp>
+#include <boost/config.hpp>
 
-#if defined(NGY313_USE_XAUDIO2)
+#if defined(_WIN32)
 #include <Xaudio2.h>
-#elif defined(NGY313_USE_OPENAL)
+#elif defined(__linux__)
 #define WAVE_FORMAT_PCM  0
 #endif
 
 namespace ngy313 {
-const std::uint16_t kFormatPCM = WAVE_FORMAT_PCM;
+BOOST_CONSTEXPR_OR_CONST std::uint16_t kFormatPCM = WAVE_FORMAT_PCM;
 
 struct buffer_format {
   std::uint16_t type;
