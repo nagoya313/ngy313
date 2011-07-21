@@ -69,7 +69,7 @@ bool operator <(const basic_string_wrap<Char> &lhs,
 template <typename Char>
 std::ostream& operator<<(std::ostream &o,
                          const basic_string_wrap<Char> &piece) {
-  return o << piece.c_str();
+  return o << piece.string();
 }
 
 typedef basic_string_wrap<char> string_wrap;
