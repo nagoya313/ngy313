@@ -41,7 +41,7 @@ class basic_texture {
   }
 
  private:
-  const Texture texture_;
+  Texture texture_;
 };
 
 #if defined(_WIN32)
