@@ -3,7 +3,7 @@
 
 #include <utility>
 
-#if defined(_MSV_VER)
+#if defined(_MSC_VER)
 #include <boost/utility/declval.hpp>
 #endif
 
