@@ -18,13 +18,15 @@ struct default_delete {
   	return T();
   }
 
-  BOOST_CONSTEXPR bool null_check(typename boost::call_traits<T>::param_type t) const {
+  BOOST_CONSTEXPR bool null_check(
+      typename boost::call_traits<T>::param_type t) const {
    	return true;
   }
 };
 
 template <typename T, typename Deleter>
-class scoped_handle : boost::operators<scoped_handle<T, Deleter>> {
+class scoped_handle : boost::equality_comparable<scoped_handle<T, Deleter>>,
+                      boost::less_than_comparable<scoped_handle<T, Deleter>> {
  public:
 	typedef T handle;
 
