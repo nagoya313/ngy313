@@ -13,7 +13,7 @@
 
 namespace ngy313 {
 template <typename Icon>
-class basic_icon : detail::init_base, boost::noncopyable {
+class basic_icon : detail::init_base {
  public:
   explicit basic_icon(const string_wrap &file_name)
       : icon_(file_name) {}
