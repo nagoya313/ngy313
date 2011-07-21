@@ -5,6 +5,7 @@
 #include <memory>
 #include <tuple>
 #include <boost/noncopyable.hpp>
+#include <boost/signals2/trackable.hpp>
 #include <GL/gl.h>
 
 namespace ngy313 { namespace detail {
@@ -52,22 +53,35 @@ texture_tuple create_texture(const Device &device,
   return texture_tuple(id, width, height);
 }
 
+template <typename Device, typename Texture, typename Pred>
+texture_tuple create_texture(Device &device, Texture &texture, Pred pred) {
+  const typename Device::scoped_render render(device);
+  if (render.succeeded()) {
+    return pred(device);
+  } else {
+  	device.after_reset().connect([&device, &texture, pred]() {texture.reset(pred(device));});
+  	return texture_tuple(texture_handle(), 0, 0);
+  }
+}
+
 template <typename Device>
-class opengl_texture {
+class opengl_texture : public boost::signals2::trackable {
  public:
   typedef const texture_handle &handle_type;
   typedef std::tuple<texture_handle, int, int> texture_tuple;
   typedef texture_delete<Device> deleter_type;
 
-  explicit opengl_texture(const Device &device,
+  explicit opengl_texture(Device &device,
   		                     int width,
   		                     int height)
       : data_(create_texture(device, width, height)) {}
 
   template <typename Image>
-  explicit opengl_texture(const Device &device,
+  explicit opengl_texture(Device &device,
   		                     const Image &image)
-      : data_(image(device)) {}
+      : data_() {
+  	data_ = create_texture(device, *this, image);
+  }
 
   int width() const {
     return std::get<1>(data_);
@@ -80,6 +94,10 @@ class opengl_texture {
   handle_type handle() const {
     return std::get<0>(data_);
   }
+
+  void reset(texture_tuple &&data) {
+    	data_ = data;
+    }
 
  private:
   texture_tuple data_;
