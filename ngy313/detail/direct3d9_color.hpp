@@ -30,7 +30,7 @@ struct direct3d9_color_wrap {
 
   template <typename Code>
   explicit direct3d9_color_wrap(const basic_color<Code> &color) {
-    color_.code = color.color_code();
+    color_.code = color.get_color_code();
   }
 
   explicit direct3d9_color_wrap(float red,
