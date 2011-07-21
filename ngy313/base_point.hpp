@@ -2,6 +2,7 @@
 #define NGY313_BASE_POINT_HPP_
 
 #include <cstddef>
+#include <boost/config.hpp>
 #include <ngy313/shape_position.hpp>
 #include <ngy313/vector.hpp>
 
@@ -50,7 +51,7 @@ struct base_point_set_at {
   std::size_t at_;
 };
 
-const struct base_point_set_center_t {
+BOOST_CONSTEXPR_OR_CONST struct base_point_set_center_t {
   template <typename Drawable>
   float x(const Drawable &drawable) const {
     return shape_center_x(drawable);
