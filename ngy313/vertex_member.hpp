@@ -18,7 +18,7 @@ struct rhw_position_t {
   typedef position_member type;
 
   rhw_position_t(const vector2 &position)
-      : x_(position.x()), y_(position.y()), z_(0.f), rhw_(1.f) {}
+      : x_(position.get_x()), y_(position.get_y()), z_(0.f), rhw_(1.f) {}
 
   float x_;
   float y_;
@@ -61,7 +61,9 @@ struct diffuse_t {
   
   diffuse_t() : color_(0xFFFFFFFF) {}
 
-  diffuse_t(const color_wrap &color) : color_(color.color_code) {}
+  template <typename Wrap>
+  diffuse_t(const basic_color_wrap<Wrap> &color) 
+      : color_(color.get_color_code()) {}
 
   std::uint32_t color_;
 };
