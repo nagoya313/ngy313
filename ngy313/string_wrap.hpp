@@ -12,7 +12,8 @@ namespace ngy313 {
 template <typename Char>
 class basic_string_wrap : public boost::iterator_range<const Char *>,
                           boost::equality_comparable<basic_string_wrap<Char>>,
-                          boost::less_than_comparable<basic_string_wrap<Char>> {
+                          boost::less_than_comparable<
+                              basic_string_wrap<Char>> {
   typedef boost::iterator_range<const Char *> base_type;
 
  public:
