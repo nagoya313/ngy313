@@ -101,6 +101,8 @@ class basic_graphic_system : boost::noncopyable {
 
   template <typename Drawable>
   void draw(Drawable &&drawable) {
+    const typename Graphic::scoped_blend<Graphic, typename Drawable::list_type>
+        scoped_blend(graphic_);
   	const detail::enable_texture<Graphic,
   	                             Drawable> tex(graphic_, drawable);
     graphic_.draw_primitive(std::forward<Drawable>(drawable));
