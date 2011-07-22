@@ -83,6 +83,8 @@ struct basic_blend_type : private boost::noncopyable {
 typedef basic_fvf_type<direct3d9_fvf_type> fvf_type;
 typedef basic_primitive_type<direct3d9_primitive_type>
     primitive_type;
+typedef basic_blend_type<direct3d9_blend_type>
+    blend_type;
 #elif defined(__linux__)
 typedef basic_fvf_type<opengl_fvf_type> fvf_type;
 typedef basic_primitive_type<opengl_primitive_type>
