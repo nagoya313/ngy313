@@ -48,6 +48,40 @@ class direct3d9_graphic_system : boost::noncopyable {
     const device_handle &device_;
     bool succeeded_;
   };
+
+  template <typename Device, typename List, typename T = void>
+  class scoped_blend {
+   public:
+    explicit scoped_blend(const Device &) {}
+  };
+
+  template <typename Device, typename List>
+  class scoped_blend<Device,
+                     List, 
+                     typename std::enable_if<!std::is_same<
+                         typename boost::mpl::at<List, 
+                                                 detail::blend_pair_key>::type,
+                         boost::mpl::void_>::value>::type> : boost::noncopyable {
+   public:
+    explicit scoped_blend(Device &device) : device_(device),
+                                            enable_alpha_(device_.get_alphablend_enable()),
+                                            src_blend_(device_.get_src_blend_mode()),
+                                            dest_blend_(device_.get_dest_blend_mode()) {
+      device_.set_alphablend_enable(true);
+      device_.set_blend_pair<boost::mpl::at<List, detail::blend_pair_key>::type>();
+    }
+
+    ~scoped_blend() {
+      device_.set_blend_mode(src_blend_, dest_blend_);
+      device_.set_alphablend_enable(enable_alpha_);
+    }
+
+   private:
+    Device &device_;
+    bool enable_alpha_;
+    D3DBLEND src_blend_;
+    D3DBLEND dest_blend_;
+  };
   
   template <typename Window>
   explicit direct3d9_graphic_system(const Window &window)
@@ -243,6 +277,43 @@ class direct3d9_graphic_system : boost::noncopyable {
       throw std::runtime_error("バックバッファの取得に失敗しました");
     }
     return surface_handle(back);
+  }
+
+  void set_blend_mode(D3DBLEND src, D3DBLEND dest) {
+    assert(device_);
+    device_->SetRenderState(D3DRS_SRCBLEND, src);
+    device_->SetRenderState(D3DRS_DESTBLEND, dest);
+  }
+
+  D3DBLEND get_src_blend_mode() const {
+    assert(device_);
+    DWORD src;
+    device_->GetRenderState(D3DRS_SRCBLEND, &src);
+    return static_cast<D3DBLEND>(src);
+  }
+
+  D3DBLEND get_dest_blend_mode() const {
+    assert(device_);
+    DWORD dest;
+    device_->GetRenderState(D3DRS_DESTBLEND, &dest);
+    return static_cast<D3DBLEND>(dest);
+  }
+
+  template <typename BlendPair>
+  void set_blend_pair() {
+    set_blend_mode(BlendPair::src_type::value, BlendPair::dest_type::value);
+  }
+
+  void set_alphablend_enable(bool enable) {
+    assert(device_);
+    device_->SetRenderState(D3DRS_ALPHABLENDENABLE, enable);
+  }
+
+  bool get_alphablend_enable() const {
+    assert(device_);
+    DWORD enable;
+    device_->GetRenderState(D3DRS_ALPHABLENDENABLE, &enable);
+    return enable != 0;
   }
 
   int width_;
