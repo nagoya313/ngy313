@@ -27,7 +27,7 @@ class scoped_render : boost::noncopyable {
   }
 
  private:
-  const typename Device::scoped_render render_;
+  typename Device::scoped_render render_;
 };
 
 template <typename Device, typename Drawable, typename T = void>
@@ -49,7 +49,7 @@ class enable_texture<
       : enable_texture_(device, drawable) {}
 
  private:
-  typename Device::enable_texture<Device> enable_texture_;
+  typename Device::enable_texture enable_texture_;
 };
 
 template <typename Device, typename Drawable, typename T = void>
@@ -63,15 +63,15 @@ class scoped_blend<Device,
                    Drawable, 
                    typename std::enable_if<!std::is_same<
                        typename boost::mpl::at<typename Drawable::list_type, 
-                                               detail::blend_pair_key>::type,
+                                               blend_pair_key>::type,
                        boost::mpl::void_>::value>::type> : boost::noncopyable {
  public:
-  explicit scoped_blend(Device &device) : scoped_blend_(device) {}
+  explicit scoped_blend(Device &device)
+      : scoped_blend_(device, boost::mpl::at<typename Drawable::list_type, 
+                                  blend_pair_key>::type()) {}
 
  private:
-  typename Device::scoped_blend<Device, 
-                                boost::mpl::at<typename Drawable::list_type, 
-                                               detail::blend_pair_key>::type> scoped_blend_;
+  typename Device::scoped_blend scoped_blend_;
 };
 
 template <typename Graphic>
