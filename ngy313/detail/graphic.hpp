@@ -3,7 +3,9 @@
 
 #include <cassert>
 #include <cstdint>
+#include <type_traits>
 #include <boost/noncopyable.hpp>
+#include <boost/mpl/at.hpp>
 #include <boost/signals2.hpp>
 #include <ngy313/fwd.hpp>
 #include <ngy313/detail/drawable_traits_key.hpp>
@@ -15,17 +17,17 @@
 #endif
 
 namespace ngy313 { namespace detail {
-template <typename Graphic>
+template <typename Device>
 class scoped_render : boost::noncopyable {
  public:
-  explicit scoped_render(Graphic &graphic) : render_(graphic) {}
+  explicit scoped_render(Device &device) : render_(device) {}
 
   bool succeeded() const {
     return render_.succeeded();
   }
 
  private:
-  const typename Graphic::scoped_render render_;
+  const typename Device::scoped_render render_;
 };
 
 template <typename Device, typename Drawable, typename T = void>
@@ -44,16 +46,32 @@ class enable_texture<
     : boost::noncopyable {
  public:
   explicit enable_texture(Device &device, const Drawable &drawable)
-      :device_(device) {
-    device_.set_texture(drawable);
-  }
-
-  ~enable_texture() {
-    device_.unset_texture();
-  }
+      : enable_texture_(device, drawable) {}
 
  private:
-  Device &device_;
+  typename Device::enable_texture<Device> enable_texture_;
+};
+
+template <typename Device, typename Drawable, typename T = void>
+class scoped_blend {
+ public:
+  explicit scoped_blend(const Device &) {}
+};
+
+template <typename Device, typename Drawable>
+class scoped_blend<Device,
+                   Drawable, 
+                   typename std::enable_if<!std::is_same<
+                       typename boost::mpl::at<typename Drawable::list_type, 
+                                               detail::blend_pair_key>::type,
+                       boost::mpl::void_>::value>::type> : boost::noncopyable {
+ public:
+  explicit scoped_blend(Device &device) : scoped_blend_(device) {}
+
+ private:
+  typename Device::scoped_blend<Device, 
+                                boost::mpl::at<typename Drawable::list_type, 
+                                               detail::blend_pair_key>::type> scoped_blend_;
 };
 
 template <typename Graphic>
@@ -101,20 +119,9 @@ class basic_graphic_system : boost::noncopyable {
 
   template <typename Drawable>
   void draw(Drawable &&drawable) {
-    const typename Graphic::scoped_blend<Graphic, typename Drawable::list_type>
-        scoped_blend(graphic_);
-  	const detail::enable_texture<Graphic,
-  	                             Drawable> tex(graphic_, drawable);
+    const scoped_blend<Graphic, Drawable> scoped_blend(graphic_);
+  	const enable_texture<Graphic, Drawable> tex(graphic_, drawable);
     graphic_.draw_primitive(std::forward<Drawable>(drawable));
-  }
-
-  template <typename Drawable>
-  void set_texture(const Drawable &drawable) {
-  	graphic_.set_texture(drawable);
-  }
-
-  void unset_texture() {
-    graphic_.unset_texture();
   }
 
   typename Graphic::handle_type handle() const {
