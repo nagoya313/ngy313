@@ -20,9 +20,9 @@ class direct3d9_graphic_system : boost::noncopyable {
 
   class scoped_render : boost::noncopyable {
    public:
-  	template <typename Graphic>
-  	explicit scoped_render(const Graphic &system)
-        : device_(system.handle()), succeeded_(begin_scene()) {}
+  	template <typename Device>
+  	explicit scoped_render(const Device &device)
+        : device_(device.handle()), succeeded_(begin_scene()) {}
 
     ~scoped_render() {
       if (succeeded()) {
@@ -49,41 +49,80 @@ class direct3d9_graphic_system : boost::noncopyable {
     bool succeeded_;
   };
 
-  template <typename Device>
   class enable_texture : boost::noncopyable {
    public:
-    template <typename Drawable>
+    template <typename Device, typename Drawable>
     explicit enable_texture(Device &device, const Drawable &drawable)
-       : device_(device) {
-      device_.set_texture(drawable);
+       : device_(device.handle()) {
+      assert(device_);
+      device_->SetTexture(0, drawable.texture1().handle().get());
     }
 
     ~enable_texture() {
-      device_.unset_texture();
+      assert(device_);
+      device_->SetTexture(0, nullptr);
     }
 
    private:
-    Device &device_;
+    const device_handle &device_;
   };
 
-  template <typename Device, typename BlendPair>
   class scoped_blend : boost::noncopyable {
    public:
-    explicit scoped_blend(Device &device) : device_(device),
-                                            enable_alpha_(device_.get_alphablend_enable()),
-                                            src_blend_(device_.get_src_blend_mode()),
-                                            dest_blend_(device_.get_dest_blend_mode()) {
-      device_.set_alphablend_enable(true);
-      device_.template set_blend_pair<BlendPair>();
+    template <typename Device, typename BlendPair>
+    explicit scoped_blend(Device &device, BlendPair &&)
+        : device_(device.handle()),
+          enable_alpha_(get_alphablend_enable()),
+          src_blend_(get_src_blend_mode()),
+          dest_blend_(get_dest_blend_mode()) {
+      set_alphablend_enable(true);
+      set_blend_pair<BlendPair>();
     }
 
     ~scoped_blend() {
-      device_.set_blend_mode(src_blend_, dest_blend_);
-      device_.set_alphablend_enable(enable_alpha_);
+      set_blend_mode(src_blend_, dest_blend_);
+      set_alphablend_enable(enable_alpha_);
     }
 
    private:
-    Device &device_;
+    void set_blend_mode(D3DBLEND src, D3DBLEND dest) {
+      assert(device_);
+      device_->SetRenderState(D3DRS_SRCBLEND, src);
+      device_->SetRenderState(D3DRS_DESTBLEND, dest);
+    }
+
+    D3DBLEND get_src_blend_mode() const {
+      assert(device_);
+      DWORD src;
+      device_->GetRenderState(D3DRS_SRCBLEND, &src);
+      return static_cast<D3DBLEND>(src);
+    }
+
+    D3DBLEND get_dest_blend_mode() const {
+      assert(device_);
+      DWORD dest;
+      device_->GetRenderState(D3DRS_DESTBLEND, &dest);
+      return static_cast<D3DBLEND>(dest);
+    }
+
+    template <typename BlendPair>
+    void set_blend_pair() {
+      set_blend_mode(BlendPair::src_type::value, BlendPair::dest_type::value);
+    }
+
+    void set_alphablend_enable(bool enable) {
+      assert(device_);
+      device_->SetRenderState(D3DRS_ALPHABLENDENABLE, enable);
+    }
+
+    bool get_alphablend_enable() const {
+      assert(device_);
+      DWORD enable;
+      device_->GetRenderState(D3DRS_ALPHABLENDENABLE, &enable);
+      return enable != 0;
+    }
+
+    const device_handle &device_;
     bool enable_alpha_;
     D3DBLEND src_blend_;
     D3DBLEND dest_blend_;
@@ -272,54 +311,6 @@ class direct3d9_graphic_system : boost::noncopyable {
       throw std::runtime_error("バックバッファの取得に失敗しました");
     }
     return surface_handle(back);
-  }
-
-  template <typename Drawable>
-  void set_texture(const Drawable &drawable) {
-    assert(device_);
-    device_->SetTexture(0, drawable.texture1().handle().get());
-  }
-
-  void unset_texture() {
-    assert(device_);
-    device_->SetTexture(0, nullptr);
-  }
-
-  void set_blend_mode(D3DBLEND src, D3DBLEND dest) {
-    assert(device_);
-    device_->SetRenderState(D3DRS_SRCBLEND, src);
-    device_->SetRenderState(D3DRS_DESTBLEND, dest);
-  }
-
-  D3DBLEND get_src_blend_mode() const {
-    assert(device_);
-    DWORD src;
-    device_->GetRenderState(D3DRS_SRCBLEND, &src);
-    return static_cast<D3DBLEND>(src);
-  }
-
-  D3DBLEND get_dest_blend_mode() const {
-    assert(device_);
-    DWORD dest;
-    device_->GetRenderState(D3DRS_DESTBLEND, &dest);
-    return static_cast<D3DBLEND>(dest);
-  }
-
-  template <typename BlendPair>
-  void set_blend_pair() {
-    set_blend_mode(BlendPair::src_type::value, BlendPair::dest_type::value);
-  }
-
-  void set_alphablend_enable(bool enable) {
-    assert(device_);
-    device_->SetRenderState(D3DRS_ALPHABLENDENABLE, enable);
-  }
-
-  bool get_alphablend_enable() const {
-    assert(device_);
-    DWORD enable;
-    device_->GetRenderState(D3DRS_ALPHABLENDENABLE, &enable);
-    return enable != 0;
   }
 
   int width_;
