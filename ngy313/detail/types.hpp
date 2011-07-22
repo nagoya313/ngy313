@@ -1,7 +1,9 @@
 #ifndef NGY313_DETAIL_TYPES_HPP_
 #define NGY313_DETAIL_TYPES_HPP_
 
+#include <boost/config.hpp>
 #include <boost/noncopyable.hpp>
+#include <boost/mpl/integral_c.hpp>
 #include <boost/mpl/vector.hpp>
 
 #if defined(_WIN32)
@@ -13,32 +15,37 @@
 namespace ngy313 { namespace detail {
 template <typename FVF>
 struct basic_fvf_type : private boost::noncopyable {
-  typedef typename FVF::xyz_rhw xyz_rhw;
-  typedef typename FVF::xyz xyz;
-  typedef typename FVF::normal normal;
-  typedef typename FVF::diffuse diffuse;
-  typedef typename FVF::specular specular;
-  typedef typename FVF::texture texture;
-  typedef typename FVF::multi_texture multi_texture;
+  typedef typename FVF::value_type value_type;
+
+  typedef boost::mpl::integral_c<value_type, FVF::kXYZ_RHW> xyz_rhw;
+  typedef boost::mpl::integral_c<value_type, FVF::kXYZ> xyz;
+  typedef boost::mpl::integral_c<value_type, FVF::kNormal> normal;
+  typedef boost::mpl::integral_c<value_type, FVF::kDiffuse> diffuse;
+  typedef boost::mpl::integral_c<value_type, FVF::kSpecular> specular;
+  typedef boost::mpl::integral_c<value_type, FVF::kTexture> texture;
+  typedef boost::mpl::integral_c<value_type, FVF::kMultiTexture> multi_texture;
 
  private:
   basic_fvf_type();
 };
 
-template <typename Primitve>
+template <typename Primitive>
 struct basic_primitive_type : private boost::noncopyable {
-  typedef typename Primitve::point_list point_list;
-  typedef typename Primitve::line_list line_list;
-  typedef typename Primitve::line_strip line_strip;
-  typedef typename Primitve::triangle_list triangle_list;
-  typedef typename Primitve::triangle_strip triangle_strip;
-  typedef typename Primitve::triangle_fan triangle_fan;
+  typedef typename Primitive::value_type value_type;
+
+  typedef std::integral_constant<value_type, Primitive::kPointList> point_list;
+  typedef std::integral_constant<value_type, Primitive::kLineList> line_list;
+  typedef std::integral_constant<value_type, Primitive::kLineStrip> line_strip;
+  typedef std::integral_constant<value_type, Primitive::kTriangleList> triangle_list;
+  typedef std::integral_constant<value_type, Primitive::kTriangleStrip> triangle_strip;
+  typedef std::integral_constant<value_type, Primitive::kTriangleFan> triangle_fan;
+  
   typedef boost::mpl::vector<point_list,
-  		                        line_list,
-  		                        line_strip,
-  		                        triangle_list,
-  		                        triangle_strip,
-  		                        triangle_fan> tag_list;
+  		                       line_list,
+  		                       line_strip,
+  		                       triangle_list,
+  		                       triangle_strip,
+  		                       triangle_fan> tag_list;
 
  private:
   basic_primitive_type();
@@ -46,6 +53,27 @@ struct basic_primitive_type : private boost::noncopyable {
 
 template <typename Blend>
 struct basic_blend_type : private boost::noncopyable {
+  typedef typename Blend::value_type value_type;
+
+  typedef std::integral_constant<value_type, 
+                                 Blend::kBlendOne> one_blend;
+  typedef std::integral_constant<value_type, 
+                                 Blend::kBlendSrcAlpha> src_alpha_blend;
+  typedef std::integral_constant<
+              value_type,
+              Blend::kBlendInvSrcAlpha> inv_src_alpha_blend;
+  typedef std::integral_constant<value_type, 
+                                 Blend::kBlendZero> zero_blend;
+  typedef std::integral_constant<value_type,
+                                 Blend::kBlendSrcColor> src_color_blend;
+  typedef std::integral_constant<
+              value_type,
+              Blend::kBlendInvSrcColor> inv_src_color_blend;
+  typedef std::integral_constant<value_type, 
+                                 Blend::kBlendDestColor> dest_color_blend;
+  typedef std::integral_constant<
+              value_type, 
+              Blend::kBlendInvDestColor> inv_dest_color_blend;
 
  private:
   basic_blend_type();
