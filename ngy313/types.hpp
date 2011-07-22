@@ -111,6 +111,15 @@ typedef make_fvf_tag<dimension2_fvf_tag,
 typedef make_fvf_tag<dimension2_fvf_tag,
                      diffuse_fvf_tag,
                      texture1_fvf_tag> bright_image_2d_fvf_tag;
+
+typedef detail::blend_type::one_blend one_blend_tag;
+typedef detail::blend_type::src_alpha_blend src_alpha_blend_tag;
+typedef detail::blend_type::inv_src_alpha_blend inv_src_alpha_blend_tag;
+typedef detail::blend_type::zero_blend zero_blend_tag;
+typedef detail::blend_type::src_color_blend src_color_blend_tag;
+typedef detail::blend_type::inv_src_color_blend inv_src_color_blend_tag;
+typedef detail::blend_type::dest_color_blend dest_color_blend_tag;
+typedef detail::blend_type::inv_dest_color_blend inv_dest_color_blend_tag;
 }
 
 #endif
