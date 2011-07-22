@@ -49,26 +49,32 @@ class direct3d9_graphic_system : boost::noncopyable {
     bool succeeded_;
   };
 
-  template <typename Device, typename List, typename T = void>
-  class scoped_blend {
+  template <typename Device>
+  class enable_texture : boost::noncopyable {
    public:
-    explicit scoped_blend(const Device &) {}
+    template <typename Drawable>
+    explicit enable_texture(Device &device, const Drawable &drawable)
+       : device_(device) {
+      device_.set_texture(drawable);
+    }
+
+    ~enable_texture() {
+      device_.unset_texture();
+    }
+
+   private:
+    Device &device_;
   };
 
-  template <typename Device, typename List>
-  class scoped_blend<Device,
-                     List, 
-                     typename std::enable_if<!std::is_same<
-                         typename boost::mpl::at<List, 
-                                                 detail::blend_pair_key>::type,
-                         boost::mpl::void_>::value>::type> : boost::noncopyable {
+  template <typename Device, typename BlendPair>
+  class scoped_blend : boost::noncopyable {
    public:
     explicit scoped_blend(Device &device) : device_(device),
                                             enable_alpha_(device_.get_alphablend_enable()),
                                             src_blend_(device_.get_src_blend_mode()),
                                             dest_blend_(device_.get_dest_blend_mode()) {
       device_.set_alphablend_enable(true);
-      device_.set_blend_pair<boost::mpl::at<List, detail::blend_pair_key>::type>();
+      device_.template set_blend_pair<BlendPair>();
     }
 
     ~scoped_blend() {
@@ -164,17 +170,6 @@ class direct3d9_graphic_system : boost::noncopyable {
                                             count_key>::type::type::value, 
                              vertex.data(), 
                              sizeof(vertex.front()));
-  }
-
-  template <typename Drawable>
-  void set_texture(const Drawable &drawable) {
-    assert(device_);
-    device_->SetTexture(0, drawable.texture1().handle().get());
-  }
-
-  void unset_texture() {
-    assert(device_);
-    device_->SetTexture(0, nullptr);
   }
 
   const device_handle &handle() const {
@@ -277,6 +272,17 @@ class direct3d9_graphic_system : boost::noncopyable {
       throw std::runtime_error("バックバッファの取得に失敗しました");
     }
     return surface_handle(back);
+  }
+
+  template <typename Drawable>
+  void set_texture(const Drawable &drawable) {
+    assert(device_);
+    device_->SetTexture(0, drawable.texture1().handle().get());
+  }
+
+  void unset_texture() {
+    assert(device_);
+    device_->SetTexture(0, nullptr);
   }
 
   void set_blend_mode(D3DBLEND src, D3DBLEND dest) {
