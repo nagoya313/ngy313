@@ -6,7 +6,6 @@
 #include <boost/bind.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/signals2/trackable.hpp>
-#include <boost/signals2/signal.hpp>
 #include <ngy313/detail/graphic.hpp>
 #include <ngy313/detail/image.hpp>
 
@@ -27,17 +26,22 @@ class scoped_statas : boost::noncopyable {
   Statas current_statas_;
 };
 
+template <typename Target>
 class direct3d9_scoped_render_target : boost::noncopyable {
   typedef std::unique_ptr<IDirect3DSurface9, com_delete> surface_handle;
 
  public:
-  template <typename Target>
   explicit direct3d9_scoped_render_target(graphic_system &device,
                                           Target &target) 
-      : target_surface_(device),
+      : target_(target),
+        target_surface_(device),
         z_and_stencil_(device),
         viewport_(device) {
-    target.begin();
+    target_.begin();
+  }
+
+  ~direct3d9_scoped_render_target() {
+    target_.end();
   }
 
  private:
@@ -92,6 +96,7 @@ class direct3d9_scoped_render_target : boost::noncopyable {
     }
   };
 
+  Target &target_;
   scoped_statas<surface_handle, state_render_surface> target_surface_;
   scoped_statas<surface_handle, state_z_and_stencil> z_and_stencil_;
   scoped_statas<D3DVIEWPORT9, state_viewport> viewport_;
@@ -102,6 +107,7 @@ class direct3d9_render_target
     : public boost::signals2::trackable, 
       public image_base<Texture>,
       boost::noncopyable {
+  typedef std::unique_ptr<IDirect3DTexture9, com_delete> texture_handle;
   typedef std::unique_ptr<IDirect3DSurface9, com_delete> surface_handle;
 
  public:
@@ -112,10 +118,10 @@ class direct3d9_render_target
         width_(width),
         height_(height),
         target_(new Texture(width_, height_)),
-        target_surface_(surface_level(*target_)),
+        copy_target_(create_texture(width_, height_)),
+        target_surface_(surface_level(target_->handle())),
         z_and_stencil_(create_z_and_stencil(width_, height_)),
-        viewport_(init_viewport(width_, height_)),
-        after_reset_() {
+        viewport_(init_viewport(width_, height_)) {
     device.before_reset().connect(
         boost::bind(&direct3d9_render_target::release, this));
     device.after_reset().connect(
@@ -137,8 +143,10 @@ class direct3d9_render_target
     //init_device(device);
   }
 
-  boost::signals2::signal<void ()> &after_reset() {
-    return after_reset_;
+  void end() {
+    assert(device_.handle());
+    device_.handle()->GetRenderTargetData(target_surface_.get(),
+                                          surface_level(copy_target_).get());
   }
 
   virtual const Texture &get_texture() const {
@@ -153,17 +161,19 @@ class direct3d9_render_target
   }
 
   void reset() {
-    target_.reset(new texture(width_, height_));
-    target_surface_ = surface_level(*target_);
+    target_.reset(new Texture(width_, height_));
+    target_surface_ = surface_level(target_->handle());
     z_and_stencil_ = create_z_and_stencil(width_, height_);
-    const direct3d9_scoped_render_target target(device_, *this);
-    after_reset_();
+    assert(device_.handle());
+    device_.handle()->UpdateTexture(copy_target_.get(),
+                                    target_->handle().get());
   }
 
-  static surface_handle surface_level(const texture &tex) {
-    assert(tex.handle());
+  template <typename Texture>
+  static surface_handle surface_level(const Texture &tex) {
+    assert(tex);
     LPDIRECT3DSURFACE9 surface;
-    if (FAILED(tex.handle()->GetSurfaceLevel(0, &surface))) {
+    if (FAILED(tex->GetSurfaceLevel(0, &surface))) {
       throw std::runtime_error("サーフェイスレベルの取得に失敗しました");
     }
     return surface_handle(surface);
@@ -207,14 +217,30 @@ class direct3d9_render_target
     device_.handle()->SetDepthStencilSurface(surface.get());
   }
 
+  texture_handle create_texture(int width, int height) {
+    assert(device_.handle());
+    LPDIRECT3DTEXTURE9 tex;
+    if (FAILED(D3DXCreateTexture(device_.handle().get(),
+                                 width, 
+                                 height,
+                                 1,
+                                 0,
+                                 D3DFMT_A8R8G8B8, 
+                                 D3DPOOL_SYSTEMMEM, 
+                                 &tex))) {
+      throw std::runtime_error("バックアップテクスチャの作成に失敗しました");
+    }
+    return texture_handle(tex);
+  }
+
   graphic_system &device_;
   int width_;
   int height_;
   std::unique_ptr<Texture> target_;
+  texture_handle copy_target_;
   surface_handle target_surface_;
   surface_handle z_and_stencil_;
   D3DVIEWPORT9 viewport_;
-  boost::signals2::signal<void ()> after_reset_;
 };
 }}
 
