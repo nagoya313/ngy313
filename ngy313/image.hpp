@@ -1,6 +1,7 @@
 #ifndef NGY313_IMAGE_HPP_
 #define NGY313_IMAGE_HPP_
 
+#include <memory>
 #include <ngy313/texture.hpp>
 #include <ngy313/string_wrap.hpp>
 #include <ngy313/detail/init_base.hpp>
@@ -16,22 +17,22 @@ template <typename Image>
 class basic_image : detail::init_base {
  public:
   explicit basic_image(const string_wrap &file_name)
-      : tuxture_(Image(file_name)) {}
+      : image_(std::make_shared<Image>(file_name)) {}
 
   int width() const {
-    return tuxture_.width();
+    return image_->width();
   }
 
   int height() const {
-    return tuxture_.height();
+    return image_->height();
   }
 
-  const texture &get_texture() const {
-    return tuxture_;
+  const std::shared_ptr<Image> &get_image() const {
+    return image_;
   }
 
  private:
-  texture tuxture_;
+  std::shared_ptr<Image> image_;
 };
 
 #if defined(_WIN32)
