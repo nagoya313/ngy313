@@ -7,123 +7,10 @@
 #include <boost/noncopyable.hpp>
 #include <boost/signals2/trackable.hpp>
 #include <boost/signals2/signal.hpp>
-#include <ngy313/texture.hpp>
 #include <ngy313/detail/graphic.hpp>
+#include <ngy313/detail/image.hpp>
 
 namespace ngy313 { namespace detail {
-class direct3d9_render_target
-    : public boost::signals2::trackable, boost::noncopyable {
-  typedef std::unique_ptr<IDirect3DSurface9, com_delete> surface_handle;
-
- public:
-  explicit direct3d9_render_target(graphic_system &device,
-                                   int width,
-                                   int height) 
-      : device_(device),
-        width_(width),
-        height_(height),
-        target_(new texture(width_, height_)),
-        target_surface_(surface_level(*target_)),
-        z_and_stencil_(create_z_and_stencil(width_, height_)),
-        viewport_(init_viewport(width_, height_)),
-        after_reset() {
-    device.before_reset().connect(
-        boost::bind(&direct3d9_render_target::release, this));
-    device.after_reset().connect(
-        boost::bind(&direct3d9_render_target::reset, this));
-  }
-
-  int width() const {
-    return width_;
-  }
-
-  int height() const {
-    return height_;
-  }
-
-  void begin() {
-    set_render_surface(target_surface_);
-    set_z_and_stencil(z_and_stencil_);
-    set_viewport(viewport_);
-    //init_device(device);
-  }
-
-  const texture &get_texture() const {
-    return *target_;
-  }
-
-  boost::signals2::signal<void ()> after_reset;
-  
- private:
-  void release() {
-    target_.reset();
-    target_surface_.reset();
-    z_and_stencil_.reset();
-  }
-
-  void reset() {
-    target_.reset(new texture(width_, height_));
-    target_surface_ = surface_level(*target_);
-    z_and_stencil_ = create_z_and_stencil(width_, height_);
-    after_reset();
-  }
-
-  static surface_handle surface_level(const texture &tex) {
-    assert(tex.handle());
-    LPDIRECT3DSURFACE9 surface;
-    if (FAILED(tex.handle()->GetSurfaceLevel(0, &surface))) {
-      throw std::runtime_error("サーフェイスレベルの取得に失敗しました");
-    }
-    return surface_handle(surface);
-  }
-
-  static D3DVIEWPORT9 init_viewport(int width, int height) {
-    const D3DVIEWPORT9 viewport = {0, 0, width, height, 0.f, 1.f};
-    return viewport;
-  }
-  
-  void set_viewport(const D3DVIEWPORT9 &viewport) {
-    assert(device_.handle());
-    device_.handle()->SetViewport(&viewport);
-  }
-
-  surface_handle create_z_and_stencil(int width, int height) {
-    assert(device_.handle());
-    LPDIRECT3DSURFACE9 surface;
-    if (FAILED(device_.handle()->CreateDepthStencilSurface(width, 
-                                                           height,
-                                                           D3DFMT_D24S8,
-                                                           D3DMULTISAMPLE_NONE,
-                                                           0, 
-                                                           TRUE, 
-                                                           &surface, 
-                                                           nullptr))) {
-      throw std::runtime_error("深度及びステンシルバッファの作成に失敗しました");
-    }
-    return surface_handle(surface);
-  }
-
-  void set_render_surface(const surface_handle &surface) {
-    assert(device_.handle());
-    assert(surface);
-    device_.handle()->SetRenderTarget(0, surface.get());
-  }
-
-  void set_z_and_stencil(const surface_handle &surface) {
-    assert(device_.handle());
-    assert(surface);
-    device_.handle()->SetDepthStencilSurface(surface.get());
-  }
-
-  graphic_system &device_;
-  int width_;
-  int height_;
-  std::unique_ptr<texture> target_;
-  surface_handle target_surface_;
-  surface_handle z_and_stencil_;
-  D3DVIEWPORT9 viewport_;
-};
-
 template <typename Statas, typename SaveReset>
 class scoped_statas : boost::noncopyable {
  public:
@@ -208,6 +95,126 @@ class direct3d9_scoped_render_target : boost::noncopyable {
   scoped_statas<surface_handle, state_render_surface> target_surface_;
   scoped_statas<surface_handle, state_z_and_stencil> z_and_stencil_;
   scoped_statas<D3DVIEWPORT9, state_viewport> viewport_;
+};
+
+template <typename Texture>
+class direct3d9_render_target
+    : public boost::signals2::trackable, 
+      public image_base<Texture>,
+      boost::noncopyable {
+  typedef std::unique_ptr<IDirect3DSurface9, com_delete> surface_handle;
+
+ public:
+  explicit direct3d9_render_target(graphic_system &device,
+                                   int width,
+                                   int height) 
+      : device_(device),
+        width_(width),
+        height_(height),
+        target_(new Texture(width_, height_)),
+        target_surface_(surface_level(*target_)),
+        z_and_stencil_(create_z_and_stencil(width_, height_)),
+        viewport_(init_viewport(width_, height_)),
+        after_reset_() {
+    device.before_reset().connect(
+        boost::bind(&direct3d9_render_target::release, this));
+    device.after_reset().connect(
+        boost::bind(&direct3d9_render_target::reset, this));
+  }
+
+  virtual int width() const {
+    return width_;
+  }
+
+  virtual int height() const {
+    return height_;
+  }
+
+  void begin() {
+    set_render_surface(target_surface_);
+    set_z_and_stencil(z_and_stencil_);
+    set_viewport(viewport_);
+    //init_device(device);
+  }
+
+  boost::signals2::signal<void ()> &after_reset() {
+    return after_reset_;
+  }
+
+  virtual const Texture &get_texture() const {
+    return *target_;
+  }
+  
+ private:
+  void release() {
+    target_.reset();
+    target_surface_.reset();
+    z_and_stencil_.reset();
+  }
+
+  void reset() {
+    target_.reset(new texture(width_, height_));
+    target_surface_ = surface_level(*target_);
+    z_and_stencil_ = create_z_and_stencil(width_, height_);
+    const direct3d9_scoped_render_target target(device_, *this);
+    after_reset_();
+  }
+
+  static surface_handle surface_level(const texture &tex) {
+    assert(tex.handle());
+    LPDIRECT3DSURFACE9 surface;
+    if (FAILED(tex.handle()->GetSurfaceLevel(0, &surface))) {
+      throw std::runtime_error("サーフェイスレベルの取得に失敗しました");
+    }
+    return surface_handle(surface);
+  }
+
+  static D3DVIEWPORT9 init_viewport(int width, int height) {
+    const D3DVIEWPORT9 viewport = {0, 0, width, height, 0.f, 1.f};
+    return viewport;
+  }
+  
+  void set_viewport(const D3DVIEWPORT9 &viewport) {
+    assert(device_.handle());
+    device_.handle()->SetViewport(&viewport);
+  }
+
+  surface_handle create_z_and_stencil(int width, int height) {
+    assert(device_.handle());
+    LPDIRECT3DSURFACE9 surface;
+    if (FAILED(device_.handle()->CreateDepthStencilSurface(width, 
+                                                           height,
+                                                           D3DFMT_D24S8,
+                                                           D3DMULTISAMPLE_NONE,
+                                                           0, 
+                                                           TRUE, 
+                                                           &surface, 
+                                                           nullptr))) {
+      throw std::runtime_error("深度及びステンシルバッファの作成に失敗しました");
+    }
+    return surface_handle(surface);
+  }
+
+  void set_render_surface(const surface_handle &surface) {
+    assert(device_.handle());
+    assert(surface);
+    device_.handle()->SetRenderTarget(0, surface.get());
+  }
+
+  void set_z_and_stencil(const surface_handle &surface) {
+    assert(device_.handle());
+    assert(surface);
+    device_.handle()->SetDepthStencilSurface(surface.get());
+  }
+
+  graphic_system &device_;
+  int width_;
+  int height_;
+  std::unique_ptr<Texture> target_;
+  surface_handle target_surface_;
+  surface_handle z_and_stencil_;
+  D3DVIEWPORT9 viewport_;
+  boost::signals2::signal<void ()> after_reset_;
 };
 }}
 
