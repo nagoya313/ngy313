@@ -36,7 +36,7 @@ class basic_texture {
     return texture_.height();
   }
 
- handle_type handle() const {
+  handle_type handle() const {
     return texture_.handle();
   }
 
