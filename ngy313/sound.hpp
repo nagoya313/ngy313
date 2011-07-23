@@ -1,29 +1,43 @@
 #ifndef NGY313_SOUND_HPP_
 #define NGY313_SOUND_HPP_
 
-#include <cstdint>
-#include <vector>
-#include <boost/config.hpp>
-
-#if defined(_WIN32)
-#include <Xaudio2.h>
-#elif defined(__linux__)
-#define WAVE_FORMAT_PCM  0
-#endif
+#include <utility>
+#include <boost/noncopyable.hpp>
+#include <ngy313/detail/ngy313.hpp>
+#include <ngy313/detail/voice.hpp>
 
 namespace ngy313 {
-BOOST_CONSTEXPR_OR_CONST std::uint16_t kFormatPCM = WAVE_FORMAT_PCM;
+template <typename Loader>
+class sound : boost::noncopyable {
+ public:
+  template <typename Load>
+  explicit sound(Load &&loader) 
+      : voice_(detail::main_singleton::instance().sound(),
+               std::forward<Load>(loader)) {}
 
-struct buffer_format {
-  std::uint16_t type;
-  std::uint16_t channels;
-  std::uint32_t samples_per_sec;
-  std::uint32_t avg_bytes_per_sec;
-  std::uint16_t block_align;
-  std::uint16_t bits_per_sample;
+  void start() {
+    voice_.start();
+  }
+
+  void pause() {
+    voice_.pause();
+  }
+
+  void stop() {
+    voice_.stop();
+  }
+
+  void set_volume(float volume) {
+    voice_.set_volume(volume);
+  }
+
+  float volume() const {
+    return voice_.set_volume();
+  }
+
+ private:
+  typename detail::voice<Loader>::type voice_;
 };
-
-typedef std::vector<std::uint8_t> buffer_container_type;
 }
 
 #endif
