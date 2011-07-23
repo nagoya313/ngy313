@@ -8,6 +8,7 @@
 #include <d3d9.h>
 #include <ngy313/fwd.hpp>
 #include <ngy313/detail/com.hpp>
+#include <ngy313/detail/fwd.hpp>
 
 namespace ngy313 { namespace detail {
 class direct3d9_graphic_system : boost::noncopyable {
@@ -21,7 +22,7 @@ class direct3d9_graphic_system : boost::noncopyable {
   class scoped_render : boost::noncopyable {
    public:
   	template <typename Device>
-  	explicit scoped_render(const Device &device)
+  	explicit scoped_render(const basic_graphic_system<Device> &device)
         : device_(device.handle()), succeeded_(begin_scene()) {}
 
     ~scoped_render() {
@@ -51,8 +52,9 @@ class direct3d9_graphic_system : boost::noncopyable {
 
   class enable_texture : boost::noncopyable {
    public:
-    template <typename Device, typename Drawable>
-    explicit enable_texture(Device &device, const Drawable &drawable)
+    template <typename Drawable>
+    explicit enable_texture(direct3d9_graphic_system &device, 
+                            const Drawable &drawable)
        : device_(device.handle()) {
       assert(device_);
       device_->SetTexture(0, drawable.texture1().handle().get());
@@ -69,8 +71,8 @@ class direct3d9_graphic_system : boost::noncopyable {
 
   class scoped_blend : boost::noncopyable {
    public:
-    template <typename Device, typename BlendPair>
-    explicit scoped_blend(Device &device, BlendPair &&)
+    template <typename BlendPair>
+    explicit scoped_blend(direct3d9_graphic_system &device, BlendPair &&)
         : device_(device.handle()),
           enable_alpha_(get_alphablend_enable()),
           src_blend_(get_src_blend_mode()),
@@ -129,7 +131,7 @@ class direct3d9_graphic_system : boost::noncopyable {
   };
   
   template <typename Window>
-  explicit direct3d9_graphic_system(const Window &window)
+  explicit direct3d9_graphic_system(const basic_window<Window> &window)
       : width_(window.width()),
         height_(window.height()),
         base_(create_base()),
@@ -215,6 +217,14 @@ class direct3d9_graphic_system : boost::noncopyable {
     return device_;
   }
 
+  boost::signals2::signal<void ()> &before_reset() {
+    return before_reset_;
+  }
+
+  boost::signals2::signal<void ()> &after_reset() {
+    return after_reset_;
+  }
+
  private:
   static D3DPRESENT_PARAMETERS 
       init_present_parameters(bool windowed,
@@ -295,10 +305,12 @@ class direct3d9_graphic_system : boost::noncopyable {
     assert(device_);
     D3DPRESENT_PARAMETERS present_parameter 
         = init_present_parameters(true, width(), height());
+    before_reset_();
     if (FAILED(device_->Reset(&present_parameter))) {
       throw std::runtime_error("デバイスのリセットに失敗しました");
 	  }
     init_device();
+    after_reset_();
   }
 
   surface_handle back_buffer() const {
@@ -317,6 +329,8 @@ class direct3d9_graphic_system : boost::noncopyable {
   int height_;
   setup_handle base_;
   device_handle device_;
+  boost::signals2::signal<void ()> before_reset_;
+  boost::signals2::signal<void ()> after_reset_;
 };
 }}
 
