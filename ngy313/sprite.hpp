@@ -1,9 +1,11 @@
 #ifndef NGY313_SPRITE_HPP_
 #define NGY313_SPRITE_HPP_
 
+#include <memory>
 #include <ngy313/drawable_traits.hpp>
 #include <ngy313/texture.hpp>
 #include <ngy313/vector.hpp>
+#include <ngy313/detail/image.hpp>
 
 namespace ngy313 {
 class sprite : public drawable_traits<sprite,
@@ -14,14 +16,14 @@ class sprite : public drawable_traits<sprite,
  public:
   template <typename Image>
   explicit sprite(const Image &image)
-      : texture_(image.get_texture()), vertex_(init(texture_)) {}
+      : image_(image.get_image()), vertex_(init(image_->get_texture())) {}
 
   vertex_array_type vertex() const {
     return vertex_;
   }
 
   const texture &texture1() const {
-    return texture_;
+    return image_->get_texture();
   }
  
  private:
@@ -43,7 +45,7 @@ class sprite : public drawable_traits<sprite,
     return vertex;
    }
 
-  texture texture_;
+  std::shared_ptr<detail::image_base<texture>> image_;
   vertex_array_type vertex_;
 };
 
@@ -55,14 +57,14 @@ class bright_sprite : public drawable_traits<bright_sprite,
  public:
   template <typename Image>
   explicit bright_sprite(const Image &image)
-      : texture_(image.get_texture()), vertex_(init(texture_)) {}
+      : image_(image.get_image()), vertex_(init(image_->get_texture())) {}
 
   vertex_array_type vertex() const {
     return vertex_;
   }
 
   const texture &texture1() const {
-    return texture_;
+    return image_->get_texture();
   }
  
  private:
@@ -88,7 +90,7 @@ class bright_sprite : public drawable_traits<bright_sprite,
     return vertex;
   }
 
-  texture texture_;
+  std::shared_ptr<detail::image_base<texture>> image_;
   vertex_array_type vertex_;
 };
 
@@ -100,14 +102,14 @@ class size_sprite : public drawable_traits<size_sprite,
  public:
   template <typename Image>
   explicit size_sprite(const vector2 &size, const Image &image)
-      : vertex_(init(size)), texture_(image.get_texture()) {}
+      : vertex_(init(size)), image_(image_->get_image()) {}
 
   vertex_array_type vertex() const {
     return vertex_;
   }
   
   const texture &texture1() const {
-    return texture_;
+    return image_->get_texture();
   }
   
  private:
@@ -126,7 +128,7 @@ class size_sprite : public drawable_traits<size_sprite,
    }
 
   vertex_array_type vertex_;
-  texture texture_;
+  std::shared_ptr<detail::image_base<texture>> image_;
 };
 
 class bright_size_sprite
@@ -138,14 +140,14 @@ class bright_size_sprite
  public:
   template <typename Image>
   explicit bright_size_sprite(const vector2 &size, const Image &image)
-      : vertex_(init(size)), texture_(image.get_texture()) {}
+      : vertex_(init(size)), image_(image.get_image()) {}
 
   vertex_array_type vertex() const {
     return vertex_;
   }
   
   const texture &texture1() const {
-    return texture_;
+    return image_->get_texture();
   }
   
  private:
@@ -168,7 +170,7 @@ class bright_size_sprite
    }
 
   vertex_array_type vertex_;
-  texture texture_;
+  std::shared_ptr<detail::image_base<texture>> image_;
 };
 }
 
