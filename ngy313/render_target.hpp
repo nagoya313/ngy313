@@ -2,6 +2,7 @@
 #define NGY313_RENDER_TARGET_HPP_
 
 #include <boost/noncopyable.hpp>
+#include <ngy313/texture.hpp>
 #include <ngy313/detail/ngy313.hpp>
 
 #if defined(_WIN32)
@@ -14,30 +15,33 @@ template <typename Target>
 class basic_render_target : boost::noncopyable {
  public:
   explicit basic_render_target(int width, int height)
-      : target_(detail::main_singleton::instance().graphic(), width, height) {}
+      : target_(std::make_shared<Target>(
+                    detail::main_singleton::instance().graphic(),
+                    width,
+                    height)) {}
 
   int width() const {
-    return target_.width();
+    return target_->width();
   }
 
   int height() const {
-    return target_.height();
+    return target_->height();
   }
 
-  void connect_after_reset(const boost::signals2::signal<void ()>::slot_type &slot) {
-    target_.after_reset.connect(slot);
+  boost::signals2::signal<void ()> &after_reset() {
+    return target_->after_reset();
   }
 
   void begin() {
-    target_.begin();
+    target_->begin();
   }
 
-  const texture &get_texture() const {
-    return target_.get_texture();
+  const std::shared_ptr<Target> &get_image() const {
+    return target_;
   }
 
  private:
-  Target target_;
+  std::shared_ptr<Target> target_;
 };
 
 template <typename ScopedTarget>
@@ -52,7 +56,7 @@ class basic_scoped_render_target : boost::noncopyable {
 };
 
 #if defined(_WIN32)
-typedef basic_render_target<detail::direct3d9_render_target> render_target;
+typedef basic_render_target<detail::direct3d9_render_target<texture>> render_target;
 typedef basic_scoped_render_target<detail::direct3d9_scoped_render_target> 
     scoped_render_target;
 #elif defined(__linux__)
