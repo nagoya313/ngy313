@@ -140,7 +140,6 @@ class direct3d9_render_target
     set_render_surface(target_surface_);
     set_z_and_stencil(z_and_stencil_);
     set_viewport(viewport_);
-    //init_device(device);
   }
 
   void end() {
