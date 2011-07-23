@@ -11,7 +11,7 @@
 namespace ngy313 { namespace detail {
 class xaudio2_sound_system : boost::noncopyable {
   struct master_voice_delete {
-    void operator ()(IXAudio2MasteringVoice * const voice) const {
+    void operator ()(IXAudio2MasteringVoice *voice) const {
       assert(voice);
       voice->DestroyVoice();
     }
@@ -22,8 +22,14 @@ class xaudio2_sound_system : boost::noncopyable {
                           master_voice_delete> master_voice_handle;
 
  public:
+  typedef const device_handle &context_handle;
+
   xaudio2_sound_system() : device_(create_device()),
                            voice_(create_master_voice(device_)) {}
+
+  context_handle context() const {
+    return device_;
+  }
 
  private:
   static device_handle create_device() {
