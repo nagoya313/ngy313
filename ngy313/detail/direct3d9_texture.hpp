@@ -26,7 +26,7 @@ texture_tuple create_texture(const Device &device,
                                D3DFMT_A8R8G8B8, 
                                D3DPOOL_DEFAULT, 
                                &tex))) {
-    throw std::runtime_error("テクスチャの作成に失敗しました");
+    throw std::runtime_error("レンダリングターゲットテクスチャの作成に失敗しました");
   }
   return texture_tuple(texture_handle(tex, false), width, height);
 }
