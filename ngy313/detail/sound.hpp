@@ -15,6 +15,10 @@ class basic_sound_system : boost::noncopyable {
  public:
   basic_sound_system() : sound_() {}
 
+  typename Sound::context_handle context() const {
+    sound_.context();
+  }
+
  private:
   Sound sound_;
 };
