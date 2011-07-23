@@ -28,12 +28,12 @@ class basic_render_target : boost::noncopyable {
     return target_->height();
   }
 
-  boost::signals2::signal<void ()> &after_reset() {
-    return target_->after_reset();
-  }
-
   void begin() {
     target_->begin();
+  }
+
+  void end() {
+    target_->end();
   }
 
   const std::shared_ptr<Target> &get_image() const {
@@ -57,7 +57,7 @@ class basic_scoped_render_target : boost::noncopyable {
 
 #if defined(_WIN32)
 typedef basic_render_target<detail::direct3d9_render_target<texture>> render_target;
-typedef basic_scoped_render_target<detail::direct3d9_scoped_render_target> 
+typedef basic_scoped_render_target<detail::direct3d9_scoped_render_target<render_target>> 
     scoped_render_target;
 #elif defined(__linux__)
 #endif
