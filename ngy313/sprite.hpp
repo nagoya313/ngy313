@@ -102,7 +102,7 @@ class size_sprite : public drawable_traits<size_sprite,
  public:
   template <typename Image>
   explicit size_sprite(const vector2 &size, const Image &image)
-      : vertex_(init(size)), image_(image_->get_image()) {}
+      : vertex_(init(size)), image_(image.get_image()) {}
 
   vertex_array_type vertex() const {
     return vertex_;
