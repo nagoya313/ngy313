@@ -47,9 +47,11 @@ template <typename Loader>
 struct voice {
   typedef basic_voice<xaudio2_voice<Loader>, Loader> type;
 };
-#include <ngy313/detail/xaudio2_voice.hpp>
 #elif defined(__linux__)
-#include <ngy313/detail/openal_voice.hpp>
+template <typename Loader>
+struct voice {
+  typedef basic_voice<openal_voice<Loader>, Loader> type;
+};
 #endif
 }}
 
