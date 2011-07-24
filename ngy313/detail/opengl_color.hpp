@@ -31,10 +31,10 @@ struct opengl_color_wrap {
 
   template <typename Code>
   explicit opengl_color_wrap(const basic_color<Code> &color)
-      : red_(color.red()),
-        green_(color.green()),
-        blue_(color.blue()),
-        alpha_(color.alpha()) {}
+      : red_(color.get_red()),
+        green_(color.get_green()),
+        blue_(color.get_blue()),
+        alpha_(color.get_alpha()) {}
 
   explicit opengl_color_wrap(float red,
                              float green,
