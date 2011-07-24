@@ -28,28 +28,22 @@ typedef std::shared_ptr<GLuint> texture_handle;
 typedef std::tuple<texture_handle, int, int> texture_tuple;
 
 template <typename Device>
-texture_tuple create_texture(const Device &device,
+texture_tuple create_empty_texture(const Device &device,
 		                          int width,
 		                          int height) {
   const typename Device::scoped_render render(device);
   const texture_handle id(new GLuint(), texture_delete<Device>(device));
-  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
   glGenTextures(1, id.get());
   glBindTexture(GL_TEXTURE_2D, *id);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexImage2D(GL_TEXTURE_2D,
-  		          0,
-  		          GL_RGBA,
-  		          width,
-  		          height,
-  		          0,
-  		          GL_RGBA,
-  		          GL_UNSIGNED_BYTE,
-  		          nullptr);
+  glTexImage2D(GL_TEXTURE_2D, 0,
+                                    GL_RGBA,
+                                    width,
+                                    height, 0,
+                                    GL_RGBA,
+                                    GL_UNSIGNED_BYTE,
+                                    nullptr);
   return texture_tuple(id, width, height);
 }
 
@@ -74,7 +68,13 @@ class opengl_texture : public boost::signals2::trackable {
   explicit opengl_texture(Device &device,
   		                     int width,
   		                     int height)
-      : data_(create_texture(device, width, height)) {}
+      : data_() {
+   data_ = create_texture(device, 
+                          *this,
+                          [&](Device &device) {
+                            return create_empty_texture(device, width, height);
+                                 });
+  }
 
   template <typename Image>
   explicit opengl_texture(Device &device,
