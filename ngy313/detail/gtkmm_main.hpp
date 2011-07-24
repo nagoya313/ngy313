@@ -10,7 +10,8 @@
 namespace ngy313 { namespace detail {
 class gtkmm_main : boost::noncopyable {
  public:
-  gtkmm_main() : main_(0, nullptr) {}
+  gtkmm_main()
+      : main_(0, nullptr), throw_(false), exception_() {}
 
   template <typename Pred>
   int run(const Pred pred) {
@@ -22,6 +23,9 @@ class gtkmm_main : boost::noncopyable {
                       &main_loop<Pred>::update),
                          16);
     Gtk::Main::run();
+    if (throw_) {
+      std::rethrow_exception(exception_);
+    }
     return 0;
   }
 
@@ -35,11 +39,9 @@ class gtkmm_main : boost::noncopyable {
 
  private:
   void error_handler() {
-  	try {
-  		throw;
-  	} catch (...) {
-  	  quit();
-  	}
+   throw_ = true;
+  	exception_ = std::current_exception();
+   quit();
   }
 
   template <typename Pred> 
@@ -56,7 +58,9 @@ class gtkmm_main : boost::noncopyable {
     const Pred pred_;
   };
 
-  const Gtk::Main main_;
+  Gtk::Main main_;
+  bool throw_;
+  std::exception_ptr exception_;
 };
 }}
 
