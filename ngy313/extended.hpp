@@ -1,7 +1,6 @@
 #ifndef NGY313_EXTENDED_HPP_
 #define NGY313_EXTENDED_HPP_
 
-#include <boost/config.hpp>
 #include <boost/range/algorithm/transform.hpp>
 #include <ngy313/adaptor.hpp>
 #include <ngy313/fvf_traits.hpp>
@@ -64,7 +63,7 @@ detail::adaptor<Drawable> make_extended(const Drawable &drawable,
 
 template <typename BasePoint>
 struct extended_t : pipe_operator::base<extended_t<BasePoint>> {
-  explicit BOOST_CONSTEXPR extended_t(const BasePoint &base_point,
+  explicit extended_t(const BasePoint &base_point,
                                       const vector2 &extend)
       : base_point_(base_point), extend_(extend) {}
 
@@ -79,7 +78,7 @@ struct extended_t : pipe_operator::base<extended_t<BasePoint>> {
 };
 
 template <typename BasePoint>
-BOOST_CONSTEXPR extended_t<BasePoint> extended(const BasePoint &base_point,
+extended_t<BasePoint> extended(const BasePoint &base_point,
                                                const vector2 &extend) {
   return extended_t<BasePoint>(base_point, extend);
 }
