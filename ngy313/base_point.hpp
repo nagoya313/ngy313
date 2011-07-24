@@ -2,7 +2,6 @@
 #define NGY313_BASE_POINT_HPP_
 
 #include <cstddef>
-#include <boost/config.hpp>
 #include <ngy313/shape_position.hpp>
 #include <ngy313/vector.hpp>
 
