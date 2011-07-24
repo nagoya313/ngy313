@@ -67,7 +67,7 @@ class scoped_blend<Device,
                        boost::mpl::void_>::value>::type> : boost::noncopyable {
  public:
   explicit scoped_blend(Device &device)
-      : scoped_blend_(device, boost::mpl::at<typename Drawable::list_type, 
+      : scoped_blend_(device, typename boost::mpl::at<typename Drawable::list_type, 
                                   blend_pair_key>::type()) {}
 
  private:
@@ -120,7 +120,7 @@ class basic_graphic_system : boost::noncopyable {
   template <typename Drawable>
   void draw(Drawable &&drawable) {
     const scoped_blend<Graphic, Drawable> scoped_blend(graphic_);
-  	const enable_texture<Graphic, Drawable> tex(graphic_, drawable);
+    const enable_texture<Graphic, Drawable> tex(graphic_, drawable);
     graphic_.draw_primitive(std::forward<Drawable>(drawable));
   }
 
