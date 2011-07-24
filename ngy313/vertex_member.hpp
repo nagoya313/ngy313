@@ -100,10 +100,10 @@ struct diffuse_t {
 
   template <typename Wrap>
   diffuse_t(const basic_color_wrap<Wrap> &color)
-    : r_(color.red_float()),
-      g_(color.green_float()),
-      b_(color.blue_float()),
-      a_(color.alpha_float()) {}
+    : r_(color.get_red_float()),
+      g_(color.get_green_float()),
+      b_(color.get_blue_float()),
+      a_(color.get_alpha_float()) {}
  
   float r_;
   float g_;
