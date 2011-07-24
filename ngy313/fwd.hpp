@@ -13,6 +13,9 @@ class basic_icon;
 
 template <typename Texture>
 class basic_texture;
+
+template <typename Font>
+class basic_font;
 }
 
 #endif
