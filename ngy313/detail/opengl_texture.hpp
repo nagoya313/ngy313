@@ -37,13 +37,15 @@ texture_tuple create_empty_texture(const Device &device,
   glBindTexture(GL_TEXTURE_2D, *id);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexImage2D(GL_TEXTURE_2D, 0,
-                                    GL_RGBA,
-                                    width,
-                                    height, 0,
-                                    GL_RGBA,
-                                    GL_UNSIGNED_BYTE,
-                                    nullptr);
+  glTexImage2D(GL_TEXTURE_2D, 
+                   0,
+               GL_RGBA,
+               width,
+               height, 
+                   0,
+               GL_RGBA,
+               GL_UNSIGNED_BYTE,
+               nullptr);
   return texture_tuple(id, width, height);
 }
 
