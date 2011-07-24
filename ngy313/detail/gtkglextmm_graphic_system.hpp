@@ -10,6 +10,7 @@
 #include <boost/mpl/at.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/signals2.hpp>
+#include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <gtkglmm.h>
@@ -128,7 +129,7 @@ class gtkglextmm_graphic_system : boost::noncopyable {
     	 std::call_once(flag_, [] {Gtk::GL::init(0, 0);});
       const Glib::RefPtr<Gdk::GL::Config> gl_config
           = Gdk::GL::Config::create(
-                Gdk::GL::MODE_RGB 
+                Gdk::GL::MODE_RGB
                     | Gdk::GL::MODE_DEPTH
                         | Gdk::GL::MODE_DOUBLE);
       if (!gl_config) {
@@ -266,6 +267,66 @@ class gtkglextmm_graphic_system : boost::noncopyable {
     const bool succeeded_;
   };
 
+  class enable_texture : boost::noncopyable {
+   public:
+    template <typename Drawable>
+    explicit enable_texture(gtkglextmm_graphic_system &device, 
+                            const Drawable &drawable) {
+      glEnable(GL_TEXTURE_2D);
+      glBindTexture(GL_TEXTURE_2D, *drawable.texture1().handle().get());
+    }
+
+    ~enable_texture() {
+      glDisable(GL_TEXTURE_2D);
+    }
+  };
+
+  class scoped_blend : boost::noncopyable {
+   public:
+    template <typename BlendPair>
+    explicit scoped_blend(gtkglextmm_graphic_system &device, BlendPair &&)
+        : enable_alpha_(glIsEnabled(GL_BLEND)),
+          src_blend_(get_src_blend_mode()),
+          dest_blend_(get_dest_blend_mode()) {
+      glEnable(GL_BLEND);
+      set_blend_pair<BlendPair>();
+       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+    }
+
+    ~scoped_blend() {
+      set_blend_mode(src_blend_, dest_blend_);
+      glDisable(GL_BLEND);
+    }
+
+   private:
+    static void set_blend_mode(GLenum src, GLenum dest) {
+      glBlendFunc(src, dest);
+    }
+
+    template <typename BlendPair>
+    static void set_blend_pair() {
+      set_blend_mode(BlendPair::src_type::value, BlendPair::dest_type::value);
+    }
+
+    static GLenum get_src_blend_mode() {
+      GLint temp;
+      glGetIntegerv(GL_BLEND_SRC, &temp);
+      return static_cast<GLenum>(temp);
+    }
+
+    static GLenum get_dest_blend_mode() {
+      GLint temp;
+      glGetIntegerv(GL_BLEND_DST, &temp);
+      return static_cast<GLenum>(temp);
+    }
+
+    bool enable_alpha_;
+    GLenum src_blend_;
+    GLenum dest_blend_;
+  };
+
+
   template <typename Window>
   explicit gtkglextmm_graphic_system(const Window &window)
       : graphic_(new system_impl(window)) {}
@@ -309,17 +370,6 @@ class gtkglextmm_graphic_system : boost::noncopyable {
                     0,
                  boost::mpl::at<typename std::decay<Drawable>::type::list_type,
                  size_key>::type::type::value);
-  }
-
-
-  template <typename Drawable>
-  void set_texture(const Drawable &drawable) {
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, *drawable.texture1().handle().get());
-  }
-
-  void unset_texture() {
-    glDisable(GL_TEXTURE_2D);
   }
 
   const std::unique_ptr<system_impl> &handle() const {
