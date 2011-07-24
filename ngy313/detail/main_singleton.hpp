@@ -3,10 +3,13 @@
 
 #include <boost/noncopyable.hpp>
 #include <boost/optional.hpp>
-
 #include <boost/config.hpp>
 
-#if defined(BOOST_NO_0X_HDR_THREAD)
+#if defined(_MSC_VER)
+#define NGY313_USE_BOOST_THREAD
+#endif
+
+#if defined(NGY313_USE_BOOST_THREAD)
 #include <boost/thread.hpp>
 #else
 #include <thread>
@@ -31,9 +34,9 @@ class basic_main_singleton : boost::noncopyable {
 
   boost::optional<Window> &window_optional() {
     main_init();
-#if defined(BOOST_NO_0X_HDR_THREAD)
+#if defined(NGY313_USE_BOOST_THREAD)
  	  static boost::once_flag flag = BOOST_ONCE_INIT;
-  	boost::call_once(flag, [this] {window_init();});
+  	boost::call_once(flag, [this] {this->window_init();});
 #else
     static std::once_flag flag;
     std::call_once(flag, [this] {this->window_init();});
@@ -46,9 +49,9 @@ class basic_main_singleton : boost::noncopyable {
   }
 
   Graphic &graphic() {
-#if defined(BOOST_NO_0X_HDR_THREAD)
+#if defined(NGY313_USE_BOOST_THREAD)
   	static boost::once_flag flag = BOOST_ONCE_INIT;
-  	boost::call_once(flag, [this] {graphic_init();});
+  	boost::call_once(flag, [this] {this->graphic_init();});
 #else
   	static std::once_flag flag;
   	std::call_once(flag, [this] {this->graphic_init();});
@@ -57,9 +60,9 @@ class basic_main_singleton : boost::noncopyable {
   }
 
   Sound &sound() {
-#if defined(BOOST_NO_0X_HDR_THREAD)
+#if defined(NGY313_USE_BOOST_THREAD)
   	static boost::once_flag flag = BOOST_ONCE_INIT;
-  	boost::call_once(flag, [this] {sound_init();});
+  	boost::call_once(flag, [this] {this->sound_init();});
 #else
   	static std::once_flag flag;
   	std::call_once(flag, [this] {this->sound_init();});
@@ -82,12 +85,12 @@ class basic_main_singleton : boost::noncopyable {
   }
 
   void main_init() {
-#if defined(BOOST_NO_0X_HDR_THREAD)
-  	static boost::once_flag flag = BOOST_ONCE_INIT;
-  	boost::call_once(flag, [this] {main_ = boost::in_place();});
+#if defined(NGY313_USE_BOOST_THREAD)
+    static boost::once_flag flag = BOOST_ONCE_INIT;
+    boost::call_once(flag, [this] {main_ = boost::in_place();});
 #else
-	  	static std::once_flag flag;
- 	  	std::call_once(flag, [this] {main_ = boost::in_place();});
+    static std::once_flag flag;
+    std::call_once(flag, [this] {main_ = boost::in_place();});
 #endif
   }
 
