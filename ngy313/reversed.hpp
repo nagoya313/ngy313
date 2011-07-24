@@ -12,7 +12,7 @@ extended_adaptor::detail::adaptor<Drawable> make_reversed(const Drawable &drawab
                                                      vector2(-1.f, 1.f));
 }
 
-BOOST_CONSTEXPR auto reversed = extended(base_point_set_center, vector2(-1.f, 1.f));
+const auto reversed = extended(base_point_set_center, vector2(-1.f, 1.f));
 }
 
 #endif
