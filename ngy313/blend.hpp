@@ -3,6 +3,7 @@
 
 #include <boost/config.hpp>
 #include <boost/mpl/pair.hpp>
+#include <boost/mpl/vector.hpp>
 #include <ngy313/pipe_operator.hpp>
 
 namespace ngy313 {
