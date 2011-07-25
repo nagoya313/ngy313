@@ -2,8 +2,10 @@
 #define NGY313_DETAIL_OPENGL_TEXTURE_HPP_
 
 #include <cassert>
+#include <functional>
 #include <memory>
 #include <tuple>
+#include <boost/bind.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/signals2/trackable.hpp>
 #include <GL/gl.h>
@@ -29,8 +31,8 @@ typedef std::tuple<texture_handle, int, int> texture_tuple;
 
 template <typename Device>
 texture_tuple create_empty_texture(const Device &device,
-		                          int width,
-		                          int height) {
+                                   int width,
+                                   int height) {
   const typename Device::scoped_render render(device);
   const texture_handle id(new GLuint(), texture_delete<Device>(device));
   glGenTextures(1, id.get());
@@ -38,11 +40,11 @@ texture_tuple create_empty_texture(const Device &device,
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexImage2D(GL_TEXTURE_2D, 
-                   0,
+               0,
                GL_RGBA,
                width,
-               height, 
-                   0,
+               height,
+               0,
                GL_RGBA,
                GL_UNSIGNED_BYTE,
                nullptr);
@@ -55,7 +57,10 @@ texture_tuple create_texture(Device &device, Texture &texture, Pred pred) {
   if (render.succeeded()) {
     return pred(device);
   } else {
-  	device.after_reset().connect([&device, &texture, pred]() {texture.reset(pred(device));});
+	const auto func = [&device, pred] {return pred(device);};
+  	device.after_reset().connect(boost::bind(&Texture::template reset<decltype(func)>,
+                                 &texture,
+                                 func));
   	return texture_tuple(texture_handle(), 0, 0);
   }
 }
@@ -67,21 +72,16 @@ class opengl_texture : public boost::signals2::trackable {
   typedef std::tuple<texture_handle, int, int> texture_tuple;
   typedef texture_delete<Device> deleter_type;
 
-  explicit opengl_texture(Device &device,
-  		                     int width,
-  		                     int height)
-      : data_() {
-   data_ = create_texture(device, 
-                          *this,
+  explicit opengl_texture(Device &device, int width, int height) : data_() {
+    data_ = create_texture(device, 
+                           *this,
                           [&](Device &device) {
                             return create_empty_texture(device, width, height);
-                                 });
+                          });
   }
 
   template <typename Image>
-  explicit opengl_texture(Device &device,
-  		                     const Image &image)
-      : data_() {
+  explicit opengl_texture(Device &device, const Image &image) : data_() {
   	data_ = create_texture(device, *this, image);
   }
 
@@ -97,9 +97,10 @@ class opengl_texture : public boost::signals2::trackable {
     return std::get<0>(data_);
   }
 
-  void reset(texture_tuple &&data) {
-    	data_ = data;
-    }
+  template <typename Pred>
+  void reset(Pred data) {
+    data_ = data();
+  }
 
  private:
   texture_tuple data_;
