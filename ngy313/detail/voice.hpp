@@ -52,6 +52,11 @@ template <typename Loader>
 struct voice {
   typedef basic_voice<openal_voice<Loader>, Loader> type;
 };
+
+template <typename Loader>
+struct streaming_voice {
+  typedef basic_voice<openal_streaming_voice<Loader>, Loader> type;
+};
 #endif
 }}
 
