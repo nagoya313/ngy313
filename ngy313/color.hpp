@@ -2,7 +2,6 @@
 #define NGY313_COLOR_HPP_
 
 #include <cstdint>
-#include <algorithm>
 #include <boost/config.hpp>
 #include <boost/operators.hpp>
 #include <ngy313/detail/color.hpp>
@@ -78,34 +77,34 @@ class basic_color : boost::equality_comparable<basic_color<Color>>,
   }
 
   basic_color &operator +=(const basic_color &rhs) {
-    red_ = std::max(std::min(red_ + rhs.red_, 1.f), 0.f);
-    green_ = std::max(std::min(green_ + rhs.green_, 1.f), 0.f);
-    blue_ = std::max(std::min(blue_ + rhs.blue_, 1.f), 0.f);
-    alpha_ = std::max(std::min(alpha_ + rhs.alpha_, 1.f), 0.f);
+    red_ = detail::limit(red_ + rhs.red_);
+    green_ = detail::limit(green_ + rhs.green_);
+    blue_ = detail::limit(blue_ + rhs.blue_);
+    alpha_ = detail::limit(alpha_ + rhs.alpha_);
     return *this;
   }
 
   basic_color &operator -=(const basic_color &rhs) {
-    red_ = std::max(std::min(red_ - rhs.red_, 1.f), 0.f);
-    green_ = std::max(std::min(green_ - rhs.green_, 1.f), 0.f);
-    blue_ = std::max(std::min(blue_ - rhs.blue_, 1.f), 0.f);
-    alpha_ = std::max(std::min(alpha_ - rhs.alpha_, 1.f), 0.f);
+    red_ = detail::limit(red_ - rhs.red_);
+    green_ = detail::limit(green_ - rhs.green_);
+    blue_ = detail::limit(blue_ - rhs.blue_);
+    alpha_ = detail::limit(alpha_ - rhs.alpha_);
     return *this;
   }
 
   basic_color &operator *=(float rhs) {
-    red_ = std::max(std::min(red_ * rhs, 1.f), 0.f);
-    green_ = std::max(std::min(green_ * rhs, 1.f), 0.f);
-    blue_ = std::max(std::min(blue_ * rhs, 1.f), 0.f);
-    alpha_ = std::max(std::min(alpha_ * rhs, 1.f), 0.f);
+    red_ = detail::limit(red_ * rhs);
+    green_ = detail::limit(green_ * rhs);
+    blue_ = detail::limit(blue_ * rhs);
+    alpha_ = detail::limit(alpha_ * rhs);
     return *this;
   }
 
   basic_color &operator /=(float rhs) {
-    red_ = std::max(std::min(red_ / rhs, 1.f), 0.f);
-    green_ = std::max(std::min(green_ / rhs, 1.f), 0.f);
-    blue_ = std::max(std::min(blue_ / rhs, 1.f), 0.f);
-    alpha_ = std::max(std::min(alpha_ / rhs, 1.f), 0.f);
+    red_ = detail::limit(red_ / rhs);
+    green_ = detail::limit(green_ / rhs);
+    blue_ = detail::limit(blue_ / rhs);
+    alpha_ = detail::limit(alpha_ / rhs);
     return *this;
   }
 
