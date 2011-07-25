@@ -16,20 +16,20 @@ typename std::remove_const<T>::type read(Stream &stream) {
 }
 
 inline
-sound_tuple create_buffer(const string_wrap &file_name) {
+sound_tuple create_wave_buffer(const string_wrap &file_name) {
   std::ifstream fin(file_name.c_str(), std::ios::in | std::ios::binary);
   if (!fin) {
-    throw std::runtime_error("ƒtƒ@ƒCƒ‹‚ğŠJ‚­‚Ì‚É¸”s‚µ‚Ü‚µ‚½");
+    throw std::runtime_error("ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½Ì‚Éï¿½ï¿½sï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½");
   }
   if (read<std::uint32_t>(fin) != *reinterpret_cast<const std::uint32_t *>("RIFF")) {
-    throw std::runtime_error("RIFFƒ`ƒƒƒ“ƒN‚ª‘¶İ‚µ‚Ü‚¹‚ñ");
+    throw std::runtime_error("RIFFï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½İ‚ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½");
   }
   fin.ignore(4);
   if (read<std::uint32_t>(fin) != *reinterpret_cast<const std::uint32_t *>("WAVE")) {
-	  throw std::runtime_error("WAVEƒ`ƒƒƒ“ƒN‚ª‘¶İ‚µ‚Ü‚¹‚ñ");
+	  throw std::runtime_error("WAVEï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½İ‚ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½");
   }
   if (read<std::uint32_t>(fin) != *reinterpret_cast<const std::uint32_t *>("fmt ")) {
-	  throw std::runtime_error("fmt ƒ`ƒƒƒ“ƒN‚ª‘¶İ‚µ‚Ü‚¹‚ñ");
+	  throw std::runtime_error("fmt ï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½İ‚ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½");
   } 
   const std::uint32_t format_size = read<decltype(format_size)>(fin);
   const buffer_format format = {
@@ -42,7 +42,7 @@ sound_tuple create_buffer(const string_wrap &file_name) {
   };
   fin.ignore(format_size - 16);
   if (read<std::uint32_t>(fin) != *reinterpret_cast<const std::uint32_t *>("data")) {
-	  throw std::runtime_error("dataƒ`ƒƒƒ“ƒN‚ª‘¶İ‚µ‚Ü‚¹‚ñ");
+	  throw std::runtime_error("dataï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½İ‚ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½");
   }
   buffer_container_type buffer(read<std::uint32_t>(fin));
   fin.read(reinterpret_cast<char *>(buffer.data()), buffer.size());
@@ -52,7 +52,7 @@ sound_tuple create_buffer(const string_wrap &file_name) {
 class wave_buffer_data {
  public:
   explicit wave_buffer_data(const string_wrap &file_name)
-      : data_(create_buffer(file_name)) {}
+      : data_(create_wave_buffer(file_name)) {}
 
   const buffer_container_type &buffer() const {
     return std::get<0>(data_);
