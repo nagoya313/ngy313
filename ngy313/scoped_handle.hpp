@@ -60,7 +60,7 @@ class scoped_handle : boost::equality_comparable<scoped_handle<T, Deleter>>,
   	return t;
   }
 
-  void reset(T t) {
+  void reset(typename boost::call_traits<T>::param_type t) {
   	std::swap(std::get<0>(data_), t);
   	if (std::get<1>(data_).null_check(t)) {
   	  get_deleter()(t);
