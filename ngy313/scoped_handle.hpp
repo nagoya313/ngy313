@@ -10,7 +10,7 @@
 namespace ngy313 {
 template <typename T>
 struct default_delete {
-	BOOST_CONSTEXPR default_delete() = default;
+  BOOST_CONSTEXPR default_delete() = default;
 
   void operator ()(typename boost::call_traits<T>::param_type t) const {}
 
@@ -55,20 +55,22 @@ class scoped_handle : boost::equality_comparable<scoped_handle<T, Deleter>>,
   }
 
   T release() {
-  	const T t = get();
+  	T t = get();
   	std::get<0>(data_) = std::get<1>(data_).null_value();
   	return t;
   }
 
   void reset(typename boost::call_traits<T>::param_type t) {
-  	std::swap(std::get<0>(data_), t);
+	using std::swap;
+  	swap(std::get<0>(data_), t);
   	if (std::get<1>(data_).null_check(t)) {
   	  get_deleter()(t);
   	}
   }
 
   void swap(scoped_handle &rhs) {
-    std::swap(data_, rhs.data_);
+    using std::swap;
+    swap(data_, rhs.data_);
   }
 
   T get() const {
