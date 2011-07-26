@@ -16,12 +16,11 @@ class basic_texture {
  public:
   typedef typename Texture::handle_type handle_type;
   typedef typename Texture::texture_tuple texture_tuple;
-  typedef typename Texture::deleter_type deleter_type;
-
+ 
   explicit basic_texture(int width, int height)
       : texture_(detail::main_singleton::instance().graphic(),
-      		        width,
-      		        height) {}
+                 width,
+                 height) {}
 
   template <typename Image>
   explicit basic_texture(const Image &image)
