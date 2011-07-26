@@ -96,17 +96,13 @@ void present() {
 
 template <typename Drawable>
 void draw(Drawable &&drawable) {
-	detail::main_singleton::instance().graphic().draw(
+  detail::main_singleton::instance().graphic().draw(
       std::forward<Drawable>(drawable));
 }
 
 template <typename Scene>
 void render(Scene scene) {
-	const detail::scoped_render<detail::graphic_system>
-	  	render(detail::main_singleton::instance().graphic());
-	if (render.succeeded()) {
-		scene();
-	}
+  detail::main_singleton::instance().graphic().render(scene);
 }
 }
 
