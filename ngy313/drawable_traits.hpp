@@ -8,7 +8,7 @@
 #include <boost/mpl/map.hpp>
 #include <ngy313/fvf_traits.hpp>
 #include <ngy313/types.hpp>
-#include <ngy313/detail/drawable_traits.hpp>
+#include <ngy313/detail/drawable_traits_key.hpp>
 
 namespace ngy313 {
 template <typename Drawable, 
