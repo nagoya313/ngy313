@@ -1,6 +1,7 @@
 #ifndef NGY313_RENDER_TARGET_HPP_
 #define NGY313_RENDER_TARGET_HPP_
 
+#include <memory>
 #include <boost/noncopyable.hpp>
 #include <ngy313/texture.hpp>
 #include <ngy313/detail/ngy313.hpp>
@@ -28,13 +29,13 @@ class basic_render_target : boost::noncopyable {
   int height() const {
     return target_->height();
   }
-
-  void begin() {
-    target_->begin();
-  }
-
-  void end() {
-    target_->end();
+  
+  template <typename Scene>
+  void render(Scene scene) {
+	const typename Target::scoped_render_target target(
+	    detail::main_singleton::instance().graphic(),
+	    *target_);
+	scene();
   }
 
   const std::shared_ptr<Target> &get_image() const {
@@ -45,25 +46,12 @@ class basic_render_target : boost::noncopyable {
   std::shared_ptr<Target> target_;
 };
 
-template <typename ScopedTarget>
-class basic_scoped_render_target : boost::noncopyable {
- public:
-  template <typename Target>
-  explicit basic_scoped_render_target(basic_render_target<Target> &target)
-      : target_(detail::main_singleton::instance().graphic(), target) {}
-
- private:
-  ScopedTarget target_;
-};
-
 #if defined(_WIN32)
 typedef basic_render_target<detail::direct3d9_render_target<texture>> render_target;
 typedef basic_scoped_render_target<detail::direct3d9_scoped_render_target<render_target>> 
     scoped_render_target;
 #elif defined(__linux__)
 typedef basic_render_target<detail::opengl_render_target<texture>> render_target;
-typedef basic_scoped_render_target<detail::opengl_scoped_render_target<render_target>> 
-    scoped_render_target;
 #endif
 }
 
