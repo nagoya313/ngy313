@@ -8,6 +8,7 @@
 #include <boost/mpl/at.hpp>
 #include <boost/signals2.hpp>
 #include <ngy313/fwd.hpp>
+#include <ngy313/detail/fwd.hpp>
 #include <ngy313/detail/drawable_traits_key.hpp>
 
 #if defined(_WIN32)
@@ -41,8 +42,12 @@ class enable_texture<
           Device,
           Drawable,
           typename std::enable_if<
-              std::is_same<texture_t<1>,
-              typename drawable_switch_element<Drawable>::type>::value>::type>
+              std::is_same<
+                  texture_t<1>,
+                  typename boost::mpl::find_if<
+                      typename Drawable::vertex_type,
+                      find_fvf_member_type<
+                          texture_member>>::type::type>::value>::type>
     : boost::noncopyable {
  public:
   explicit enable_texture(Device &device, const Drawable &drawable)
@@ -67,8 +72,9 @@ class scoped_blend<Device,
                        boost::mpl::void_>::value>::type> : boost::noncopyable {
  public:
   explicit scoped_blend(Device &device)
-      : scoped_blend_(device, typename boost::mpl::at<typename Drawable::list_type, 
-                                  blend_pair_key>::type()) {}
+      : scoped_blend_(device, 
+                      typename boost::mpl::at<typename Drawable::list_type, 
+                                              blend_pair_key>::type()) {}
 
  private:
   typename Device::scoped_blend scoped_blend_;
@@ -77,15 +83,15 @@ class scoped_blend<Device,
 template <typename Graphic>
 class basic_graphic_system : boost::noncopyable {
  public:
-	typedef typename Graphic::scoped_render scoped_render;
+  typedef typename Graphic::scoped_render scoped_render;
 
   template <typename Window>
-  explicit basic_graphic_system(const Window &window)
+  explicit basic_graphic_system(const basic_window<Window> &window)
       : graphic_(window) {}
 
-  void resize(int width_size, int height_size) {
-    graphic_.resize(width_size, height_size);
-    assert(width_size == width() && height_size == height());
+  void resize(int width, int height) {
+    graphic_.resize(width, height);
+    assert(width == this->width() && height == this->height());
   }
 
   int width() const {
@@ -99,15 +105,7 @@ class basic_graphic_system : boost::noncopyable {
   void present() {
     graphic_.present();
   }
-
-  bool begin_scene() {
-    return graphic_.begin_scene();
-  }
-
-  void end_scene() {
-    graphic_.end_scene();
-  }
-
+  
   template <typename Wrap>
   void clear_screen(const basic_color_wrap<Wrap> &color) {
     graphic_.clear_screen(color);
@@ -122,6 +120,14 @@ class basic_graphic_system : boost::noncopyable {
     const scoped_blend<Graphic, Drawable> scoped_blend(graphic_);
     const enable_texture<Graphic, Drawable> tex(graphic_, drawable);
     graphic_.draw_primitive(std::forward<Drawable>(drawable));
+  }
+  
+  template <typename Scene>
+  void render(Scene scene) {
+    const scoped_render render(graphic_);
+    if (render.succeeded()) {
+      scene();
+    }
   }
 
   typename Graphic::handle_type handle() const {
