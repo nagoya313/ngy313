@@ -13,28 +13,35 @@
 namespace ngy313 { namespace detail {
 template <typename Device>
 struct texture_delete {
-  explicit texture_delete(const Device &device) : device_(device) {}
+  explicit texture_delete(const Device &device) : device_(&device) {}
 
   void operator ()(const GLuint *texture) const {
-  	assert(texture);
-  	const typename Device::scoped_render render(device_);
+  	assert(texture && device_);
+  	const typename Device::scoped_render render(*device_);
     glDeleteTextures(1, texture);
     delete texture;
   }
   
  private:
-  const Device &device_;
+  const Device *device_;
 };
 
-typedef std::shared_ptr<GLuint> texture_handle;
-typedef std::tuple<texture_handle, int, int> texture_tuple;
+template <typename Device>
+struct texture_handle {
+  typedef std::unique_ptr<GLuint, texture_delete<Device>> type;
+};
 
 template <typename Device>
-texture_tuple create_empty_texture(const Device &device,
-                                   int width,
-                                   int height) {
+struct texture_tuple {
+  typedef std::tuple<typename texture_handle<Device>::type, int, int> type;
+};
+
+template <typename Device,
+          typename Result = typename texture_tuple<Device>::type>
+Result create_empty_texture(const Device &device, int width, int height) {
   const typename Device::scoped_render render(device);
-  const texture_handle id(new GLuint(), texture_delete<Device>(device));
+  typename texture_handle<Device>::type id(new GLuint(), 
+                                           texture_delete<Device>(device));
   glGenTextures(1, id.get());
   glBindTexture(GL_TEXTURE_2D, *id);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -48,42 +55,51 @@ texture_tuple create_empty_texture(const Device &device,
                GL_RGBA,
                GL_UNSIGNED_BYTE,
                nullptr);
-  return texture_tuple(id, width, height);
+  return std::make_tuple(std::move(id), width, height);
 }
 
-template <typename Device, typename Texture, typename Pred>
-texture_tuple create_texture(Device &device, Texture &texture, Pred pred) {
+template <typename Device, 
+          typename Texture,
+          typename Pred,
+          typename Result = typename texture_tuple<Device>::type>
+Result create_texture(Device &device, Texture &texture, Pred pred) {
   const typename Device::scoped_render render(device);
   if (render.succeeded()) {
     return pred(device);
   } else {
 	const auto func = [&device, pred] {return pred(device);};
-  	device.after_reset().connect(boost::bind(&Texture::template reset<decltype(func)>,
+  	device.after_reset().connect(boost::bind(
+  	                                 &Texture::template reset<decltype(func)>,
                                  &texture,
                                  func));
-  	return texture_tuple(texture_handle(), 0, 0);
+  	return std::make_tuple(typename texture_handle<Device>::type(
+  	                           nullptr, 
+  	                           texture_delete<Device>(device)),
+  	                       0,
+  	                       0);
   }
 }
 
 template <typename Device>
 class opengl_texture : public boost::signals2::trackable {
  public:
-  typedef const texture_handle &handle_type;
-  typedef std::tuple<texture_handle, int, int> texture_tuple;
-  typedef texture_delete<Device> deleter_type;
+  typedef const typename texture_handle<Device>::type &handle_type;
+  typedef std::tuple<typename texture_handle<Device>::type, 
+                     int,
+                     int> texture_tuple;
 
-  explicit opengl_texture(Device &device, int width, int height) : data_() {
-    data_ = create_texture(device, 
-                           *this,
-                          [&](Device &device) {
-                            return create_empty_texture(device, width, height);
-                          });
-  }
+  explicit opengl_texture(Device &device, int width, int height)
+      : data_(create_texture(device, 
+                             *this,
+                             [&](Device &device) {
+                               return create_empty_texture(device, 
+                                                           width,
+                                                           height);
+                             })) {}
 
   template <typename Image>
-  explicit opengl_texture(Device &device, const Image &image) : data_() {
-  	data_ = create_texture(device, *this, image);
-  }
+  explicit opengl_texture(Device &device, const Image &image)
+      : data_(create_texture(device, *this, image)) {}
 
   int width() const {
     return std::get<1>(data_);
