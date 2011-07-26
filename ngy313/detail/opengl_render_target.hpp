@@ -11,24 +11,6 @@
 #include <ngy313/detail/image.hpp>
 
 namespace ngy313 { namespace detail {
-template <typename Target>
-class opengl_scoped_render_target : boost::noncopyable {
- public:
-  explicit opengl_scoped_render_target(graphic_system &device,
-                                                         Target &target) 
-      : device_(device), target_(target) {
-    target_.begin();
-  }
-
-  ~opengl_scoped_render_target() {
-    target_.end();
-  }
-
- private:
-  graphic_system &device_;
-  Target &target_;
-};
-
 struct base_fbo {
   template <typename Device>
   base_fbo(Device &device) {
@@ -82,7 +64,7 @@ struct state_viewport {
 
   static void reset(graphic_system &device, const gl_viewport &viewport) {
     const graphic_system::scoped_render render(device);
-    glViewport(viewport.x, viewport.y, viewport.width, viewport.height);
+    //glViewport(viewport.x, viewport.y, viewport.width, viewport.height);
   }
 };
 
@@ -121,9 +103,24 @@ class opengl_render_target
   typedef std::shared_ptr<GLuint> texture_handle;
 
  public:
-  explicit opengl_render_target(graphic_system &device,
-                                   int width,
-                                   int height) 
+  class scoped_render_target : boost::noncopyable {
+   public:
+    explicit scoped_render_target(graphic_system &device,
+                                  opengl_render_target &target) 
+        : device_(device), target_(target) {
+        target_.begin();
+    }
+
+    ~scoped_render_target() {
+      target_.end();
+   }
+
+   private:
+    graphic_system &device_;
+    opengl_render_target &target_;
+  };
+
+  explicit opengl_render_target(graphic_system &device, int width, int height) 
       : base_fbo(device),
         device_(device),
         width_(width),
@@ -133,8 +130,23 @@ class opengl_render_target
         frame_buffer_(create_frame_buffer(device)) {
      const graphic_system::scoped_render render(device);
      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, *frame_buffer_);
-     glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, *target_.handle(), 0);
-     glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, *render_buffer_);
+     glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
+                               GL_COLOR_ATTACHMENT0_EXT, 
+                               GL_TEXTURE_2D,
+                               *target_.handle(),
+                               0);
+     glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT,
+                                  GL_DEPTH_ATTACHMENT_EXT,
+                                  GL_RENDERBUFFER_EXT,
+                                  *render_buffer_);
+     glViewport(0, 0, width_, height_);
+     glMatrixMode(GL_PROJECTION);
+     glLoadIdentity();
+     glOrtho(0.f, 
+             static_cast<float>(width_),
+             0.f, static_cast<float>(height_),
+             0.f,
+             1.f);
      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
   }
 
@@ -149,10 +161,6 @@ class opengl_render_target
   void begin() {
     const graphic_system::scoped_render render(device_);
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, *frame_buffer_);
-    glViewport(0, 0, width(), height());
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0.f, static_cast<float>(width()), 0.f, static_cast<float>(height()), 0.f, 1.f);
   }
 
   void end() {
@@ -174,12 +182,16 @@ class opengl_render_target
   }
 
   template <typename Device>
-  static render_buffer_handle create_render_buffer(Device &device, int width, int height) {
+  static render_buffer_handle
+      create_render_buffer(Device &device, int width, int height) {
     const typename Device::scoped_render render(device);
     GLuint * const frame = new GLuint();
     glGenRenderbuffersEXT(1, frame);
     glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, *frame);
-    glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, width, height);
+    glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, 
+                             GL_DEPTH_COMPONENT, 
+                             width,
+                             height);
     return render_buffer_handle(frame, render_buffer_delete(device));
   }
 
