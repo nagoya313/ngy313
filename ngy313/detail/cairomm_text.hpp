@@ -10,13 +10,13 @@
 namespace ngy313 { namespace detail {
 template <typename Texture>
 class cairomm_text_image : public image_base<Texture> {
-	class creater {
-	 public:
+  class creater {
+   public:
     template <typename Font>
     explicit creater(const basic_font<Font> &font,
                      const string_wrap &text) 
         : text_(text.string()), 
-          extents_(extents(font)),
+          extents_(extents(font, text_)),
           surface_(Cairo::ImageSurface::create(
                        Cairo::FORMAT_ARGB32,
                        extents_.width, 
@@ -30,14 +30,13 @@ class cairomm_text_image : public image_base<Texture> {
     
     template <typename Device,
               typename Result = typename Texture::texture_tuple,
-              typename Handle = typename std::remove_reference<
-                                    typename Texture::handle_type>::type,
-              typename Deleter = typename Texture::deleter_type>
+              typename Handle = typename std::decay<
+                                    typename Texture::handle_type>::type>
     Result operator ()(const Device &device) const {  
       context_->set_source_rgba(1.0, 1.0, 1.0, 1.0);
       context_->move_to(-extents_.x_bearing, -extents_.y_bearing);
       context_->show_text(text_);
-      const Handle id(new GLuint(), Deleter(device));
+      Handle id(new GLuint(), typename Handle::deleter_type(device));
       glEnable(GL_TEXTURE_2D);
       glGenTextures(1, id.get());
       glBindTexture(GL_TEXTURE_2D, *id);
@@ -48,15 +47,18 @@ class cairomm_text_image : public image_base<Texture> {
                         GL_RGBA,
                         GL_UNSIGNED_BYTE,
                         surface_->get_data());
-      return Result(id, surface_->get_width(), surface_->get_height());
+      return std::make_tuple(std::move(id), 
+                             surface_->get_width(),
+                             surface_->get_height());
     }
 
     
-	 private:
+   private:
     template <typename Font>
-    Cairo::TextExtents extents(const basic_font<Font> &font) {
+    static Cairo::TextExtents extents(const basic_font<Font> &font,
+                                      const std::string &text) {
       Cairo::TextExtents text_extents;
-      font.handle()->get_text_extents(text_, text_extents);
+      font.handle()->get_text_extents(text, text_extents);
       return text_extents;
     }
     
@@ -64,7 +66,7 @@ class cairomm_text_image : public image_base<Texture> {
     Cairo::TextExtents extents_;
     Cairo::RefPtr<Cairo::ImageSurface> surface_;
     Cairo::RefPtr<Cairo::Context> context_;
-	};
+  };
 	
  public:
 	template <typename Font>
@@ -72,7 +74,7 @@ class cairomm_text_image : public image_base<Texture> {
 	                            const string_wrap &text)
 	    : texture_(creater(font, text)) {}
 	
-	virtual int width() const {
+  virtual int width() const {
     return texture_.width();
   }
 
@@ -85,7 +87,7 @@ class cairomm_text_image : public image_base<Texture> {
   }
 	  
  private:
-	Texture texture_;
+  Texture texture_;
 };
 }}
 
