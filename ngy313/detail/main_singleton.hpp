@@ -3,15 +3,10 @@
 
 #include <boost/noncopyable.hpp>
 #include <boost/optional.hpp>
-#include <boost/config.hpp>
 
 #if defined(_MSC_VER)
-#define NGY313_USE_BOOST_THREAD
-#endif
-
-#if defined(NGY313_USE_BOOST_THREAD)
 #include <boost/thread.hpp>
-#else
+#elif defined(__GNUC__)
 #include <thread>
 #endif
 
@@ -34,10 +29,10 @@ class basic_main_singleton : boost::noncopyable {
 
   boost::optional<Window> &window_optional() {
     main_init();
-#if defined(NGY313_USE_BOOST_THREAD)
- 	  static boost::once_flag flag = BOOST_ONCE_INIT;
+#if defined(_MSC_VER)
+    static boost::once_flag flag = BOOST_ONCE_INIT;
   	boost::call_once(flag, [this] {this->window_init();});
-#else
+#elif defined(__GNUC__)
     static std::once_flag flag;
     std::call_once(flag, [this] {this->window_init();});
 #endif
@@ -49,10 +44,10 @@ class basic_main_singleton : boost::noncopyable {
   }
 
   Graphic &graphic() {
-#if defined(NGY313_USE_BOOST_THREAD)
+#if defined(_MSC_VER)
   	static boost::once_flag flag = BOOST_ONCE_INIT;
   	boost::call_once(flag, [this] {this->graphic_init();});
-#else
+#elif defined(__GNUC__)
   	static std::once_flag flag;
   	std::call_once(flag, [this] {this->graphic_init();});
 #endif
@@ -60,10 +55,10 @@ class basic_main_singleton : boost::noncopyable {
   }
 
   Sound &sound() {
-#if defined(NGY313_USE_BOOST_THREAD)
+#if defined(_MSC_VER)
   	static boost::once_flag flag = BOOST_ONCE_INIT;
   	boost::call_once(flag, [this] {this->sound_init();});
-#else
+#elif defined(__GNUC__)
   	static std::once_flag flag;
   	std::call_once(flag, [this] {this->sound_init();});
 #endif
@@ -85,10 +80,10 @@ class basic_main_singleton : boost::noncopyable {
   }
 
   void main_init() {
-#if defined(NGY313_USE_BOOST_THREAD)
+#if defined(_MSC_VER)
     static boost::once_flag flag = BOOST_ONCE_INIT;
     boost::call_once(flag, [this] {main_ = boost::in_place();});
-#else
+#elif defined(__GNUC__)
     static std::once_flag flag;
     std::call_once(flag, [this] {main_ = boost::in_place();});
 #endif
@@ -103,7 +98,7 @@ class basic_main_singleton : boost::noncopyable {
   }
 
   void sound_init() {
-   sound_ = boost::in_place();
+    sound_ = boost::in_place();
   }
 
   boost::optional<Main> main_;
