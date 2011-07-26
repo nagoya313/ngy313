@@ -2,6 +2,7 @@
 #define NGY313_DETAIL_WINDOW_HPP_
 
 #include <cassert>
+#include <string>
 #include <ngy313/fwd.hpp>
 #include <ngy313/string_wrap.hpp>
 
@@ -31,14 +32,14 @@ class basic_window {
     window_.set_icon(icon);
   }
 
-  void move(int x_pos, int y_pos) {
-    window_.move(x_pos, y_pos);
-    assert(x() == x_pos && y() == y_pos);
+  void move(int x, int y) {
+    window_.move(x, y);
+    assert(this->x() == x && this->y() == y);
   }
 
-  void resize(int width_size, int height_size) {
-    window_.resize(width_size, height_size);
-    assert(width() == width_size && height() == height_size);
+  void resize(int width, int height) {
+    window_.resize(width, height);
+    assert(this->width() == width && this->height() == height);
   }
 
   std::string caption() const {
