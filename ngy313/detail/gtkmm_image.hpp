@@ -6,8 +6,6 @@
 #include <gtkmm.h>
 #include <ngy313/string_wrap.hpp>
 #include <ngy313/detail/image.hpp>
-#include <boost/gil/gil_all.hpp>
-#include <boost/gil/extension/io/png_io.hpp>
 
 namespace ngy313 { namespace detail {
 template <typename Texture>
@@ -18,34 +16,36 @@ class gtkmm_image : public image_base<Texture> {
 	    : file_name_(file_name.string()) {}
 
    template <typename Device,
-                    typename Result = typename Texture::texture_tuple,
-                    typename Handle = typename std::remove_reference<
-                                                       typename Texture::handle_type>::type,
-                    typename Deleter = typename Texture::deleter_type>
+             typename Result = typename Texture::texture_tuple,
+             typename Handle = typename std::decay<
+                                   typename Texture::handle_type>::type>
     Result operator ()(const Device &device) const {
       try {
         const Glib::RefPtr<Gdk::Pixbuf> pixel(
   	  	  	Gdk::Pixbuf::create_from_file(file_name_.c_str()));
-        const Handle id(new GLuint(), Deleter(device));
+        Handle id(new GLuint(), typename Handle::deleter_type(device));
         glEnable(GL_TEXTURE_2D);
         glGenTextures(1, id.get());
         glBindTexture(GL_TEXTURE_2D, *id);
         gluBuild2DMipmaps(GL_TEXTURE_2D,
-                                    GL_RGBA,
-                                    pixel->get_width(),
-                                    pixel->get_height(),
-                                    GL_RGBA,
-                                    GL_UNSIGNED_BYTE,
-                                    pixel->get_pixels());
-        return Result(id, pixel->get_width(), pixel->get_height());
-     } catch(const Glib::Error &error) {
-  	throw std::runtime_error("画像の読み込みに失敗しました");
-     }
+                          GL_RGBA,
+                          pixel->get_width(),
+                          pixel->get_height(),
+                          GL_RGBA,
+                          GL_UNSIGNED_BYTE,
+                          pixel->get_pixels());
+        return std::make_tuple(std::move(id),
+                               pixel->get_width(),
+                               pixel->get_height());
+      } catch(const Glib::Error &error) {
+        throw std::runtime_error("画像の読み込みに失敗しました");
+      }
    }
 
    private:
     std::string file_name_;
   };
+  
  public:
   explicit gtkmm_image(const string_wrap &file_name)
 	    : texture_(loader(file_name)) {}
