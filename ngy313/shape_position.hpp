@@ -7,7 +7,7 @@
 #include <boost/range/numeric.hpp>
 #include <ngy313/fvf_traits.hpp>
 #include <ngy313/vertex_member.hpp>
-#include <ngy313/detail/drawable_traits.hpp>
+#include <ngy313/detail/drawable_traits_key.hpp>
 
 namespace ngy313 { namespace detail {
 const struct add_position_x_t {
