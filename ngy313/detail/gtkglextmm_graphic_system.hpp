@@ -17,6 +17,7 @@
 #include <ngy313/fwd.hpp>
 #include <ngy313/fvf_traits.hpp>
 #include <ngy313/vertex_member.hpp>
+#include <ngy313/detail/fwd.hpp>
 #include <ngy313/detail/drawable_traits_key.hpp>
 
 namespace ngy313 { namespace detail {
@@ -25,9 +26,9 @@ struct scoped_vertex_enable {
   explicit scoped_vertex_enable(const Vertex &vertex) {
     glEnableClientState(GL_VERTEX_ARRAY);
     glVertexPointer(3,
-    		             GL_FLOAT,
-    		             sizeof(vertex.front()),
-    		             &vertex_member_at<position_member>(vertex[0]).x_);
+    		        GL_FLOAT,
+    		        sizeof(vertex.front()),
+    		        &vertex_member_at<position_member>(vertex[0]).x_);
   }
 
   ~scoped_vertex_enable() {
@@ -50,9 +51,9 @@ struct scoped_color_enable<FVF, typename std::enable_if<FVF & 0x02>::type>
       : scoped_vertex_enable(vertex) {
     glEnableClientState(GL_COLOR_ARRAY);
     glColorPointer(4,
-    		            GL_FLOAT,
-    		            sizeof(vertex.front()),
-    		            &vertex_member_at<diffuse_member>(vertex[0]).r_);
+                   GL_FLOAT,
+    		       sizeof(vertex.front()),
+    		       &vertex_member_at<diffuse_member>(vertex[0]).r_);
   }
 
   ~scoped_color_enable() {
@@ -76,10 +77,10 @@ struct scoped_texture_1_enable<FVF, typename std::enable_if<FVF & 0x08>::type>
       : scoped_texture_1_enable::scoped_color_enable(vertex) {
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glTexCoordPointer(2,
-    		               GL_FLOAT,
-    		               sizeof(vertex.front()),
-    		               &vertex_member_at<texture_member>(
-    		              		  vertex[0]).texture_array[0].u);
+    		          GL_FLOAT,
+    		          sizeof(vertex.front()),
+    		          &vertex_member_at<texture_member>(
+                          vertex[0]).texture_array[0].u);
   }
 
   ~scoped_texture_1_enable() {
@@ -104,8 +105,8 @@ class gtkglextmm_graphic_system : boost::noncopyable {
     }
     
     ~scoped_gl() {
-	    assert(gl_window_);
-	    gl_window_->gl_end();
+      assert(gl_window_);
+      gl_window_->gl_end();
     }
 
     void swap_buffers() {
@@ -114,7 +115,7 @@ class gtkglextmm_graphic_system : boost::noncopyable {
     }
 
    private:
-    const Glib::RefPtr<Gdk::GL::Window> gl_window_;
+    Glib::RefPtr<Gdk::GL::Window> gl_window_;
   };
 
   class system_impl : public Gtk::GL::DrawingArea,
@@ -122,11 +123,11 @@ class gtkglextmm_graphic_system : boost::noncopyable {
    public:
     template <typename Window>
     explicit system_impl(const Window &window) 
-        : flag_(),
-          width_(window.width()),
+        : width_(window.width()),
           height_(window.height()),
           realized_(false) {
-    	 std::call_once(flag_, [] {Gtk::GL::init(0, 0);});
+	  static std::once_flag flag_;
+      std::call_once(flag_, [] {Gtk::GL::init(0, 0);});
       const Glib::RefPtr<Gdk::GL::Config> gl_config
           = Gdk::GL::Config::create(
                 Gdk::GL::MODE_RGB
@@ -159,9 +160,9 @@ class gtkglextmm_graphic_system : boost::noncopyable {
       gl_window->swap_buffers();
     }
 
-    void resize(int width_size, int height_size) {
-      width_ = width_size;
-      height_ = height_size;
+    void resize(int width, int height) {
+      width_ = width;
+      height_ = height;
       glViewport(0, 0, width_, height_);
       glMatrixMode(GL_PROJECTION);
       glLoadIdentity();
@@ -171,7 +172,7 @@ class gtkglextmm_graphic_system : boost::noncopyable {
               0.f, 
               0.f,
               1.f);
-      assert(width_size == width() && height_size == height());
+      assert(width == this->width() && height == this->height());
     }
 
     int width() const {
@@ -223,7 +224,6 @@ class gtkglextmm_graphic_system : boost::noncopyable {
     }
 
    private:
-    std::once_flag flag_;
     int width_;
     int height_;
     bool realized_;
@@ -263,15 +263,14 @@ class gtkglextmm_graphic_system : boost::noncopyable {
       gl_window_->gl_end();
     }
     
-    const Glib::RefPtr<Gdk::GL::Window> gl_window_;
-    const bool succeeded_;
+    Glib::RefPtr<Gdk::GL::Window> gl_window_;
+    bool succeeded_;
   };
 
   class enable_texture : boost::noncopyable {
    public:
-    template <typename Drawable>
-    explicit enable_texture(gtkglextmm_graphic_system &device, 
-                            const Drawable &drawable) {
+    template <typename Device, typename Drawable>
+    explicit enable_texture(Device &device, const Drawable &drawable) {
       glEnable(GL_TEXTURE_2D);
       glBindTexture(GL_TEXTURE_2D, *drawable.texture1().handle().get());
     }
@@ -290,8 +289,8 @@ class gtkglextmm_graphic_system : boost::noncopyable {
           dest_blend_(get_dest_blend_mode()) {
       glEnable(GL_BLEND);
       set_blend_pair<BlendPair>();
-       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	  glEnable(GL_BLEND);
     }
 
     ~scoped_blend() {
@@ -326,14 +325,13 @@ class gtkglextmm_graphic_system : boost::noncopyable {
     GLenum dest_blend_;
   };
 
-
   template <typename Window>
-  explicit gtkglextmm_graphic_system(const Window &window)
+  explicit gtkglextmm_graphic_system(const basic_window<Window> &window)
       : graphic_(new system_impl(window)) {}
 
-  void resize(int width_size, int height_size) {
-    graphic_->resize(width_size, height_size);
-    assert(width_size == width() && height_size == height());
+  void resize(int width, int height) {
+    graphic_->resize(width, height);
+    assert(width == this->width() && height == this->height());
   }
 
   int width() const {
@@ -357,22 +355,21 @@ class gtkglextmm_graphic_system : boost::noncopyable {
     return graphic_->pixel_color(x, y);
   }
 
-  template <typename Drawable>
+  template <typename Drawable, 
+            typename List = typename std::decay<Drawable>::type::list_type>
   void draw_primitive(Drawable &&drawable) {
     const auto vertex = drawable.vertex();
     const scoped_list<
         fvf_traits<
             typename boost::mpl::at<
-                typename std::decay<Drawable>::type::list_type,
+                List,
                 fvf_key>::type>::fvf_type::value> list(vertex);
-    glDrawArrays(boost::mpl::at<typename std::decay<Drawable>::type::list_type,
-    	                          primitive_key>::type::type::value,
-                    0,
-                 boost::mpl::at<typename std::decay<Drawable>::type::list_type,
-                 size_key>::type::type::value);
+    glDrawArrays(boost::mpl::at<List, primitive_key>::type::type::value,
+                 0,
+                 boost::mpl::at<List, size_key>::type::type::value);
   }
 
-  const std::unique_ptr<system_impl> &handle() const {
+  const handle_type &handle() const {
     return graphic_;
   }
 
