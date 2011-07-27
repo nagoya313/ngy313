@@ -11,75 +11,19 @@
 #endif
 
 namespace ngy313 { namespace detail {
-template <typename Main,
-          typename Window,
-          typename Graphic,
-          typename Sound>
+template <typename Main, typename Window, typename Graphic, typename Sound>
 class basic_main_singleton : boost::noncopyable {
  public:
   static basic_main_singleton &instance() {
     static basic_main_singleton instance;
     return instance;
   }
+  
+  boost::optional<Main> &main_optional() {
+    return main_;
+  }
 
   Main &main() {
-    main_init();
-    return *main_;
-  }
-
-  boost::optional<Window> &window_optional() {
-    main_init();
-#if defined(_MSC_VER)
-    static boost::once_flag flag = BOOST_ONCE_INIT;
-  	boost::call_once(flag, [this] {this->window_init();});
-#elif defined(__GNUC__)
-    static std::once_flag flag;
-    std::call_once(flag, [this] {this->window_init();});
-#endif
-    return window_;
-  }
-
-  Window &window() {
-    return *window_optional();
-  }
-
-  Graphic &graphic() {
-#if defined(_MSC_VER)
-  	static boost::once_flag flag = BOOST_ONCE_INIT;
-  	boost::call_once(flag, [this] {this->graphic_init();});
-#elif defined(__GNUC__)
-  	static std::once_flag flag;
-  	std::call_once(flag, [this] {this->graphic_init();});
-#endif
-    return *graphic_;
-  }
-
-  Sound &sound() {
-#if defined(_MSC_VER)
-  	static boost::once_flag flag = BOOST_ONCE_INIT;
-  	boost::call_once(flag, [this] {this->sound_init();});
-#elif defined(__GNUC__)
-  	static std::once_flag flag;
-  	std::call_once(flag, [this] {this->sound_init();});
-#endif
-    return *sound_;
-  }
-
- private:
-  basic_main_singleton() : main_(), 
-                           window_(),
-                           graphic_(),
-                           sound_() {}
-
-  static Window init_window() {
-    Window window;
-    window.move(0, 0);
-    window.resize(640, 480);
-    window.set_caption("");
-    return window;
-  }
-
-  void main_init() {
 #if defined(_MSC_VER)
     static boost::once_flag flag = BOOST_ONCE_INIT;
     boost::call_once(flag, [this] {main_ = boost::in_place();});
@@ -87,19 +31,60 @@ class basic_main_singleton : boost::noncopyable {
     static std::once_flag flag;
     std::call_once(flag, [this] {main_ = boost::in_place();});
 #endif
+    assert(main_);
+    return *main_;
   }
 
-  void window_init() {
-  	window_ = boost::in_place();
+  boost::optional<Window> &window_optional() {
+    return window_;
   }
 
-  void graphic_init() {
-    graphic_ = boost::in_place(window());
+  Window &window() {
+#if defined(_MSC_VER)
+    static boost::once_flag flag = BOOST_ONCE_INIT;
+  	boost::call_once(flag, [this] {window_ = boost::in_place();});
+#elif defined(__GNUC__)
+    static std::once_flag flag;
+    std::call_once(flag, [this] {window_ = boost::in_place();});
+#endif
+	assert(window_);
+    return *window_optional();
+  }
+  
+  boost::optional<Graphic> &graphic_optional() {
+    return graphic_;
   }
 
-  void sound_init() {
-    sound_ = boost::in_place();
+  Graphic &graphic() {
+#if defined(_MSC_VER)
+  	static boost::once_flag flag = BOOST_ONCE_INIT;
+  	boost::call_once(flag, [this] {graphic_ = boost::in_place(this->window());});
+#elif defined(__GNUC__)
+  	static std::once_flag flag;
+  	std::call_once(flag, [this] {graphic_ = boost::in_place(this->window());});
+#endif
+    assert(graphic_);
+    return *graphic_;
   }
+  
+  boost::optional<Sound> &sound_optional() {
+    return sound_;
+  }
+
+  Sound &sound() {
+#if defined(_MSC_VER)
+  	static boost::once_flag flag = BOOST_ONCE_INIT;
+  	boost::call_once(flag, [this] {sound_ = boost::in_place();});
+#elif defined(__GNUC__)
+  	static std::once_flag flag;
+  	std::call_once(flag, [this] {sound_ = boost::in_place();});
+#endif
+    assert(sound_);
+    return *sound_;
+  }
+
+ private:
+  basic_main_singleton() : main_(), window_(), graphic_(), sound_() {}
 
   boost::optional<Main> main_;
   boost::optional<Window> window_;
