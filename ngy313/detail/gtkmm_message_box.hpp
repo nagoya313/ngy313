@@ -5,6 +5,7 @@
 #include <boost/noncopyable.hpp>
 #include <gtkmm.h>
 #include <ngy313/string_wrap.hpp>
+#include <ngy313/detail/gtkmm_initializer.hpp>
 
 namespace ngy313 { namespace detail {
 class gtkmm_message_box : boost::noncopyable {
@@ -17,6 +18,7 @@ class gtkmm_message_box : boost::noncopyable {
                  const string_wrap &caption,
                  Gtk::ButtonsType botton,
                  Gtk::MessageType icon) {
+	gtkmm_initializer init;
     Gtk::MessageDialog diag(message.c_str(),
                             false, 
                             icon, 
