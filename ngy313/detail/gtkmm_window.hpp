@@ -7,28 +7,28 @@
 #include <gtkmm.h>
 #include <ngy313/fwd.hpp>
 #include <ngy313/string_wrap.hpp>
+#include <ngy313/detail/gtkmm_initializer.hpp>
 
 namespace ngy313 { namespace detail {
 class gtkmm_window {
  public:
   class window_impl : public Gtk::Window {
-	 public:
-	  window_impl() {
-	    set_resizable(false);
-	  }
+   public:
+    window_impl() {
+	  gtkmm_initializer init;
+      set_resizable(false);
+    }
 	 
    protected:
     virtual bool on_delete_event(GdkEventAny *event) {
-	    Gtk::Main::quit();
-	    return true;
+      Gtk::Main::quit();
+      return true;
     }
   };
   
   typedef const std::unique_ptr<window_impl> &handle_type;
 
-  gtkmm_window() : handle_(new window_impl()),
-  		              width_(640),
-  		              height_(480) {
+  gtkmm_window() : handle_(new window_impl()), width_(640), height_(480) {
     resize(width_, height_);  
   }
 
