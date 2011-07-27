@@ -46,7 +46,7 @@ buffer_handle create_buffer() {
 }
 
 struct buffers_delete {
-	explicit buffers_delete(int size) : size_(size) {}
+  explicit buffers_delete(int size) : size_(size) {}
 
   void operator ()(const ALuint *buffer) const {
     assert(buffer);
@@ -67,83 +67,31 @@ buffers_handle create_buffers(int size) {
   return buffers;
 }
 
-class source_voice : boost::noncopyable {
- public:
-  template <typename Loader>
-  explicit source_voice(const Loader &loader) 
-      : buffer_(create_buffer()), source_(create_source()) {
-    const auto format_data = loader.format();
-    ALenum format;
-    if (format_data.channels ==  1) {
-      format = format_data.bits_per_sample == 8 ? AL_FORMAT_MONO8 : AL_FORMAT_MONO16;
-    } else {
-      format = format_data.bits_per_sample == 8 ? AL_FORMAT_STEREO8 : AL_FORMAT_STEREO16;
-    }
-    alBufferData(*buffer_, format, &(*loader.buffer()), loader.size(), format_data.samples_per_sec);
-    alSourcei(*source_, AL_BUFFER, *buffer_);
-  }
-  
-  ALuint voice() const {
-    return *source_;
-  }
- 
- private:
-  buffer_handle buffer_;
-  source_handle source_;
-};
-
-template <typename Loader>
 class openal_voice : boost::noncopyable {
  public:
-  template <typename Device, typename Load>
-  explicit openal_voice(const Device &device, Load &&loader)
-      : voice_(std::forward<Load>(loader)) {}
-
-  void start() {
-    alSourcePlay(voice_.voice());
+  template <typename Device, typename Loader>
+  explicit openal_voice(const Device &device, Loader &&loader, bool loop)
+      : buffer_(create_buffer()), source_(create_source()) {
+	const auto format_data = loader.format();
+    ALenum format;
+    if (format_data.channels ==  1) {
+      format = format_data.bits_per_sample == 8 ?
+               AL_FORMAT_MONO8 :
+               AL_FORMAT_MONO16;
+    } else {
+      format = format_data.bits_per_sample == 8 ?
+               AL_FORMAT_STEREO8 :
+               AL_FORMAT_STEREO16;
+    }
+    alBufferData(*buffer_,
+                 format,
+                 &(*loader.buffer()),
+                 loader.size(),
+                 format_data.samples_per_sec);
+    alSourcei(*source_, AL_BUFFER, *buffer_);
+    alSourcei(*source_, AL_LOOPING, loop ? AL_TRUE : AL_FALSE);      
   }
 
-  void pause() {
-    alSourcePause(voice_.voice());
-  }
-
-  void stop() {
-    alSourceStop(voice_.voice());
-  }
-
-  void set_volume(float volume) {
-    alSourcef(voice_.voice(), AL_GAIN, volume);
-  }
-
-  float volume() const {
-    float vol;
-    alGetSourcef(voice_.voice(), AL_GAIN, &vol);
-    return vol;
-  }
-
- private:
-  source_voice voice_;
-};
-
-template <typename Loader>
-class streaming_source_voice {
- public:
-  template <typename Load>
-  explicit streaming_source_voice(Load &&loader)
-      : end_flag_(false),
-        loader_(std::forward<Load>(loader)),
-        buffers_(create_buffers(kBufferSize_)),
-        source_(create_source()) {
-	for (int i = 0; i < kBufferSize_; ++i) {
-   	 read(buffers_[i]);
-  	}
-  	alSourceQueueBuffers(*source_, kBufferSize_, &buffers_[0]);
-  }
-
-  void quit() {
-  	end_flag_.store(true, std::memory_order_seq_cst);
-  }
-  
   void start() {
     alSourcePlay(*source_);
   }
@@ -154,7 +102,6 @@ class streaming_source_voice {
 
   void stop() {
     alSourceStop(*source_);
-    loader_.reset();
   }
 
   void set_volume(float volume) {
@@ -168,59 +115,18 @@ class streaming_source_voice {
     return vol;
   }
 
-  void run() {
-  	for (;;) {
-      if (end_flag_.load(std::memory_order_seq_cst)) {
-         break;
-       }
-      ALint state;
-      alGetSourcei(*source_, AL_SOURCE_STATE, &state);
-      if (state == AL_PLAYING) {
-        int processed;
-        alGetSourcei(*source_, AL_BUFFERS_PROCESSED, &processed);
-        while(processed--) {
-          ALuint buffer;
-          alSourceUnqueueBuffers(*source_, 1, &buffer);
-          read(buffer);
-          alSourceQueueBuffers(*source_, 1, &buffer);
-         }
-       }
-      sleep(1);
-     }
-   }
-
  private:
-  void read(ALuint buffer) {
-    assert(buffer);
-    loader_.start();
-    const auto format_data = loader_.format();
-    ALenum format;
-    if (format_data.channels ==  1) {
-      format = format_data.bits_per_sample == 8 ? AL_FORMAT_MONO8 : AL_FORMAT_MONO16;
-    } else {
-      format = format_data.bits_per_sample == 8 ? AL_FORMAT_STEREO8 : AL_FORMAT_STEREO16;
-     }
-    alBufferData(buffer,
-    		     format,
-     		     &(*loader_.buffer()),
-     		     loader_.size(),
-     		     format_data.samples_per_sec);
-  }
-
-  std::atomic<bool> end_flag_;
-  Loader loader_;
-  buffers_handle buffers_;
+  buffer_handle buffer_;
   source_handle source_;
-  static constexpr int kBufferSize_ = 32;
 };
 
 template <typename Loader>
 class openal_streaming_voice : boost::noncopyable {
  public:
-	template <typename Device, typename Load>
-  explicit openal_streaming_voice(const Device &device, Load &&loader)
+  template <typename Device, typename Load>
+  explicit openal_streaming_voice(const Device &device, Load &&loader, bool)
       : loader_(std::forward<Load>(loader)),
-        thread_(std::bind(&streaming_source_voice<Loader>::run, &loader_)) {}
+        thread_(std::bind(&streaming_source_voice::run, &loader_)) {}
 
   ~openal_streaming_voice() {
     loader_.quit();
@@ -248,7 +154,98 @@ class openal_streaming_voice : boost::noncopyable {
   }
 
  private:
-  streaming_source_voice<Loader> loader_;
+  class streaming_source_voice {
+   public:
+    template <typename Load>
+    explicit streaming_source_voice(Load &&loader)
+        : end_flag_(false),
+      loader_(std::forward<Load>(loader)),
+      buffers_(create_buffers(kBufferSize_)),
+      source_(create_source()) {
+	  for (int i = 0; i < kBufferSize_; ++i) {
+        read(buffers_[i]);
+  	  }
+  	  alSourceQueueBuffers(*source_, kBufferSize_, &buffers_[0]);
+    }
+
+    void quit() {
+  	  end_flag_.store(true, std::memory_order_seq_cst);
+    }
+  
+    void start() {
+      alSourcePlay(*source_);
+    }
+
+    void pause() {
+      alSourcePause(*source_);
+    }
+
+    void stop() {
+      alSourceStop(*source_);
+      loader_.reset();
+    }
+
+    void set_volume(float volume) {
+      alSourcef(*source_, AL_GAIN, volume);
+      assert(volume == this->volume());
+    }
+
+    float volume() const {
+      float vol;
+      alGetSourcef(*source_, AL_GAIN, &vol);
+      return vol;
+    }
+
+    void run() {
+  	  for (;;) {
+        if (end_flag_.load(std::memory_order_seq_cst)) {
+           break;
+        }
+        ALint state;
+        alGetSourcei(*source_, AL_SOURCE_STATE, &state);
+        if (state == AL_PLAYING) {
+          int processed;
+          alGetSourcei(*source_, AL_BUFFERS_PROCESSED, &processed);
+          while(processed--) {
+            ALuint buffer;
+            alSourceUnqueueBuffers(*source_, 1, &buffer);
+            read(buffer);
+            alSourceQueueBuffers(*source_, 1, &buffer);
+          }
+        }
+        sleep(1);
+      }
+    }
+
+   private:
+    void read(ALuint buffer) {
+      const auto format_data = loader_.format();
+      ALenum format;
+      if (format_data.channels ==  1) {
+        format = format_data.bits_per_sample == 8 ?
+                 AL_FORMAT_MONO8 :
+                 AL_FORMAT_MONO16;
+      } else {
+        format = format_data.bits_per_sample == 8 ?
+                 AL_FORMAT_STEREO8 :
+                 AL_FORMAT_STEREO16;
+       }
+       alBufferData(buffer,
+                    format,
+     	 	        &(*loader_.streaming_buffer()),
+     		        4096,
+     		        format_data.samples_per_sec);
+      if (loader_.end()) {
+	    pause();
+      }
+    }
+
+    std::atomic<bool> end_flag_;
+    Loader loader_;
+    buffers_handle buffers_;
+    source_handle source_;
+    static constexpr int kBufferSize_ = 32;
+  } loader_;
   std::thread thread_;
 };
 }}
