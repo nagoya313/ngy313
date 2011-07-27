@@ -9,9 +9,9 @@
 namespace ngy313 {
 template <typename Drawable, typename BlendPair>
 struct blend_adaptor {
-  typedef add_drawable_adaptor<Drawable,
-                               boost::mpl::pair<detail::blend_pair_key,
-                                                BlendPair>> type;
+  typedef add_drawable_adaptor<boost::mpl::pair<detail::blend_pair_key,
+                                                BlendPair>,
+                               Drawable> type;
 };
 
 template <typename Src, typename Dest>
@@ -29,8 +29,10 @@ struct blend_pair {
                              dest_color_blend_tag, 
                              inv_dest_color_blend_tag> blend_tag_list;
 
-  static_assert(boost::mpl::contains<blend_tag_list, Src>::value, "");
-  static_assert(boost::mpl::contains<blend_tag_list, Dest>::value, "");
+  static_assert(boost::mpl::contains<blend_tag_list, Src>::value,
+                "Blend_tag of src is illegal.");
+  static_assert(boost::mpl::contains<blend_tag_list, Dest>::value, 
+                "Blend_tag of dest is illegal.");
 };
 
 template <typename Drawable, typename Blend>
