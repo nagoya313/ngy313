@@ -10,23 +10,9 @@
 
 namespace ngy313 { namespace detail {
 class openal_sound_system : boost::noncopyable {
-  struct device_delete {
-    void operator ()(ALCdevice *device) const {
-      assert(device);
-      alcCloseDevice(device);
-    }
-  };
-
+  struct device_delete;
   typedef std::unique_ptr<ALCdevice, device_delete> device_handle;
-
-  struct context_delete {
-    void operator ()(ALCcontext *context) const {
-      assert(context);
-      alcMakeContextCurrent(nullptr);
-      alcDestroyContext(context);
-    }
-  };
-
+  struct context_delete;
   typedef std::unique_ptr<ALCcontext, context_delete> context_handle;
 
  public:
@@ -36,6 +22,21 @@ class openal_sound_system : boost::noncopyable {
   }
 
  private:
+  struct device_delete {
+    void operator ()(ALCdevice *device) const {
+      assert(device);
+      alcCloseDevice(device);
+    }
+  };
+  
+  struct context_delete {
+    void operator ()(ALCcontext *context) const {
+      assert(context);
+      alcMakeContextCurrent(nullptr);
+      alcDestroyContext(context);
+    }
+  };
+  
   static device_handle create_device() {
     ALCdevice * const device = alcOpenDevice(nullptr);
     if (!device) {
@@ -45,16 +46,15 @@ class openal_sound_system : boost::noncopyable {
   }
 
   static context_handle create_context(const device_handle &device) {
-    ALCcontext * const context = alcCreateContext(device.get(),
-                                                        nullptr);
+    ALCcontext * const context = alcCreateContext(device.get(), nullptr);
     if (!context) {
       throw std::runtime_error("コンテクストの生成に失敗しました");
     }
     return context_handle(context);
   }
 
-  const device_handle device_;
-  const context_handle context_;
+  device_handle device_;
+  context_handle context_;
 };
 }}
 
