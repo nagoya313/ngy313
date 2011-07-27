@@ -6,10 +6,11 @@
 #include <gtkmm.h>
 #include <ngy313/string_wrap.hpp>
 #include <ngy313/detail/image.hpp>
+#include <ngy313/detail/gtkmm_initializer.hpp>
 
 namespace ngy313 { namespace detail {
 template <typename Texture>
-class gtkmm_image : public image_base<Texture> {
+class gtkmm_image : public image_base<Texture>, gtkmm_initializer {
   class loader {
    public:
     explicit loader(const string_wrap &file_name)
