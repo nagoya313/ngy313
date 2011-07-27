@@ -5,6 +5,7 @@
 #include <tuple>
 #include <vector>
 #include <boost/config.hpp>
+#include <boost/mpl/vector.hpp>
 
 #if defined(_WIN32)
 #include <Xaudio2.h>
@@ -26,7 +27,24 @@ struct buffer_format {
 
 typedef std::vector<std::uint8_t> buffer_container_type;
 
-typedef std::tuple<buffer_container_type, buffer_format> sound_tuple;
+struct normal_play_tag;
+struct streaming_play_tag;
+
+template <typename PlayTag>
+struct sound_loader_facade {
+  typedef PlayTag play_type;
+};
+
+typedef boost::mpl::vector<normal_play_tag> normal_play_only_tag;
+typedef boost::mpl::vector<streaming_play_tag> streaming_play_only_tag;
+typedef boost::mpl::vector<normal_play_tag,
+                           streaming_play_tag> normal_and_streaming_play_tag;
+
+struct sound_buffer_base {
+  virtual ~sound_buffer_base() {}
+  virtual const buffer_container_type &buffer() const = 0;
+  virtual const buffer_format &format() const = 0;
+};
 }
 
 #endif
