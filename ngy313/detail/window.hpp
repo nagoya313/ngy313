@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <string>
+#include <boost/noncopyable.hpp>
 #include <ngy313/fwd.hpp>
 #include <ngy313/string_wrap.hpp>
 
@@ -14,9 +15,11 @@
 
 namespace ngy313 { namespace detail {
 template <typename Window>
-class basic_window {
+class basic_window : boost::noncopyable {
  public:
-  basic_window() : window_() {}
+  basic_window() : window_() {
+    assert(width() == 640 && height() == 480 && caption() == "");  
+  }
 
   void show() {
     window_.show();
@@ -67,9 +70,6 @@ class basic_window {
   }
 
  private:
-  basic_window(const basic_window &rhs);
-  basic_window &operator =(const basic_window &rhs);
-
   Window window_;
 };
 
