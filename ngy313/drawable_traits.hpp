@@ -1,24 +1,27 @@
 #ifndef NGY313_DRAWABLE_TRAITS_HPP_
 #define NGY313_DRAWABLE_TRAITS_HPP_
 
+#include <cstddef>
 #include <cstdint>
 #include <array>
 #include <type_traits>
 #include <boost/mpl/contains.hpp>
 #include <boost/mpl/map.hpp>
+#include <boost/mpl/pair.hpp>
 #include <ngy313/fvf_traits.hpp>
 #include <ngy313/types.hpp>
 #include <ngy313/detail/drawable_traits_key.hpp>
 
 namespace ngy313 {
-template <typename Drawable, 
+template <typename Drawable,
           std::size_t Size,
           std::uint32_t Count,
-          typename FVFTag, 
+          typename FVFTag,
           typename PrimitiveTag>
 struct drawable_traits {
   static_assert(boost::mpl::contains<detail::primitive_type::tag_list,
-                                     PrimitiveTag>::value, "");
+                                     PrimitiveTag>::value, 
+                "Primitive_tag is illegal.");
   
   typedef boost::mpl::map<
       boost::mpl::pair<detail::drawable_key, Drawable>, 
