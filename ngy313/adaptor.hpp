@@ -27,7 +27,7 @@ struct drawable_adaptor {
   const Drawable &drawable_;
 };
 
-template <typename Drawable, typename AddData>
+template <typename AddData, typename Drawable>
 struct add_drawable_adaptor {
   typedef typename boost::mpl::insert<typename Drawable::list_type,
 		                              AddData>::type list_type;
