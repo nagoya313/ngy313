@@ -1,19 +1,37 @@
 #ifndef NGY313_SOUND_HPP_
 #define NGY313_SOUND_HPP_
 
+#include <cassert>
+#include <cstdint>
+#include <type_traits>
 #include <utility>
 #include <boost/noncopyable.hpp>
+#include <boost/mpl/contains.hpp>
 #include <ngy313/detail/ngy313.hpp>
 #include <ngy313/detail/voice.hpp>
 
 namespace ngy313 {
-template <typename Loader>
-class basic_sound : boost::noncopyable {
- public:
-  template <typename Load>
-  explicit basic_sound(Load &&loader) 
+class sound : boost::noncopyable {
+ public:              
+  template <typename Loader>
+  explicit sound(Loader &&loader) 
       : voice_(detail::main_singleton::instance().sound(),
-               std::forward<Load>(loader)) {}
+               std::forward<Loader>(loader),
+               false) {
+    static_assert(boost::mpl::contains<typename std::decay<Loader>::type::play_type,
+                                       normal_play_tag>::value, 
+                  "Loader does not usually correspond to the reproduction.");
+  }
+               
+  template <typename Loader>
+  explicit sound(Loader &&loader, bool loop) 
+      : voice_(detail::main_singleton::instance().sound(),
+               std::forward<Loader>(loader),
+               loop) {
+	static_assert(boost::mpl::contains<typename std::decay<Loader>::type::play_type,
+                                       normal_play_tag>::value, 
+                  "Loader does not usually correspond to the reproduction.");
+  }
 
   void start() {
     voice_.start();
@@ -29,23 +47,28 @@ class basic_sound : boost::noncopyable {
 
   void set_volume(float volume) {
     voice_.set_volume(volume);
+    assert(volume == this->volume());
   }
 
   float volume() const {
-    return voice_.set_volume();
+    return voice_.volume();
   }
 
  private:
-  typename detail::voice<Loader>::type voice_;
+  detail::voice voice_;
 };
 
 template <typename Loader>
 class basic_streaming_sound : boost::noncopyable {
  public:
+  static_assert(boost::mpl::contains<typename Loader::play_type,
+                                     streaming_play_tag>::value, 
+                "Loader does not correspond to the streaming reproduction.");
+                
   template <typename Load>
   explicit basic_streaming_sound(Load &&loader) 
       : voice_(detail::main_singleton::instance().sound(),
-               std::forward<Load>(loader)) {}
+               std::forward<Load>(loader), false) {}
 
   void start() {
     voice_.start();
