@@ -3,27 +3,26 @@
 
 #include <cstdint>
 #include <exception>
-#include <memory>
 #include <boost/noncopyable.hpp>
 #include <gtkmm.h>
+#include <ngy313/detail/gtkmm_initializer.hpp>
 
 namespace ngy313 { namespace detail {
 class gtkmm_main : boost::noncopyable {
  public:
-  gtkmm_main()
-      : main_(0, nullptr), throw_(false), exception_() {}
+  gtkmm_main() : exception_() {
+    gtkmm_initializer init;	  
+  }
 
   template <typename Pred>
-  int run(const Pred pred) {
+  int run(Pred pred) {
   	Glib::add_exception_handler(
-  	    sigc::mem_fun(this, &gtkmm_main::error_handler));
+        sigc::mem_fun(this, &gtkmm_main::error_handler));
     const main_loop<Pred> update(pred);
     Glib::signal_timeout().connect(
-    		 sigc::mem_fun(&update,
-                      &main_loop<Pred>::update),
-                         16);
+    		 sigc::mem_fun(&update, &main_loop<Pred>::update), 16);
     Gtk::Main::run();
-    if (throw_) {
+    if (exception_) {
       std::rethrow_exception(exception_);
     }
     return 0;
@@ -39,15 +38,14 @@ class gtkmm_main : boost::noncopyable {
 
  private:
   void error_handler() {
-   throw_ = true;
   	exception_ = std::current_exception();
-   quit();
+    quit();
   }
 
   template <typename Pred> 
   class main_loop {
    public:
-    explicit main_loop(const Pred pred) : pred_(pred) {}
+    explicit main_loop(Pred pred) : pred_(pred) {}
        
     bool update() const {
       pred_();
@@ -55,11 +53,9 @@ class gtkmm_main : boost::noncopyable {
     }
 
    private:
-    const Pred pred_;
+    Pred pred_;
   };
 
-  Gtk::Main main_;
-  bool throw_;
   std::exception_ptr exception_;
 };
 }}
